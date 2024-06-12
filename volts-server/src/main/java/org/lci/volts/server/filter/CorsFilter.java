@@ -1,4 +1,4 @@
-package com.example.energier.server.filter;
+package org.lci.volts.server.filter;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

@@ -1,4 +1,4 @@
-package com.example.energier.server.config;
+package org.lci.volts.server.config;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;

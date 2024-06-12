@@ -1,13 +1,13 @@
-package com.example.energier.server.filter;
+package org.lci.volts.server.filter;
 
-import com.example.energier.server.jwt.JwtUtil;
-import com.example.energier.server.repository.UserRepository;
-import com.example.energier.server.type.Role;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.lci.volts.server.jwt.JwtUtil;
+import org.lci.volts.server.repository.UserRepository;
+import org.lci.volts.server.type.Role;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

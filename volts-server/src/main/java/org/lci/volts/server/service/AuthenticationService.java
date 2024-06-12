@@ -1,12 +1,11 @@
-package com.example.energier.server.service;
+package org.lci.volts.server.service;
 
-import com.example.energier.server.jwt.JwtUtil;
-import com.example.energier.server.logger.LoginActivityLogger;
-import com.example.energier.server.model.request.AuthenticationRequest;
-import com.example.energier.server.model.responce.AuthenticationResponse;
-import com.example.energier.server.repository.UserRepository;
-import com.example.energier.server.type.Role;
 import lombok.RequiredArgsConstructor;
+import org.lci.volts.server.jwt.JwtUtil;
+import org.lci.volts.server.model.request.AuthenticationRequest;
+import org.lci.volts.server.model.responce.AuthenticationResponse;
+import org.lci.volts.server.repository.UserRepository;
+import org.lci.volts.server.type.Role;
 import org.springframework.data.convert.ReadingConverter;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;

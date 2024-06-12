@@ -1,7 +1,6 @@
 
-package com.example.energier.server.logger;
-
-import com.example.energier.server.persistence.TerraUserLogEntity;
+package org.lci.volts.server.logger;
+import org.lci.volts.server.persistence.TerraUserLogEntity;
 
 import java.sql.Date;
 import java.time.Instant;

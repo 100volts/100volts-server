@@ -1,6 +1,6 @@
-package com.example.energier.server.repository;
+package org.lci.volts.server.repository;
 
-import com.example.energier.server.persistence.User;
+import org.lci.volts.server.persistence.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

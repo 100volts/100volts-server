@@ -5,7 +5,7 @@ spring:
     jwtSecret: s3cr37
     jwtExpirationMs: 36000000
   datasource:
-    url:
+    url: jdbc:postgresql://ep-lively-queen-99751851.eu-central-1.aws.neon.tech/energyx?user=IvoRum&password=RXvnYfB9m1Uz&sslmode=require
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:

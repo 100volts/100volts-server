@@ -1,8 +1,8 @@
-package com.example.energier.server.config;
+package org.lci.volts.server.config;
 
-import com.example.energier.server.filter.JwtAuthFilter;
-import com.example.energier.server.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.lci.volts.server.filter.JwtAuthFilter;
+import org.lci.volts.server.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,4 +1,4 @@
-package com.example.energier.server.model.responce;
+package org.lci.volts.server.model.responce;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

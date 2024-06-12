@@ -1,6 +1,7 @@
-package com.example.energier.server.jwt;
+package org.lci.volts.server.jwt;
 
 import io.jsonwebtoken.*;
+import lombok.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 

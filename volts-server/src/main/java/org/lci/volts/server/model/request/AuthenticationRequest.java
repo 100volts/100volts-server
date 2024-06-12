@@ -1,4 +1,4 @@
-package com.example.energier.server.model.request;
+package org.lci.volts.server.model.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,6 +13,6 @@ public class AuthenticationRequest {
 
     private String email;
     private String password;
-    private String macAddress;
-    private String ipAddress;
+    //private String macAddress;
+    //private String ipAddress;
 }

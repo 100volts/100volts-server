@@ -1,8 +1,11 @@
-package com.example.energier.server.persistence;
+package org.lci.volts.server.persistence;
 
-import com.example.energier.server.type.Role;
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import org.lci.volts.server.type.Role;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,28 +13,30 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
-
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@Entity
-@Setter
 @Table(name = "company_user")
 public class User implements UserDetails {
+    @Column(value = "id")
+    public Company company;
 
     @Id
-    @GeneratedValue
-    private Integer id;
-    @Column(name = "id_company")
-    private int idCompany;
-    @Column(name = "first_name")
-    private String firstName;
-    @Column(name = "family_name")
-    private String familyName;
-    private String email;
-    private String password;
-    private String telephone;
+    @Column(value = "id_company")
+    public Long idCompany;
+
+    @Column(value = "email")
+    public String email;
+
+    @Column(value = "telephone")
+    public String telephone;
+
+    @Column(value = "password")
+    public String password;
+
+    @Column(value = "first_name")
+    public String firstName;
+
+    @Column(value = "family_name")
+    public String familyName;
+
 
     @Enumerated(EnumType.STRING)
     private Role role;
@@ -40,6 +45,7 @@ public class User implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
     }
+
 
     @Override
     public String getPassword() {
@@ -71,4 +77,71 @@ public class User implements UserDetails {
         return true;
     }
 
+    public Long getId() {
+        return idCompany;
+    }
+
+    public void setId(Long id) {
+        this.idCompany = id;
+    }
+
+    public Company getCompany() {
+        return company;
+    }
+
+    public void setCompany(Company company) {
+        this.company = company;
+    }
+
+    public Long getIdCompany() {
+        return idCompany;
+    }
+
+    public void setIdCompany(Long idCompany) {
+        this.idCompany = idCompany;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getTelephone() {
+        return telephone;
+    }
+
+    public void setTelephone(String telephone) {
+        this.telephone = telephone;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getFamilyName() {
+        return familyName;
+    }
+
+    public void setFamilyName(String familyName) {
+        this.familyName = familyName;
+    }
+
+    public void setRole(final Role role) {
+        this.role=role;
+    }
+
+    public Object getRole() {
+        return this.role;
+    }
 }

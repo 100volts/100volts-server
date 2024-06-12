@@ -1,4 +1,4 @@
-package com.example.energier.server.persistence;
+package org.lci.volts.server.persistence;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

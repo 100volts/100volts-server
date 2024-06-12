@@ -1,4 +1,4 @@
-package com.example.energier.server.logger;
+package org.lci.volts.server.logger;
 
 import com.mongodb.client.MongoClients;
 import org.springframework.data.mongodb.core.MongoTemplate;

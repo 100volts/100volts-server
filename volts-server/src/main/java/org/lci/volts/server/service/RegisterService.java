@@ -1,13 +1,13 @@
-package com.example.energier.server.service;
+package org.lci.volts.server.service;
 
-import com.example.energier.server.config.SecurityConfig;
-import com.example.energier.server.model.request.AuthenticationRequest;
-import com.example.energier.server.model.request.RegistrationRequest;
-import com.example.energier.server.model.responce.AuthenticationResponse;
-import com.example.energier.server.persistence.User;
-import com.example.energier.server.repository.UserRepository;
-import com.example.energier.server.type.Role;
 import lombok.RequiredArgsConstructor;
+import org.lci.volts.server.config.SecurityConfig;
+import org.lci.volts.server.model.request.AuthenticationRequest;
+import org.lci.volts.server.model.request.RegistrationRequest;
+import org.lci.volts.server.model.responce.AuthenticationResponse;
+import org.lci.volts.server.persistence.User;
+import org.lci.volts.server.repository.UserRepository;
+import org.lci.volts.server.type.Role;
 import org.springframework.data.convert.ReadingConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,11 +34,14 @@ public class RegisterService {
         toRegister.setPassword(securityConfig.passwordEncoder().encode(request.getPassword()));
         toRegister.setFirstName(request.getFirstName());
         toRegister.setFamilyName(request.getLastName());
+        toRegister.setTelephone(request.getTelephoneNumber());
+        toRegister.setId(toRegister.getIdCompany());
         toRegister.setRole(Role.USER);
         userRepository.save(toRegister);
 
         return authenticationService.authenticate(
-                new AuthenticationRequest(request.getEmail(),request.getPassword(),
-                        request.getMacAddress(),request.getIpAddress()));
+                new AuthenticationRequest(request.getEmail(),request.getPassword()
+//                        ,request.getMacAddress(),request.getIpAddress()
+                ));
     }
 }
