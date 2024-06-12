@@ -1,30 +1,25 @@
 package org.lci.volts.server.persistence;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Column;
-import org.springframework.data.relational.core.mapping.Table;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.util.List;
+
+@Entity
+@Setter
+@Getter
 @Table(name = "company")
 public class Company {
     @Id
     public Long id;
 
-    @Column(value = "name")
+    @Column()
     public String name;
 
-    public Long getId() {
-        return id;
-    }
+    //@OneToMany(mappedBy = "company")
+    //private List<CompanyUser> books;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    public Company() {
     }
 }

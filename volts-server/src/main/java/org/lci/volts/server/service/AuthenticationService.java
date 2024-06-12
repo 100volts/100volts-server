@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.lci.volts.server.jwt.JwtUtil;
 import org.lci.volts.server.model.request.AuthenticationRequest;
 import org.lci.volts.server.model.responce.AuthenticationResponse;
-import org.lci.volts.server.repository.UserRepository;
+import org.lci.volts.server.repository.CompanyUserRepository;
 import org.lci.volts.server.type.Role;
 import org.springframework.data.convert.ReadingConverter;
 import org.springframework.http.HttpStatus;
@@ -21,7 +21,7 @@ import org.springframework.web.server.ResponseStatusException;
 @RequiredArgsConstructor
 public class AuthenticationService {
     private final JwtUtil jwtUtil;
-    private final UserRepository userRepository;
+    private final CompanyUserRepository companyUserRepository;
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
@@ -33,7 +33,7 @@ public class AuthenticationService {
                 )
         );
 
-        var user = userRepository.findByEmail(request.getEmail()).orElseThrow(
+        var user = companyUserRepository.findByEmail(request.getEmail()).orElseThrow(
                 () -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "user not found"
                 )

@@ -29,16 +29,13 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponse> registerUser(
+    public ResponseEntity<String> registerUser(
             @RequestBody RegistrationRequest request,
             @RequestHeader("Host") String remoteAddress
     ) {
         request.setIpAddress(remoteAddress);
-        AuthenticationResponse response = registerService.registerUser(request);
-        if(response == null){
-            return ResponseEntity.status(HttpStatus.SEE_OTHER).body(null);
-        }
-        return ResponseEntity.ok(response);
+        registerService.registerUser(request);
+        return ResponseEntity.ok("ok");
     }
 
 }

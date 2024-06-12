@@ -6,7 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.lci.volts.server.jwt.JwtUtil;
-import org.lci.volts.server.repository.UserRepository;
+import org.lci.volts.server.repository.CompanyUserRepository;
 import org.lci.volts.server.type.Role;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,7 +24,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
 
-    private final UserRepository userRepository;
+    private final CompanyUserRepository companyUserRepository;
     private final JwtUtil jwtUtil;
 
 
@@ -50,7 +50,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         userEmail = jwtUtil.extractUsername(jwtToken);
 
         if (userEmail != null) {
-            var optionalDetails = this.userRepository.findByEmail(userEmail);
+            var optionalDetails = this.companyUserRepository.findByEmail(userEmail);
             UserDetails userDetails;
             if(optionalDetails.isPresent()){
                 userDetails = optionalDetails.get();

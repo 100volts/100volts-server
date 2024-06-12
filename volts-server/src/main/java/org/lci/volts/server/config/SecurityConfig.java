@@ -2,7 +2,7 @@ package org.lci.volts.server.config;
 
 import lombok.RequiredArgsConstructor;
 import org.lci.volts.server.filter.JwtAuthFilter;
-import org.lci.volts.server.repository.UserRepository;
+import org.lci.volts.server.repository.CompanyUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,7 +29,7 @@ public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
     @Autowired
-    private final UserRepository userRepository;
+    private final CompanyUserRepository companyUserRepository;
 
 
     @Bean
@@ -77,7 +77,7 @@ public class SecurityConfig {
         return new UserDetailsService() {
             @Override
             public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-                return userRepository.findByEmail(email).orElseThrow();
+                return companyUserRepository.findByEmail(email).orElseThrow();
             }
         };
     }
