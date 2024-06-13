@@ -2,9 +2,8 @@ package org.lci.volts.server.service;
 
 import lombok.RequiredArgsConstructor;
 import org.lci.volts.server.config.SecurityConfig;
-import org.lci.volts.server.model.request.AuthenticationRequest;
 import org.lci.volts.server.model.request.RegistrationRequest;
-import org.lci.volts.server.model.responce.AuthenticationResponse;
+import org.lci.volts.server.model.request.RegistrationWithCompanyRequest;
 import org.lci.volts.server.persistence.CompanyUser;
 import org.lci.volts.server.repository.CompanyRepository;
 import org.lci.volts.server.repository.CompanyUserRepository;
@@ -21,12 +20,13 @@ public class RegisterService {
 
     private final CompanyUserRepository companyUserRepository;
     private final CompanyRepository companyRepository;
-    private final AuthenticationService authenticationService;
     private final SecurityConfig securityConfig;
 
+    private static final long BLANK_COMPANY_ID = 1L;
+
     @Transactional
-    public void registerUser(final RegistrationRequest request) {
-        validateEmailIsNotTaken(request);
+    public void registerUserWhitCopany(final RegistrationWithCompanyRequest request) {
+        validateEmailIsNotTaken(request.getEmail());
 
         CompanyUser toRegister = CompanyUser
                 .builder()
@@ -35,25 +35,38 @@ public class RegisterService {
                 .firstName(request.getFirstName())
                 .familyName(request.getLastName())
                 .telephone(request.getTelephoneNumber())
-                .company(companyRepository.findById(request.getCompanyId()).orElseThrow(() -> new IllegalArgumentException("Company id is now found")))
+                .company(companyRepository.findById(request.getCompanyId())
+                        .orElseThrow(() -> new IllegalArgumentException("Company id is now found")))
                 .role(Role.USER)
                 .build();
-        //toRegister.setEmail(request.getEmail());
-        //toRegister.setPassword(securityConfig.passwordEncoder().encode(request.getPassword()));
-        //toRegister.setFirstName(request.getFirstName());
-        //toRegister.setFamilyName(request.getLastName());
-        //toRegister.setTelephone(request.getTelephoneNumber());
-        //toRegister.setCompany(companyRepository.findById(request.getCompanyId()).orElseThrow(() -> new IllegalArgumentException("Company id is now found")));
-        //toRegister.setRole(Role.USER);
+
         companyUserRepository.save(toRegister);
 
         //return authenticationService.authenticate(new AuthenticationRequest(request.getEmail(), request.getPassword()
 //                        ,request.getMacAddress(),request.getIpAddress()
-       // ));
+        // ));
     }
 
-    private void validateEmailIsNotTaken(final RegistrationRequest request) {
-        if (companyUserRepository.findByEmail(request.getEmail()).isPresent()) {
+    public void registerUser(final RegistrationRequest request) {
+        validateEmailIsNotTaken(request.getEmail());
+
+        CompanyUser toRegister = CompanyUser
+                .builder()
+                .email(request.getEmail())
+                .password(securityConfig.passwordEncoder().encode(request.getPassword()))
+                .firstName(request.getFirstName())
+                .familyName(request.getLastName())
+                .telephone(request.getTelephoneNumber())
+                .company(companyRepository.findById(BLANK_COMPANY_ID)
+                        .orElseThrow(() -> new IllegalArgumentException("Company id is now found")))
+                .role(Role.USER)
+                .build();
+
+        companyUserRepository.save(toRegister);
+    }
+
+    private void validateEmailIsNotTaken(final String email) {
+        if (companyUserRepository.findByEmail(email).isPresent()) {
             throw new IllegalArgumentException("User name exists");
         }
     }
