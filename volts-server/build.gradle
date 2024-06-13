@@ -40,6 +40,11 @@ dependencies {
     //lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
+    //javax
+    implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
+    implementation group: 'org.glassfish.jaxb', name: 'jaxb-runtime', version: '4.0.5'
+    implementation group: 'javax.activation', name: 'activation', version: '1.1.1'
+
 }
 
 tasks.named('test') {

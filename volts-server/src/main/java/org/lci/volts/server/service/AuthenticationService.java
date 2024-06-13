@@ -6,6 +6,7 @@ import org.lci.volts.server.model.request.AuthenticationRequest;
 import org.lci.volts.server.model.responce.AuthenticationResponse;
 import org.lci.volts.server.repository.CompanyUserRepository;
 import org.lci.volts.server.type.Role;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.convert.ReadingConverter;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,11 +19,17 @@ import org.springframework.web.server.ResponseStatusException;
 @Service
 @Transactional
 @ReadingConverter
-@RequiredArgsConstructor
 public class AuthenticationService {
     private final JwtUtil jwtUtil;
     private final CompanyUserRepository companyUserRepository;
     private final AuthenticationManager authenticationManager;
+
+    @Autowired
+    public AuthenticationService(final JwtUtil jwtUtil, final CompanyUserRepository companyUserRepository, final AuthenticationManager authenticationManager) {
+        this.jwtUtil = jwtUtil;
+        this.companyUserRepository = companyUserRepository;
+        this.authenticationManager = authenticationManager;
+    }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
 
