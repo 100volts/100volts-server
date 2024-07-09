@@ -1,56 +1,63 @@
 package org.lci.volts.server.persistence;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Column;
-import org.springframework.data.relational.core.mapping.Table;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import jakarta.persistence.Id;
+import jakarta.persistence.Column;
+import jakarta.persistence.Table;
 
 import java.math.BigDecimal;
 
 @Table(name = "electric_meter")
+@AllArgsConstructor
+@NoArgsConstructor
 public class ElectricMeter {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
 
-    @Column(value = "voltagell1")
+    @Column
     public BigDecimal voltagell1;
 
-    @Column(value = "voltagell2")
+    @Column
     public BigDecimal voltagell2;
 
-    @Column(value = "voltagell3")
+    @Column
     public BigDecimal voltagell3;
 
-    @Column(value = "currentl1")
+    @Column
     public BigDecimal currentl1;
 
-    @Column(value = "currentl2")
+    @Column
     public BigDecimal currentl2;
 
-    @Column(value = "currentl3")
+    @Column
     public BigDecimal currentl3;
 
-    @Column(value = "activepowerl1")
+    @Column
     public BigDecimal activepowerl1;
 
-    @Column(value = "activepowerl2")
+    @Column
     public BigDecimal activepowerl2;
 
-    @Column(value = "activepowerl3")
+    @Column
     public BigDecimal activepowerl3;
 
-    @Column(value = "pfl1")
+    @Column
     public BigDecimal pfl1;
 
-    @Column(value = "pfl2")
+    @Column
     public BigDecimal pfl2;
 
-    @Column(value = "pfl3")
+    @Column
     public BigDecimal pfl3;
 
-    @Column(value = "pf")
+    @Column
     public BigDecimal pf;
 
-    @Column(value = "totalactiveenergyimporttariff1")
+    @Column
     public BigDecimal totalactiveenergyimporttariff1;
 
     public Long getId() {
