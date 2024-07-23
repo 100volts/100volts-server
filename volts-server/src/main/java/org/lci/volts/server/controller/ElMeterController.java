@@ -14,10 +14,9 @@ import org.springframework.web.bind.annotation.*;
 public class ElMeterController {
     private final ElMerterService elMerterService;
 
-    @PostMapping("/authenticate")
+    @PostMapping
     public ResponseEntity<ElMeterReadResponse> authenticate(
-            @RequestBody ElMeterReadRequest request,
-            @RequestHeader("Host") String remoteAddress
+            @RequestBody ElMeterReadRequest request
     ) {
         return ResponseEntity.ok(elMerterService.setReadData(request.getElMeterData()));
     }
