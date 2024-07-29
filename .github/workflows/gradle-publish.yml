@@ -19,10 +19,10 @@ jobs:
         distribution: 'temurin'
 
     - name: Grant execute permission for gradlew
-      run: chmod +x ./volts-server/gradlew
+      run: chmod +x volts-server/gradlew
 
     - name: List files for debugging
-      run: ls -R ./
+      run: ls -R volts-server/
 
     - name: Build with Gradle
-      run: ./volts-server/gradlew build --scan
+      run: volts-server/gradlew build --scan
