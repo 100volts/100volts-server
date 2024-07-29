@@ -1,4 +1,4 @@
-name: CI
+name: Greadle-build
 on:
   push:
     branches: [ main ]
@@ -22,3 +22,15 @@ jobs:
       - name: Build with Gradle
         working-directory: volts-server
         run: ./gradlew build
+
+      - name: List build directory
+        working-directory: volts-server
+        run: ls -la build/libs
+  
+      - name: Upload JAR file
+        uses: actions/upload-artifact@v3
+        with:
+          working-directory: volts-server
+          name: my-app-build
+          path: build/libs/*.jar
+          
