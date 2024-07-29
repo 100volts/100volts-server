@@ -23,4 +23,5 @@ jobs:
       run: chmod +x gradlew
 
     - name: Build with Gradle
+      working-directory: volts-server
       run: ./gradlew build
