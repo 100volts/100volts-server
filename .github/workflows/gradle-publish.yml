@@ -18,6 +18,9 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x ./volts-server/gradlew
 
+      - name: List files for debugging
+        run: ls -R ./
+
       - name: Build with Gradle
         run: ./volts-server/gradlew build --scan
 
