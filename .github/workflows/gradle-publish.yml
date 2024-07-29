@@ -21,7 +21,6 @@ jobs:
     - name: Grant execute permission for gradlew
       working-directory: volts-server
       run: chmod +x gradlew
-            ls
 
     - name: Build with Gradle
       run: ./gradlew build
