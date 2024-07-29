@@ -35,6 +35,7 @@ jobs:
           path: build/libs/*.jar
 
       - name: Commit JAR file to repository
+        working-directory: volts-server
         run: |
           git config user.name "IvoRum"
           git config user.email "ivaylo.rumenov@outlookc.com"
