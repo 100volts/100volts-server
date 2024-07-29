@@ -18,14 +18,10 @@ jobs:
         java-version: '11'
         distribution: 'temurin'
 
-    - name: Move to a different directory and run a command
-      run: |
-        echo "Current directory: $(pwd)"
-        ls
-      working-directory: volts-server
-
     - name: Grant execute permission for gradlew
+      working-directory: volts-server
       run: chmod +x gradlew
+            ls
 
     - name: Build with Gradle
       run: ./gradlew build
