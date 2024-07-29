@@ -5,24 +5,14 @@ on:
   pull_request:
     branches: [ main ]
 jobs:
-  build:
+  build-without-cache:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Check out the code
-      uses: actions/checkout@v3
-
-    - name: Set up JDK 11
-      uses: actions/setup-java@v3
-      with:
-        java-version: '11'
-        distribution: 'temurin'
-
-    - name: Grant execute permission for gradlew
-      run: chmod +x volts-server/gradlew
-
-    - name: List files in volts-server for debugging
-      run: ls -la volts-server/
-
-    - name: Build with Gradle
-      run: volts-server/gradlew build --scan
+      - uses: actions/checkout@v2
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          java-version: 17
+          distribution: 'adopt'
+      - name: Build with Gradle
+        run: ./gradlew build --scan
