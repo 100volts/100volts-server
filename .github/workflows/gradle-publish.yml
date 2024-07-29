@@ -33,4 +33,14 @@ jobs:
           working-directory: volts-server
           name: my-app-build
           path: build/libs/*.jar
+
+      - name: Commit JAR file to repository
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add build/libs/*.jar
+          git commit -m "Add build artifacts"
+          git push origin main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
