@@ -3,13 +3,11 @@ package org.lci.volts.server.repository;
 import lombok.RequiredArgsConstructor;
 import org.lci.volts.server.model.ElMeterDTO;
 import org.lci.volts.server.model.ElMeterDataDTO;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.*;
-import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
