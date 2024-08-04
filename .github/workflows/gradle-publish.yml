@@ -1,4 +1,4 @@
-name: Gradle Build and SonarQube Analysis
+name: Gradle Build
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  build-and-analyze:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -26,13 +26,6 @@ jobs:
       - name: Build with Gradle
         working-directory: volts-server
         run: ./gradlew build
-
-      - name: SonarQube Analysis
-        working-directory: volts-server
-        env:
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./gradlew sonarqube -Dsonar.login=${{ secrets.SONAR_TOKEN }}
 
       - name: List build directory
         working-directory: volts-server
