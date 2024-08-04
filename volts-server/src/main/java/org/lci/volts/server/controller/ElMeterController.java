@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 public class ElMeterController {
     private final ElMerterService elMerterService;
 
-    @PostMapping
+    @PostMapping("/data")
     public ResponseEntity<ElMeterReadResponse> insertData(
             @RequestBody ElMeterReadRequest request
     ) {
