@@ -2,7 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.3.0'
     id 'io.spring.dependency-management' version '1.1.5'
-    id 'org.sonarqube' version '3.9.1.2161'
+    id "org.sonarqube" version "4.0.0.2929"
 }
 
 sonarqube {
@@ -12,6 +12,8 @@ sonarqube {
         property 'sonar.login', 'squ_25c06af6900e5ac71eab68e195adc59a845be76f'
     }
 }
+
+tasks['sonarqube'].dependsOn test
 
 
 group = 'com.hund.volts'
