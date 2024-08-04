@@ -9,7 +9,7 @@ sonarqube {
     properties {
         property 'sonar.projectKey', 'volts-server'
         property 'sonar.host.url', '192.168.0.102'
-        property 'sonar.login', 'squ_25c06af6900e5ac71eab68e195adc59a845be76f'
+
     }
 }
 
