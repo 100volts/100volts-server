@@ -17,7 +17,7 @@ public class ElMerterService {
     private final ElMeterRpository repository;
 
     public ElMeterReadResponse setReadData(ElMeterDataDTO elMeterData) {
-        return new ElMeterReadResponse(true);
+        return new ElMeterReadResponse(repository.saveElmeterData(elMeterData));
     }
 
     public boolean createElMeter(final ElMeterDTO request) {

@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 
 @Data
 public class ElMeterDataDTO {
+    public BigDecimal merterId;
     public BigDecimal voltagell1;
     public BigDecimal voltagell2;
     public BigDecimal voltagell3;
@@ -20,6 +21,7 @@ public class ElMeterDataDTO {
     public BigDecimal pfl1;
     public BigDecimal pfl2;
     public BigDecimal pfl3;
-    public BigDecimal pf;
-    public BigDecimal totalactiveenergyimporttariff1;
+    public BigDecimal totalActivePpower;
+    public BigDecimal totalActiveEnergyImportTariff1;
+    public BigDecimal totalActiveEnergyImportTariff2;
 }
