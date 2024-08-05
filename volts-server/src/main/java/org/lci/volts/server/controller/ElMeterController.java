@@ -2,6 +2,7 @@ package org.lci.volts.server.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.lci.volts.server.model.ElMeterDTO;
+import org.lci.volts.server.model.ElMeterDataDTO;
 import org.lci.volts.server.model.request.ElMeterCreationRequest;
 import org.lci.volts.server.model.request.ElMeterReadRequest;
 import org.lci.volts.server.model.responce.ElMeterReadResponse;
@@ -18,9 +19,9 @@ public class ElMeterController {
 
     @PostMapping("/data")
     public ResponseEntity<ElMeterReadResponse> insertData(
-            @RequestBody ElMeterReadRequest request
+            @RequestBody ElMeterDataDTO request
     ) {
-        return ResponseEntity.ok(elMerterService.setReadData(request.getElMeterData()));
+        return ResponseEntity.ok(elMerterService.setReadData(request));
     }
 
     @PostMapping("create")
