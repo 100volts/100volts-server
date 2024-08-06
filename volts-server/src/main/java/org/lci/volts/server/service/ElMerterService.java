@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ElMerterService {
     private final ElMeterRpository repository;
 
-    public ElMeterReadResponse setReadData(ElMeterDataDTO elMeterData) {
+    public ElMeterReadResponse  setReadData(ElMeterDataDTO elMeterData) {
         return new ElMeterReadResponse(repository.saveElmeterData(elMeterData));
     }
 
