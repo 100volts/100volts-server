@@ -60,7 +60,7 @@ public class ElMeterRpository {
             }
 
         }
-        return result;
+        return !result;
     }
 
     public boolean createElmeter(ElMeterDTO elmeterData) {
