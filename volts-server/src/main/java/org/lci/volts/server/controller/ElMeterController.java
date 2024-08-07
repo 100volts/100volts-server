@@ -4,10 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.lci.volts.server.model.ElMeterDTO;
 import org.lci.volts.server.model.ElMeterDataDTO;
 import org.lci.volts.server.model.request.ElMeterCreationRequest;
-import org.lci.volts.server.model.request.ElMeterReadRequest;
 import org.lci.volts.server.model.responce.ElMeterReadResponse;
 import org.lci.volts.server.model.responce.ElMetterCreateResponse;
-import org.lci.volts.server.service.ElMerterService;
+import org.lci.volts.server.service.ElMeterService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,20 +14,20 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("elmeter")
 @RequiredArgsConstructor
 public class ElMeterController {
-    private final ElMerterService elMerterService;
+    private final ElMeterService elMeterService;
 
     @PostMapping("/data")
     public ResponseEntity<ElMeterReadResponse> insertData(
             @RequestBody ElMeterDataDTO request
     ) {
-        return ResponseEntity.ok(elMerterService.setReadData(request));
+        return ResponseEntity.ok(elMeterService.setReadData(request));
     }
 
     @PostMapping("create")
     public ResponseEntity<ElMetterCreateResponse> createElectricMeter(
             @RequestBody ElMeterCreationRequest request
     ) {
-        return ResponseEntity.ok(new ElMetterCreateResponse(elMerterService.createElMeter(new ElMeterDTO(
+        return ResponseEntity.ok(new ElMetterCreateResponse(elMeterService.createElMeter(new ElMeterDTO(
                 request.getCompanyId(), request.getMeterAddress(), request.getMeterName()))));
     }
 

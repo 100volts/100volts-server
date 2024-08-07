@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @ReadingConverter
 @RequiredArgsConstructor
-public class ElMerterService {
+public class ElMeterService {
     private final ElMeterRpository repository;
 
     public ElMeterReadResponse  setReadData(ElMeterDataDTO elMeterData) {
