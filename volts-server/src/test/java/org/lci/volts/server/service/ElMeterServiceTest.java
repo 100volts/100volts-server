@@ -10,8 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.math.BigDecimal;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -43,10 +42,10 @@ class ElMeterServiceTest {
                  BigDecimal.ZERO
         );
         //when
-        when(elMeterRpository.saveElmeterData(request)).thenReturn(false);
+        when(elMeterRpository.saveElmeterData(request)).thenReturn(true);
         ElMeterReadResponse response=elMeterService.setReadData(request);
         //then
         assertNotNull(response);
-        assertFalse(response.isSuccess());
+        assertTrue(response.isSuccess());
     }
 }
