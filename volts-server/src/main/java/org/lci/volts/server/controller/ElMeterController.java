@@ -5,11 +5,9 @@ import org.lci.volts.server.model.ElMeterDTO;
 import org.lci.volts.server.model.ElMeterDataDTO;
 import org.lci.volts.server.model.request.ElMeterCreationRequest;
 import org.lci.volts.server.model.request.GetAddressListElMeterRequest;
+import org.lci.volts.server.model.request.GetElMeterLastDataRequest;
 import org.lci.volts.server.model.request.GetElMeterRequest;
-import org.lci.volts.server.model.responce.ElMeterReadResponse;
-import org.lci.volts.server.model.responce.ElMetterCreateResponse;
-import org.lci.volts.server.model.responce.GetAddressListElMeterResponse;
-import org.lci.volts.server.model.responce.GetElMeterResponse;
+import org.lci.volts.server.model.responce.*;
 import org.lci.volts.server.service.ElMeterService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -46,8 +44,8 @@ public class ElMeterController {
     }
 
     @GetMapping("/data/last")
-    public ResponseEntity<GetElMeterResponse> getElectricMeterWithLastData(@RequestBody GetElMeterRequest request) {
-        return ResponseEntity.ok(elMeterService.getElectricMeter(request.getAddress()));
+    public ResponseEntity<GetElMeterAndDataResponse> getElectricMeterWithLastData(@RequestBody GetElMeterLastDataRequest request) {
+        return ResponseEntity.ok(elMeterService.getElectricMeterWithLastData(request.getAddress(),request.getCompanyName()));
     }
 
 }

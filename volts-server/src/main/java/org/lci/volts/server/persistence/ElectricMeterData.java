@@ -3,6 +3,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 
 @Entity
 @Setter
@@ -15,33 +17,33 @@ public class ElectricMeterData {
     @JoinColumn(name = "el_meter")
     private ElectricMeter meter;
     @Column(name = "voltage_l1_n")
-    private double voltageL1;
+    private BigDecimal voltageL1;
     @Column(name = "voltage_l2_n")
-    private double voltageL2;
+    private BigDecimal voltageL2;
     @Column(name = "voltage_l3_n")
-    private double voltageL3;
+    private BigDecimal voltageL3;
     @Column(name = "current_l1")
-    private double currentL1;
+    private BigDecimal currentL1;
     @Column(name = "current_l2")
-    private double currentL2;
+    private BigDecimal currentL2;
     @Column(name = "current_l3")
-    private double currentL3;
+    private BigDecimal currentL3;
     @Column(name = "active_power_l1")
-    private double activePowerL1;
+    private BigDecimal activePowerL1;
     @Column(name = "active_power_l2")
-    private double activePowerL2;
+    private BigDecimal activePowerL2;
     @Column(name = "active_power_l3")
-    private double activePowerL3;
+    private BigDecimal activePowerL3;
     @Column(name = "power_factor_l1")
-    private double powerFactorL1;
+    private BigDecimal powerFactorL1;
     @Column(name = "power_factor_l2")
-    private double powerFactorL2;
+    private BigDecimal powerFactorL2;
     @Column(name = "power_factor_l3")
-    private double powerFactorL3;
+    private BigDecimal powerFactorL3;
     @Column(name = "total_active_power")
-    private double totalActivePower;
+    private BigDecimal totalActivePower;
     @Column(name = "total_active_energy_import_tariff_1")
-    private double totalActiveEnergyImportTariff1;
+    private BigDecimal totalActiveEnergyImportTariff1;
     @Column(name = "total_active_energy_import_tariff_2")
-    private double totalActiveEnergyImportTariff2;
+    private BigDecimal totalActiveEnergyImportTariff2;
 }
