@@ -4,8 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.lci.volts.server.model.ElMeterDTO;
 import org.lci.volts.server.model.ElMeterDataDTO;
 import org.lci.volts.server.model.request.ElMeterCreationRequest;
-import org.lci.volts.server.model.responce.ElMeterReadResponse;
-import org.lci.volts.server.model.responce.ElMetterCreateResponse;
+import org.lci.volts.server.model.request.GetAddressListElMeterRequest;
+import org.lci.volts.server.model.request.GetElMeterLastDataRequest;
+import org.lci.volts.server.model.request.GetElMeterRequest;
+import org.lci.volts.server.model.responce.*;
 import org.lci.volts.server.service.ElMeterService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +31,21 @@ public class ElMeterController {
     ) {
         return ResponseEntity.ok(new ElMetterCreateResponse(elMeterService.createElMeter(new ElMeterDTO(
                 request.getCompanyId(), request.getMeterAddress(), request.getMeterName()))));
+    }
+
+    @GetMapping
+    public ResponseEntity<GetElMeterResponse> getElectricMeter(@RequestBody GetElMeterRequest request) {
+        return ResponseEntity.ok(elMeterService.getElectricMeter(request.getAddress()));
+    }
+
+    @GetMapping("company/address/list")
+    public ResponseEntity<GetAddressListElMeterResponse> getAddressListElectricMeterForCompany(@RequestBody GetAddressListElMeterRequest request) {
+        return ResponseEntity.ok(elMeterService.getAddressListElectricMeterForCompany(request.getCompanyName()));
+    }
+
+    @GetMapping("/data/last")
+    public ResponseEntity<GetElMeterAndDataResponse> getElectricMeterWithLastData(@RequestBody GetElMeterLastDataRequest request) {
+        return ResponseEntity.ok(elMeterService.getElectricMeterWithLastData(request.getAddress(),request.getCompanyName()));
     }
 
 }
