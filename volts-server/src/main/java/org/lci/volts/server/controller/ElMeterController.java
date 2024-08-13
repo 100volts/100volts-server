@@ -33,17 +33,17 @@ public class ElMeterController {
                 request.getCompanyId(), request.getMeterAddress(), request.getMeterName()))));
     }
 
-    @GetMapping
+    @PostMapping
     public ResponseEntity<GetElMeterResponse> getElectricMeter(@RequestBody GetElMeterRequest request) {
         return ResponseEntity.ok(elMeterService.getElectricMeter(request.getAddress()));
     }
 
-    @GetMapping("company/address/list")
+    @PostMapping("company/address/list")
     public ResponseEntity<GetAddressListElMeterResponse> getAddressListElectricMeterForCompany(@RequestBody GetAddressListElMeterRequest request) {
         return ResponseEntity.ok(elMeterService.getAddressListElectricMeterForCompany(request.getCompanyName()));
     }
 
-    @GetMapping("/data/last")
+    @PostMapping("/data/last")
     public ResponseEntity<GetElMeterAndDataResponse> getElectricMeterWithLastData(@RequestBody GetElMeterLastDataRequest request) {
         return ResponseEntity.ok(elMeterService.getElectricMeterWithLastData(request.getAddress(),request.getCompanyName()));
     }
