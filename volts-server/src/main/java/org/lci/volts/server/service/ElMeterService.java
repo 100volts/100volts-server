@@ -53,10 +53,9 @@ public class ElMeterService {
                 electricMeterDataRepository.findAllElMetersWitDatalastRead(address,companyName).orElseThrow();
         return new GetElMeterAndDataResponse(foundMeterWithData.getMeter().getName(), address,
                 new ElMeterDataDTO(
-                        BigDecimal.valueOf(foundMeterWithData.getMeter().getId()), foundMeterWithData.getCurrentL1(),
-                        foundMeterWithData.getCurrentL2(), foundMeterWithData.getCurrentL3(),
-                        foundMeterWithData.getCurrentL1(), foundMeterWithData.getCurrentL2(),
-                        foundMeterWithData.getCurrentL3(),
+                        BigDecimal.valueOf(foundMeterWithData.getMeter().getId()),
+                        foundMeterWithData.getVoltageL1(), foundMeterWithData.getVoltageL1(), foundMeterWithData.getVoltageL1(),
+                        foundMeterWithData.getCurrentL1(), foundMeterWithData.getCurrentL2(), foundMeterWithData.getCurrentL3(),
                         foundMeterWithData.getActivePowerL1(), foundMeterWithData.getActivePowerL2(),
                         foundMeterWithData.getActivePowerL3(), foundMeterWithData.getPowerFactorL1(),
                         foundMeterWithData.getPowerFactorL2(), foundMeterWithData.getPowerFactorL3(),
