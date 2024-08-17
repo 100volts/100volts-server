@@ -3,10 +3,8 @@ package org.lci.volts.server.service;
 import lombok.RequiredArgsConstructor;
 import org.lci.volts.server.model.ElMeterDTO;
 import org.lci.volts.server.model.ElMeterDataDTO;
-import org.lci.volts.server.model.responce.ElMeterReadResponse;
-import org.lci.volts.server.model.responce.GetAddressListElMeterResponse;
-import org.lci.volts.server.model.responce.GetElMeterAndDataResponse;
-import org.lci.volts.server.model.responce.GetElMeterResponse;
+import org.lci.volts.server.model.GetAddListAndElMeterNamesDTO;
+import org.lci.volts.server.model.responce.*;
 import org.lci.volts.server.persistence.ElectricMeter;
 import org.lci.volts.server.persistence.ElectricMeterData;
 import org.lci.volts.server.repository.ElMeterRpository;
@@ -17,7 +15,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -46,6 +46,15 @@ public class ElMeterService {
                 electricMeterRepository.findAllElMetersByCompanyName(companyId).orElseThrow();
         int[] allMeterAddresses = allMetersFound.stream().mapToInt(ElectricMeter::getAddress).toArray();
         return new GetAddressListElMeterResponse(allMeterAddresses);
+    }
+
+    public GetAddListAndElMeterNamesResponse getAddressListWithNamesElectricMeterForCompany(final String companyId) {
+        Set<ElectricMeter> allMetersFound =
+                electricMeterRepository.findAllElMetersByCompanyName(companyId).orElseThrow();
+        List<GetAddListAndElMeterNamesDTO> meterWithAddresses=
+        allMetersFound.stream().map(meter->
+             new GetAddListAndElMeterNamesDTO(meter.getName(), meter.getAddress())).collect(Collectors.toList());
+        return new GetAddListAndElMeterNamesResponse(meterWithAddresses);
     }
 
     public GetElMeterAndDataResponse getElectricMeterWithLastData(final int address,final String companyName) {
