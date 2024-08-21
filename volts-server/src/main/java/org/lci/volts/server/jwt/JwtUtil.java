@@ -14,7 +14,7 @@ public class JwtUtil {
     //@Value("${spring.app.jwtSecret}")
     private static String secretKey="s3cr37";
     //@Value("${spring.app.jwtExpirationMs}")
-    private static int jwtExpirationMs=36000000;
+    private static int jwtExpirationMs=1800000;//30 min//36000000;//10 howers
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
