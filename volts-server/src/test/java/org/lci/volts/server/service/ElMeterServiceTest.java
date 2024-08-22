@@ -96,8 +96,8 @@ class ElMeterServiceTest {
         GetElMeterResponse foundMeter = elMeterService.getElectricMeter(address);
         //then
         assertNotNull(foundMeter);
-        assertEquals(foundMeter.getAddress(), address);
-        assertEquals(COMPANY_NAME, foundMeter.getName());
+        assertEquals(address,foundMeter.getAddress());
+        assertEquals(mockMeter.getName(), foundMeter.getName());
     }
 
     @Test
