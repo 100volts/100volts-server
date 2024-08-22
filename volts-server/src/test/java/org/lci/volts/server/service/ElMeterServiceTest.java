@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.lci.volts.server.model.ElMeterDataDTO;
 import org.lci.volts.server.model.responce.ElMeterReadResponse;
+import org.lci.volts.server.model.responce.GetAddressListElMeterResponse;
 import org.lci.volts.server.model.responce.GetElMeterResponse;
 import org.lci.volts.server.persistence.Company;
 import org.lci.volts.server.persistence.ElectricMeter;
@@ -16,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.mockito.BDDMockito.given;
 import static org.junit.jupiter.api.Assertions.*;
@@ -93,5 +95,45 @@ class ElMeterServiceTest {
         //then
         assertNotNull(foundMeter);
         assertEquals(foundMeter.getAddress(),address);
+    }
+
+    @Test
+    void getElectricMeternegativ(){
+        //given
+        final Company mockCompany=new Company();
+        mockCompany.setId(1L);
+        mockCompany.setName("Test_company");
+
+        int address=1;
+        ElectricMeter mockMeter=new ElectricMeter();
+        mockMeter.setId(1L);
+        mockMeter.setName("test");
+        mockMeter.setAddress(address);
+        mockMeter.setCompany(mockCompany);
+        given(electricMeterRepository.findByAddress(address)).willThrow(new RuntimeException());
+        //when then
+        assertThrows(RuntimeException.class,()->elMeterService.getElectricMeter(address));
+    }
+
+    @Test
+    void getAddressListElectricMeterForCompanyPositive(){
+        //given
+        final String copmanyName="Test_Company";
+        final Company mockCompany=new Company();
+        mockCompany.setId(1L);
+        mockCompany.setName("Test_company");
+
+        int address=1;
+        ElectricMeter mockMeter=new ElectricMeter();
+        mockMeter.setId(1L);
+        mockMeter.setName("test");
+        mockMeter.setAddress(address);
+        mockMeter.setCompany(mockCompany);
+        given(electricMeterRepository.findAllElMetersByCompanyName(copmanyName)).willReturn(Optional.of(Set.of(mockMeter)));
+        //when
+        GetAddressListElMeterResponse foundAddressList=elMeterService.getAddressListElectricMeterForCompany(copmanyName);
+        //then
+        assertNotNull(foundAddressList);
+        assertEquals(foundAddressList.getAddressList()[0],address);
     }
 }
