@@ -1,24 +1,40 @@
 package org.lci.volts.server.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.lci.volts.server.model.ElMeterDataDTO;
 import org.lci.volts.server.model.responce.ElMeterReadResponse;
+import org.lci.volts.server.model.responce.GetElMeterResponse;
+import org.lci.volts.server.persistence.Company;
+import org.lci.volts.server.persistence.ElectricMeter;
 import org.lci.volts.server.repository.ElMeterRpository;
+import org.lci.volts.server.repository.ElectricMeterDataRepository;
+import org.lci.volts.server.repository.ElectricMeterRepository;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
+import static org.mockito.BDDMockito.given;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class ElMeterServiceTest {
     @Mock
     private ElMeterRpository elMeterRpository;
-    @Autowired
+    @Mock
+    private ElectricMeterRepository electricMeterRepository;
+    @Mock
+    private ElectricMeterDataRepository electricMeterDataRepository;
     private ElMeterService elMeterService;
+
+    @BeforeEach
+    void setUp(){
+        elMeterService=new ElMeterService(elMeterRpository,electricMeterRepository,electricMeterDataRepository);
+    }
 
     @Test
     void setReadDataWillPositive(){
@@ -47,5 +63,35 @@ class ElMeterServiceTest {
         //then
         assertNotNull(response);
         assertTrue(response.isSuccess());
+    }
+
+    @Test
+    void setReadDataWillNegative(){
+        //given
+        ElMeterDataDTO request = new ElMeterDataDTO();
+        //when then
+        when(elMeterRpository.saveElmeterData(request)).thenThrow(new RuntimeException());
+        assertThrows(RuntimeException.class,()-> elMeterService.setReadData(request));
+    }
+
+    @Test
+    void getElectricMeterPositive(){
+        //given
+        var mockCompany=new Company();
+        mockCompany.setId(1L);
+        mockCompany.setName("Test_company");
+
+        int address=1;
+        var mockMeter=new ElectricMeter();
+        mockMeter.setId(1L);
+        mockMeter.setName("test");
+        mockMeter.setAddress(address);
+        mockMeter.setCompany(mockCompany);
+        given(electricMeterRepository.findByAddress(address)).willReturn(Optional.of(mockMeter));
+        //when
+        GetElMeterResponse foundMeter=elMeterService.getElectricMeter(address);
+        //then
+        assertNotNull(foundMeter);
+        assertEquals(foundMeter.getAddress(),address);
     }
 }
