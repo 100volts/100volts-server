@@ -1,8 +1,6 @@
 package org.lci.volts.server.service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.lci.volts.server.model.ElMeterDTO;
 import org.lci.volts.server.model.ElMeterDataDTO;
 import org.lci.volts.server.model.responce.*;
@@ -12,8 +10,6 @@ import org.lci.volts.server.persistence.ElectricMeterData;
 import org.lci.volts.server.repository.ElMeterRpository;
 import org.lci.volts.server.repository.ElectricMeterDataRepository;
 import org.lci.volts.server.repository.ElectricMeterRepository;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -22,7 +18,6 @@ import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
