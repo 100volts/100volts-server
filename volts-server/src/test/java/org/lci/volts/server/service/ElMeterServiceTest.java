@@ -14,6 +14,7 @@ import org.lci.volts.server.repository.ElectricMeterDataRepository;
 import org.lci.volts.server.repository.ElectricMeterRepository;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -24,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@SpringBootTest
 class ElMeterServiceTest {
     @Mock
     private ElMeterRpository elMeterRpository;
