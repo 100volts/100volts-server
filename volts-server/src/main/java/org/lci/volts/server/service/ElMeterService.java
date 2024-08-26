@@ -128,4 +128,5 @@ public class ElMeterService {
                 powerFactorSum.divide(BigDecimal.valueOf(15),mc)
         );
     }
+
 }
