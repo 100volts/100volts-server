@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.sql.Date;
+import java.sql.Timestamp;
 
 
 @Entity
@@ -46,4 +48,6 @@ public class ElectricMeterData {
     private BigDecimal totalActiveEnergyImportTariff1;
     @Column(name = "total_active_energy_import_tariff_2")
     private BigDecimal totalActiveEnergyImportTariff2;
+    @Column(name= "time_stamp")
+    private Date date;
 }

@@ -17,9 +17,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.sql.Date;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -82,6 +89,38 @@ public class ElMeterService {
         );
     }
 
+    public GetElectricMeterDailyTotPowerResponse getDailyTotPowerTariff(final int address, final String companyName, final ZoneId zoneId) {
+        List<ElectricMeterData> dailyTariff = electricMeterDataRepository.findDaielyRead(address, companyName).orElseThrow();
+        /*List<ZonedDateTime> zoneAndDatsFormDb=dailyTariff.stream().map(electricMeterData -> convertUtcToUserTimeZone(electricMeterData.getDate().getTime(),zoneId.getId())).toList();
+        List<TotPowerDTO> totPowerDTOList =new ArrayList<>();
+        for (int i=0;i<zoneAndDatsFormDb.size();i++) {
+            totPowerDTOList.add(new TotPowerDTO(dailyTariff.get(i).getTotalActiveEnergyImportTariff1(),zoneAndDatsFormDb.get(i)));
+        }
+
+        return new GetElectricMeterDailyTotPowerResponse(filterLast24Hours(totPowerDTOList,zoneId.getId()));
+        */
+         return new GetElectricMeterDailyTotPowerResponse(dailyTariff.stream().map(dailyT->new TotPowerDTO(dailyT.getTotalActiveEnergyImportTariff1(),dailyT.getDate())).toList());
+    }
+/*
+    public static List<TotPowerDTO> filterLast24Hours(List<TotPowerDTO> dateTimes, String timeZone) {
+        ZonedDateTime nowInUserZone = ZonedDateTime.now(ZoneId.of(timeZone));
+        ZonedDateTime last24Hours = nowInUserZone.minusHours(24);
+        return dateTimes.stream()
+                .filter(totPower -> totPower.timeStamp().isAfter(last24Hours) && totPower.timeStamp().isBefore(nowInUserZone))
+                .collect(Collectors.toList());
+    }
+
+ */
+
+    public static ZonedDateTime convertUtcToUserTimeZone(long utcTimestamp, String userTimeZone) {
+        Instant instant = Instant.ofEpochMilli(utcTimestamp);
+        ZoneId utcZone = ZoneId.of("UTC");
+        ZoneId userZone = ZoneId.of(userTimeZone);
+        ZonedDateTime utcDateTime = ZonedDateTime.ofInstant(instant, utcZone);
+
+        return utcDateTime.withZoneSameInstant(userZone);
+    }
+
     private ElMeterAvrFifteenMinuteLoad getAvrData(Set<ElectricMeterData> data) {
         Set<BigDecimal> voltage = new HashSet<>();
         Set<BigDecimal> current = new HashSet<>();
@@ -91,42 +130,41 @@ public class ElMeterService {
         MathContext mc = new MathContext(5);
 
         data.forEach(electricMeterData -> {
-            var vl1=electricMeterData.getVoltageL1();
-            var vl1l2=vl1.add(electricMeterData.getVoltageL2());
-            var vl1l2l3=vl1l2.add(electricMeterData.getVoltageL3());
-            var vSumAvr=vl1l2l3.divide(BigDecimal.valueOf(3L),mc);
+            var vl1 = electricMeterData.getVoltageL1();
+            var vl1l2 = vl1.add(electricMeterData.getVoltageL2());
+            var vl1l2l3 = vl1l2.add(electricMeterData.getVoltageL3());
+            var vSumAvr = vl1l2l3.divide(BigDecimal.valueOf(3L), mc);
 
             voltage.add(vSumAvr);
             current.add(electricMeterData.getCurrentL1()
                     .add(electricMeterData.getCurrentL2().add(electricMeterData.getCurrentL3()))
-                    .divide(BigDecimal.valueOf(3L),mc));
+                    .divide(BigDecimal.valueOf(3L), mc));
             power.add(electricMeterData.getActivePowerL1()
                     .add(electricMeterData.getActivePowerL2().add(electricMeterData.getActivePowerL3()))
-                    .divide(BigDecimal.valueOf(3L),mc));
+                    .divide(BigDecimal.valueOf(3L), mc));
             powerFactor.add(electricMeterData.getPowerFactorL1()
                     .add(electricMeterData.getPowerFactorL2().add(electricMeterData.getPowerFactorL3()))
-                    .divide(BigDecimal.valueOf(3L),mc));
+                    .divide(BigDecimal.valueOf(3L), mc));
         });
         BigDecimal volltsSum = BigDecimal.ZERO, currentSum = BigDecimal.ZERO, powerSum = BigDecimal.ZERO,
                 powerFactorSum = BigDecimal.ZERO;
-        for (BigDecimal v:voltage){
-            volltsSum=volltsSum.add(v);
+        for (BigDecimal v : voltage) {
+            volltsSum = volltsSum.add(v);
         }
-        for(BigDecimal c:current){
-            currentSum=currentSum.add(c);
+        for (BigDecimal c : current) {
+            currentSum = currentSum.add(c);
         }
-        for (BigDecimal pf:powerFactor){
-            powerFactorSum=powerFactorSum.add(pf);
+        for (BigDecimal pf : powerFactor) {
+            powerFactorSum = powerFactorSum.add(pf);
         }
-        for (BigDecimal p:power){
-            powerSum=powerSum.add(p);
+        for (BigDecimal p : power) {
+            powerSum = powerSum.add(p);
         }
         return new ElMeterAvrFifteenMinuteLoad(
-                volltsSum.divide(BigDecimal.valueOf(15),mc),
-                currentSum.divide(BigDecimal.valueOf(15),mc),
-                powerSum.divide(BigDecimal.valueOf(15),mc),
-                powerFactorSum.divide(BigDecimal.valueOf(15),mc)
+                volltsSum.divide(BigDecimal.valueOf(15), mc),
+                currentSum.divide(BigDecimal.valueOf(15), mc),
+                powerSum.divide(BigDecimal.valueOf(15), mc),
+                powerFactorSum.divide(BigDecimal.valueOf(15), mc)
         );
     }
-
 }

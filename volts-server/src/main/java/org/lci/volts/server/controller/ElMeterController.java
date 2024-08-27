@@ -3,14 +3,13 @@ package org.lci.volts.server.controller;
 import lombok.RequiredArgsConstructor;
 import org.lci.volts.server.model.ElMeterDTO;
 import org.lci.volts.server.model.ElMeterDataDTO;
-import org.lci.volts.server.model.request.ElMeterCreationRequest;
-import org.lci.volts.server.model.request.GetAddressListElMeterRequest;
-import org.lci.volts.server.model.request.GetElMeterLastDataRequest;
-import org.lci.volts.server.model.request.GetElMeterRequest;
+import org.lci.volts.server.model.request.*;
 import org.lci.volts.server.model.responce.*;
 import org.lci.volts.server.service.ElMeterService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.ZoneId;
 
 @RestController
 @RequestMapping("elmeter")
@@ -53,4 +52,8 @@ public class ElMeterController {
         return ResponseEntity.ok(elMeterService.getElectricMeterWithLastData(request.getAddress(),request.getCompanyName()));
     }
 
+    @PostMapping("/data/daily")
+    public ResponseEntity<GetElectricMeterDailyTotPowerResponse> getElectricMeterDailyData(@RequestBody GetElectricMeterDailyTotPowerRequest request) {
+        return ResponseEntity.ok(elMeterService.getDailyTotPowerTariff(request.getAddress(),request.getCompanyName(), ZoneId.of(request.getTz())));
+    }
 }
