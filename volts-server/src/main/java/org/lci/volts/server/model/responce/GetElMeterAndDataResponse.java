@@ -6,6 +6,8 @@ import lombok.Data;
 import org.lci.volts.server.model.ElMeterAvrFifteenMinuteLoad;
 import org.lci.volts.server.model.ElMeterDataDTO;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 public class GetElMeterAndDataResponse {
@@ -15,4 +17,6 @@ public class GetElMeterAndDataResponse {
     private ElMeterDataDTO data;
     @JsonProperty("electric_meter_avr_data")
     private ElMeterAvrFifteenMinuteLoad avr;
+    @JsonProperty("daily_tariff_data")
+    private List<TotPowerDTO> dailyTariff;
 }

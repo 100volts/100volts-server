@@ -54,6 +54,6 @@ public class ElMeterController {
 
     @PostMapping("/data/daily")
     public ResponseEntity<GetElectricMeterDailyTotPowerResponse> getElectricMeterDailyData(@RequestBody GetElectricMeterDailyTotPowerRequest request) {
-        return ResponseEntity.ok(elMeterService.getDailyTotPowerTariff(request.getAddress(),request.getCompanyName(), ZoneId.of(request.getTz())));
+        return ResponseEntity.ok(elMeterService.getDailyTotPowerTariff(request.getAddress(),request.getCompanyName()));
     }
 }

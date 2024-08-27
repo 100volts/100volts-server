@@ -17,13 +17,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
-import java.sql.Date;
 import java.time.*;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -69,7 +66,7 @@ public class ElMeterService {
                 electricMeterDataRepository.findAllElMetersWitDatalastRead(address, companyName).orElseThrow();
         final Set<ElectricMeterData> foundAvrMeterData =
                 electricMeterDataRepository.findAvrElMetersData(address, companyName).orElseThrow();
-
+        var traf=getDailyTotPowerTariff(address,companyName);
         return new GetElMeterAndDataResponse(foundMeterWithData.getMeter().getName(), address,
                 new ElMeterDataDTO(
                         BigDecimal.valueOf(foundMeterWithData.getMeter().getId()),
@@ -82,11 +79,11 @@ public class ElMeterService {
                         foundMeterWithData.getPowerFactorL2(), foundMeterWithData.getPowerFactorL3(),
                         foundMeterWithData.getTotalActivePower(),
                         foundMeterWithData.getTotalActiveEnergyImportTariff1(),
-                        foundMeterWithData.getTotalActiveEnergyImportTariff2()), getAvrData(foundAvrMeterData)
+                        foundMeterWithData.getTotalActiveEnergyImportTariff2()), getAvrData(foundAvrMeterData),traf.dailyTariff()
         );
     }
 
-    public GetElectricMeterDailyTotPowerResponse getDailyTotPowerTariff(final int address, final String companyName, final ZoneId zoneId) {
+    public GetElectricMeterDailyTotPowerResponse getDailyTotPowerTariff(final int address, final String companyName) {
         List<ElectricMeterData> dailyTariff = electricMeterDataRepository.findDaielyRead(address, companyName).orElseThrow();
         LocalDateTime dateTime = LocalDateTime.now();
         return new GetElectricMeterDailyTotPowerResponse(dailyTariff.stream().filter(dailyT -> dailyT.getDate().getDayOfMonth() == dateTime.getDayOfMonth()).map(dailyT -> new TotPowerDTO(dailyT.getTotalActiveEnergyImportTariff1(), dailyT.getDate().toString())).toList());
