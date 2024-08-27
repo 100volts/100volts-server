@@ -15,6 +15,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -206,12 +208,14 @@ class ElMeterServiceTest {
         mockElectricMeterData.setTotalActiveEnergyImportTariff1(BigDecimal.valueOf(0.738755));
         mockElectricMeterData.setTotalActiveEnergyImportTariff2(BigDecimal.ZERO);
         mockElectricMeterData.setTotalActivePower(BigDecimal.valueOf(27010.097));
+        mockElectricMeterData.setDate(LocalDateTime.now());
 
         ElectricMeterData mockAvr= new ElectricMeterData();
 
         given(electricMeterDataRepository.findAllElMetersWitDatalastRead(address, COMPANY_NAME)).willReturn(
                 Optional.of(mockElectricMeterData));
         given(electricMeterDataRepository.findAvrElMetersData(address, COMPANY_NAME)).willReturn(Optional.of(Set.of(mockElectricMeterData)));
+        given(electricMeterDataRepository.findDaielyRead(address,COMPANY_NAME)).willReturn(Optional.of(List.of(mockElectricMeterData)));
         //when
         GetElMeterAndDataResponse foundLastMeterData =
                 elMeterService.getElectricMeterWithLastData(address, COMPANY_NAME);
