@@ -2,10 +2,10 @@ package org.lci.volts.server.persistence;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import net.sf.jsqlparser.expression.DateTimeLiteralExpression;
 
 import java.math.BigDecimal;
-import java.sql.Date;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 
 @Entity
@@ -49,5 +49,5 @@ public class ElectricMeterData {
     @Column(name = "total_active_energy_import_tariff_2")
     private BigDecimal totalActiveEnergyImportTariff2;
     @Column(name= "time_stamp")
-    private Date date;
+    private LocalDateTime date;
 }

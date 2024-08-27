@@ -18,10 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.sql.Date;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -91,34 +88,8 @@ public class ElMeterService {
 
     public GetElectricMeterDailyTotPowerResponse getDailyTotPowerTariff(final int address, final String companyName, final ZoneId zoneId) {
         List<ElectricMeterData> dailyTariff = electricMeterDataRepository.findDaielyRead(address, companyName).orElseThrow();
-        /*List<ZonedDateTime> zoneAndDatsFormDb=dailyTariff.stream().map(electricMeterData -> convertUtcToUserTimeZone(electricMeterData.getDate().getTime(),zoneId.getId())).toList();
-        List<TotPowerDTO> totPowerDTOList =new ArrayList<>();
-        for (int i=0;i<zoneAndDatsFormDb.size();i++) {
-            totPowerDTOList.add(new TotPowerDTO(dailyTariff.get(i).getTotalActiveEnergyImportTariff1(),zoneAndDatsFormDb.get(i)));
-        }
-
-        return new GetElectricMeterDailyTotPowerResponse(filterLast24Hours(totPowerDTOList,zoneId.getId()));
-        */
-         return new GetElectricMeterDailyTotPowerResponse(dailyTariff.stream().map(dailyT->new TotPowerDTO(dailyT.getTotalActiveEnergyImportTariff1(),dailyT.getDate())).toList());
-    }
-/*
-    public static List<TotPowerDTO> filterLast24Hours(List<TotPowerDTO> dateTimes, String timeZone) {
-        ZonedDateTime nowInUserZone = ZonedDateTime.now(ZoneId.of(timeZone));
-        ZonedDateTime last24Hours = nowInUserZone.minusHours(24);
-        return dateTimes.stream()
-                .filter(totPower -> totPower.timeStamp().isAfter(last24Hours) && totPower.timeStamp().isBefore(nowInUserZone))
-                .collect(Collectors.toList());
-    }
-
- */
-
-    public static ZonedDateTime convertUtcToUserTimeZone(long utcTimestamp, String userTimeZone) {
-        Instant instant = Instant.ofEpochMilli(utcTimestamp);
-        ZoneId utcZone = ZoneId.of("UTC");
-        ZoneId userZone = ZoneId.of(userTimeZone);
-        ZonedDateTime utcDateTime = ZonedDateTime.ofInstant(instant, utcZone);
-
-        return utcDateTime.withZoneSameInstant(userZone);
+        LocalDateTime dateTime = LocalDateTime.now();
+        return new GetElectricMeterDailyTotPowerResponse(dailyTariff.stream().filter(dailyT -> dailyT.getDate().getDayOfMonth() == dateTime.getDayOfMonth()).map(dailyT -> new TotPowerDTO(dailyT.getTotalActiveEnergyImportTariff1(), dailyT.getDate().toString())).toList());
     }
 
     private ElMeterAvrFifteenMinuteLoad getAvrData(Set<ElectricMeterData> data) {

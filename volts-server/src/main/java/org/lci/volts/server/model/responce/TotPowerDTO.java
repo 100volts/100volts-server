@@ -5,5 +5,5 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.ZonedDateTime;
 
-public record TotPowerDTO(BigDecimal totPower, Date timeStamp) {
+public record TotPowerDTO(BigDecimal totPower, String timeStamp) {
 }
