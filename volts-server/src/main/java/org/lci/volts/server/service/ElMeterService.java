@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.time.*;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -138,9 +139,16 @@ public class ElMeterService {
     }
 
     public GetElmeterReportResponse getElmeterReportResponseResponseEntity(final GetElmeterReportRequest request) {
-        Set<ElectricMeterData> foundMeterData=electricMeterDataRepository.findAllElMetersWitDatalastReadLimit(request.address(),request.companyName(),
+        List<ElectricMeterData> foundMeterData=electricMeterDataRepository.findAllElMetersWitDatalastReadLimit(request.address(),request.companyName(),
                 request.pageLimit()* request.pages()).orElseThrow();
-
-        return null;
+        List<List<ElMeterDataDTO>> allPages=new ArrayList<>();
+        for(int i=0;i< request.pages();i++){
+            List<ElMeterDataDTO> page=new ArrayList<>();
+            for (int j=0;j< request.pageLimit();j++){
+                page.add(foundMeterData.get((request.pageLimit()*i)+j).toDTO());
+            }
+            allPages.add(page);
+        }
+        return new GetElmeterReportResponse(allPages);
     }
 }
