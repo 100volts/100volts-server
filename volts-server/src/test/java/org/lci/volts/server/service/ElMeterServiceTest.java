@@ -1,8 +1,6 @@
 package org.lci.volts.server.service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.lci.volts.server.model.ElMeterDTO;
 import org.lci.volts.server.model.ElMeterDataDTO;
 import org.lci.volts.server.model.responce.*;
@@ -12,11 +10,13 @@ import org.lci.volts.server.persistence.ElectricMeterData;
 import org.lci.volts.server.repository.ElMeterRpository;
 import org.lci.volts.server.repository.ElectricMeterDataRepository;
 import org.lci.volts.server.repository.ElectricMeterRepository;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -24,23 +24,18 @@ import static org.mockito.BDDMockito.given;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
 @SpringBootTest
 class ElMeterServiceTest {
-    @Mock
+    @MockBean
     private ElMeterRpository elMeterRpository;
-    @Mock
+    @MockBean
     private ElectricMeterRepository electricMeterRepository;
-    @Mock
+    @MockBean
     private ElectricMeterDataRepository electricMeterDataRepository;
+    @Autowired
     private ElMeterService elMeterService;
 
     private static final String COMPANY_NAME = "Test_Company";
-
-    @BeforeEach
-    void setUp() {
-        elMeterService = new ElMeterService(elMeterRpository, electricMeterRepository, electricMeterDataRepository);
-    }
 
     @Test
     void setReadDataWillPositive() {
@@ -202,8 +197,8 @@ class ElMeterServiceTest {
         mockElectricMeterData.setVoltageL2(BigDecimal.valueOf(232.23));
         mockElectricMeterData.setVoltageL3(BigDecimal.valueOf(254.98));
         mockElectricMeterData.setCurrentL1(BigDecimal.valueOf(39.16));
-        mockElectricMeterData.setCurrentL1(BigDecimal.valueOf(43.12));
-        mockElectricMeterData.setCurrentL1(BigDecimal.valueOf(54.43));
+        mockElectricMeterData.setCurrentL2(BigDecimal.valueOf(43.12));
+        mockElectricMeterData.setCurrentL3(BigDecimal.valueOf(54.43));
         mockElectricMeterData.setActivePowerL1(BigDecimal.valueOf(8307.05));
         mockElectricMeterData.setActivePowerL2(BigDecimal.valueOf(11124.19));
         mockElectricMeterData.setActivePowerL3(BigDecimal.valueOf(8626.97));
@@ -213,9 +208,14 @@ class ElMeterServiceTest {
         mockElectricMeterData.setTotalActiveEnergyImportTariff1(BigDecimal.valueOf(0.738755));
         mockElectricMeterData.setTotalActiveEnergyImportTariff2(BigDecimal.ZERO);
         mockElectricMeterData.setTotalActivePower(BigDecimal.valueOf(27010.097));
+        mockElectricMeterData.setDate(LocalDateTime.now());
+
+        ElectricMeterData mockAvr= new ElectricMeterData();
 
         given(electricMeterDataRepository.findAllElMetersWitDatalastRead(address, COMPANY_NAME)).willReturn(
                 Optional.of(mockElectricMeterData));
+        given(electricMeterDataRepository.findAvrElMetersData(address, COMPANY_NAME)).willReturn(Optional.of(Set.of(mockElectricMeterData)));
+        given(electricMeterDataRepository.findDaielyRead(address,COMPANY_NAME)).willReturn(Optional.of(List.of(mockElectricMeterData)));
         //when
         GetElMeterAndDataResponse foundLastMeterData =
                 elMeterService.getElectricMeterWithLastData(address, COMPANY_NAME);

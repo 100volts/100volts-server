@@ -4,8 +4,10 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.lci.volts.server.model.ElMeterDataDTO;
+import net.sf.jsqlparser.expression.DateTimeLiteralExpression;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 
 @Entity
@@ -48,6 +50,8 @@ public class ElectricMeterData {
     private BigDecimal totalActiveEnergyImportTariff1;
     @Column(name = "total_active_energy_import_tariff_2")
     private BigDecimal totalActiveEnergyImportTariff2;
+    @Column(name= "time_stamp")
+    private LocalDateTime date;
 
     public ElMeterDataDTO toDTO() {
         return new ElMeterDataDTO(

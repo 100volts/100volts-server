@@ -9,6 +9,8 @@ import org.lci.volts.server.service.ElMeterService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.ZoneId;
+
 @RestController
 @RequestMapping("elmeter")
 @RequiredArgsConstructor
@@ -50,9 +52,13 @@ public class ElMeterController {
         return ResponseEntity.ok(elMeterService.getElectricMeterWithLastData(request.getAddress(),request.getCompanyName()));
     }
 
+    @PostMapping("/data/daily")
+    public ResponseEntity<GetElectricMeterDailyTotPowerResponse> getElectricMeterDailyData(@RequestBody GetElectricMeterDailyTotPowerRequest request) {
+        return ResponseEntity.ok(elMeterService.getDailyTotPowerTariff(request.getAddress(),request.getCompanyName()));
+    }
+
     @PostMapping("/data/report")
     public ResponseEntity<GetElmeterReportResponse> getElmeterReportResponseResponseEntity(@RequestBody GetElmeterReportRequest request){
         return ResponseEntity.ok(elMeterService.getElmeterReportResponseResponseEntity(request));
     }
-
 }

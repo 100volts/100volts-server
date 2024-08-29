@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.time.*;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -66,7 +67,7 @@ public class ElMeterService {
                 electricMeterDataRepository.findAllElMetersWitDatalastRead(address, companyName).orElseThrow();
         final Set<ElectricMeterData> foundAvrMeterData =
                 electricMeterDataRepository.findAvrElMetersData(address, companyName).orElseThrow();
-
+        var traf=getDailyTotPowerTariff(address,companyName);
         return new GetElMeterAndDataResponse(foundMeterWithData.getMeter().getName(), address,
                 new ElMeterDataDTO(
                         BigDecimal.valueOf(foundMeterWithData.getMeter().getId()),
@@ -79,8 +80,14 @@ public class ElMeterService {
                         foundMeterWithData.getPowerFactorL2(), foundMeterWithData.getPowerFactorL3(),
                         foundMeterWithData.getTotalActivePower(),
                         foundMeterWithData.getTotalActiveEnergyImportTariff1(),
-                        foundMeterWithData.getTotalActiveEnergyImportTariff2()), getAvrData(foundAvrMeterData)
+                        foundMeterWithData.getTotalActiveEnergyImportTariff2()), getAvrData(foundAvrMeterData),traf.dailyTariff()
         );
+    }
+
+    public GetElectricMeterDailyTotPowerResponse getDailyTotPowerTariff(final int address, final String companyName) {
+        List<ElectricMeterData> dailyTariff = electricMeterDataRepository.findDaielyRead(address, companyName).orElseThrow();
+        LocalDateTime dateTime = LocalDateTime.now();
+        return new GetElectricMeterDailyTotPowerResponse(dailyTariff.stream().filter(dailyT -> dailyT.getDate().getDayOfMonth() == dateTime.getDayOfMonth()).map(dailyT -> new TotPowerDTO(dailyT.getTotalActiveEnergyImportTariff1(), dailyT.getDate().toString())).toList());
     }
 
     private ElMeterAvrFifteenMinuteLoad getAvrData(Set<ElectricMeterData> data) {
@@ -92,41 +99,41 @@ public class ElMeterService {
         MathContext mc = new MathContext(5);
 
         data.forEach(electricMeterData -> {
-            var vl1=electricMeterData.getVoltageL1();
-            var vl1l2=vl1.add(electricMeterData.getVoltageL2());
-            var vl1l2l3=vl1l2.add(electricMeterData.getVoltageL3());
-            var vSumAvr=vl1l2l3.divide(BigDecimal.valueOf(3L),mc);
+            var vl1 = electricMeterData.getVoltageL1();
+            var vl1l2 = vl1.add(electricMeterData.getVoltageL2());
+            var vl1l2l3 = vl1l2.add(electricMeterData.getVoltageL3());
+            var vSumAvr = vl1l2l3.divide(BigDecimal.valueOf(3L), mc);
 
             voltage.add(vSumAvr);
             current.add(electricMeterData.getCurrentL1()
                     .add(electricMeterData.getCurrentL2().add(electricMeterData.getCurrentL3()))
-                    .divide(BigDecimal.valueOf(3L),mc));
+                    .divide(BigDecimal.valueOf(3L), mc));
             power.add(electricMeterData.getActivePowerL1()
                     .add(electricMeterData.getActivePowerL2().add(electricMeterData.getActivePowerL3()))
-                    .divide(BigDecimal.valueOf(3L),mc));
+                    .divide(BigDecimal.valueOf(3L), mc));
             powerFactor.add(electricMeterData.getPowerFactorL1()
                     .add(electricMeterData.getPowerFactorL2().add(electricMeterData.getPowerFactorL3()))
-                    .divide(BigDecimal.valueOf(3L),mc));
+                    .divide(BigDecimal.valueOf(3L), mc));
         });
         BigDecimal volltsSum = BigDecimal.ZERO, currentSum = BigDecimal.ZERO, powerSum = BigDecimal.ZERO,
                 powerFactorSum = BigDecimal.ZERO;
-        for (BigDecimal v:voltage){
-            volltsSum=volltsSum.add(v);
+        for (BigDecimal v : voltage) {
+            volltsSum = volltsSum.add(v);
         }
-        for(BigDecimal c:current){
-            currentSum=currentSum.add(c);
+        for (BigDecimal c : current) {
+            currentSum = currentSum.add(c);
         }
-        for (BigDecimal pf:powerFactor){
-            powerFactorSum=powerFactorSum.add(pf);
+        for (BigDecimal pf : powerFactor) {
+            powerFactorSum = powerFactorSum.add(pf);
         }
-        for (BigDecimal p:power){
-            powerSum=powerSum.add(p);
+        for (BigDecimal p : power) {
+            powerSum = powerSum.add(p);
         }
         return new ElMeterAvrFifteenMinuteLoad(
-                volltsSum.divide(BigDecimal.valueOf(15),mc),
-                currentSum.divide(BigDecimal.valueOf(15),mc),
-                powerSum.divide(BigDecimal.valueOf(15),mc),
-                powerFactorSum.divide(BigDecimal.valueOf(15),mc)
+                volltsSum.divide(BigDecimal.valueOf(15), mc),
+                currentSum.divide(BigDecimal.valueOf(15), mc),
+                powerSum.divide(BigDecimal.valueOf(15), mc),
+                powerFactorSum.divide(BigDecimal.valueOf(15), mc)
         );
     }
 
