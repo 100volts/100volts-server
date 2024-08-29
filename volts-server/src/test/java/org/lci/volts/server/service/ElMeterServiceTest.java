@@ -1,9 +1,13 @@
 package org.lci.volts.server.service;
 
 import org.junit.jupiter.api.Test;
-import org.lci.volts.server.model.ElMeterDTO;
-import org.lci.volts.server.model.ElMeterDataDTO;
-import org.lci.volts.server.model.responce.*;
+import org.lci.volts.server.model.dto.ElMeterDTO;
+import org.lci.volts.server.model.dto.ElMeterDataDTO;
+import org.lci.volts.server.model.responce.electric.GetAddListAndElMeterNamesResponse;
+import org.lci.volts.server.model.responce.electric.GetAddressListElMeterResponse;
+import org.lci.volts.server.model.responce.electric.data.ElMeterReadResponse;
+import org.lci.volts.server.model.responce.electric.data.GetElMeterAndDataResponse;
+import org.lci.volts.server.model.responce.electric.data.GetElMeterResponse;
 import org.lci.volts.server.persistence.Company;
 import org.lci.volts.server.persistence.ElectricMeter;
 import org.lci.volts.server.persistence.ElectricMeterData;

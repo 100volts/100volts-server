@@ -2,8 +2,8 @@ package org.lci.volts.server.service;
 
 import lombok.RequiredArgsConstructor;
 import org.lci.volts.server.config.SecurityConfig;
-import org.lci.volts.server.model.request.RegistrationRequest;
-import org.lci.volts.server.model.request.RegistrationWithCompanyRequest;
+import org.lci.volts.server.model.request.auth.RegistrationRequest;
+import org.lci.volts.server.model.request.company.RegistrationWithCompanyRequest;
 import org.lci.volts.server.persistence.CompanyUser;
 import org.lci.volts.server.repository.CompanyRepository;
 import org.lci.volts.server.repository.CompanyUserRepository;

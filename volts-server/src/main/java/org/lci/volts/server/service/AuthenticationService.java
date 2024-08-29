@@ -1,9 +1,8 @@
 package org.lci.volts.server.service;
 
-import lombok.RequiredArgsConstructor;
 import org.lci.volts.server.jwt.JwtUtil;
-import org.lci.volts.server.model.request.AuthenticationRequest;
-import org.lci.volts.server.model.responce.AuthenticationResponse;
+import org.lci.volts.server.model.request.auth.AuthenticationRequest;
+import org.lci.volts.server.model.responce.auth.AuthenticationResponse;
 import org.lci.volts.server.repository.CompanyUserRepository;
 import org.lci.volts.server.type.Role;
 import org.springframework.beans.factory.annotation.Autowired;

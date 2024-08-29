@@ -2,7 +2,7 @@ package org.lci.volts.server.controller;
 
 
 import lombok.RequiredArgsConstructor;
-import org.lci.volts.server.model.responce.UserDataResponse;
+import org.lci.volts.server.model.responce.user.UserDataResponse;
 import org.lci.volts.server.service.CompanyUserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.CurrentSecurityContext;

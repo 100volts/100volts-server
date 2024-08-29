@@ -1,7 +1,7 @@
 package org.lci.volts.server.service;
 
 import lombok.RequiredArgsConstructor;
-import org.lci.volts.server.model.responce.CompanyDataResponse;
+import org.lci.volts.server.model.responce.company.CompanyDataResponse;
 import org.lci.volts.server.persistence.Company;
 import org.lci.volts.server.persistence.CompanyUser;
 import org.lci.volts.server.repository.CompanyRepository;
