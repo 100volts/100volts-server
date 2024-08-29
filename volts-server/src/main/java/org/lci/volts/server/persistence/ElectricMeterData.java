@@ -1,7 +1,9 @@
 package org.lci.volts.server.persistence;
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.lci.volts.server.model.ElMeterDataDTO;
 
 import java.math.BigDecimal;
 
@@ -46,4 +48,16 @@ public class ElectricMeterData {
     private BigDecimal totalActiveEnergyImportTariff1;
     @Column(name = "total_active_energy_import_tariff_2")
     private BigDecimal totalActiveEnergyImportTariff2;
+
+    public ElMeterDataDTO toDTO() {
+        return new ElMeterDataDTO(
+                BigDecimal.valueOf(this.getMeter().getId()),
+                this.getVoltageL1(), this.getVoltageL2(),this.getVoltageL3(),
+                this.getCurrentL1(), this.getCurrentL2(),this.getCurrentL3(),
+                this.getActivePowerL1(), this.getActivePowerL2(),this.getActivePowerL3(),
+                this.getPowerFactorL1(), this.getPowerFactorL2(), this.getPowerFactorL3(),
+                this.getTotalActivePower(),
+                this.getTotalActiveEnergyImportTariff1(),
+                this.getTotalActiveEnergyImportTariff2());
+    }
 }

@@ -5,6 +5,7 @@ import org.lci.volts.server.model.ElMeterAvrFifteenMinuteLoad;
 import org.lci.volts.server.model.ElMeterDTO;
 import org.lci.volts.server.model.ElMeterDataDTO;
 import org.lci.volts.server.model.GetAddListAndElMeterNamesDTO;
+import org.lci.volts.server.model.request.GetElmeterReportRequest;
 import org.lci.volts.server.model.responce.*;
 import org.lci.volts.server.persistence.ElectricMeter;
 import org.lci.volts.server.persistence.ElectricMeterData;
@@ -69,8 +70,8 @@ public class ElMeterService {
         return new GetElMeterAndDataResponse(foundMeterWithData.getMeter().getName(), address,
                 new ElMeterDataDTO(
                         BigDecimal.valueOf(foundMeterWithData.getMeter().getId()),
-                        foundMeterWithData.getVoltageL1(), foundMeterWithData.getVoltageL1(),
-                        foundMeterWithData.getVoltageL1(),
+                        foundMeterWithData.getVoltageL1(), foundMeterWithData.getVoltageL2(),
+                        foundMeterWithData.getVoltageL3(),
                         foundMeterWithData.getCurrentL1(), foundMeterWithData.getCurrentL2(),
                         foundMeterWithData.getCurrentL3(),
                         foundMeterWithData.getActivePowerL1(), foundMeterWithData.getActivePowerL2(),
@@ -127,5 +128,12 @@ public class ElMeterService {
                 powerSum.divide(BigDecimal.valueOf(15),mc),
                 powerFactorSum.divide(BigDecimal.valueOf(15),mc)
         );
+    }
+
+    public GetElmeterReportResponse getElmeterReportResponseResponseEntity(final GetElmeterReportRequest request) {
+        Set<ElectricMeterData> foundMeterData=electricMeterDataRepository.findAllElMetersWitDatalastReadLimit(request.address(),request.companyName(),
+                request.pageLimit()* request.pages()).orElseThrow();
+
+        return null;
     }
 }

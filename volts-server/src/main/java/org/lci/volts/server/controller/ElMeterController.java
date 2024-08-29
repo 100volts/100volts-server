@@ -3,10 +3,7 @@ package org.lci.volts.server.controller;
 import lombok.RequiredArgsConstructor;
 import org.lci.volts.server.model.ElMeterDTO;
 import org.lci.volts.server.model.ElMeterDataDTO;
-import org.lci.volts.server.model.request.ElMeterCreationRequest;
-import org.lci.volts.server.model.request.GetAddressListElMeterRequest;
-import org.lci.volts.server.model.request.GetElMeterLastDataRequest;
-import org.lci.volts.server.model.request.GetElMeterRequest;
+import org.lci.volts.server.model.request.*;
 import org.lci.volts.server.model.responce.*;
 import org.lci.volts.server.service.ElMeterService;
 import org.springframework.http.ResponseEntity;
@@ -51,6 +48,11 @@ public class ElMeterController {
     @PostMapping("/data/last")
     public ResponseEntity<GetElMeterAndDataResponse> getElectricMeterWithLastData(@RequestBody GetElMeterLastDataRequest request) {
         return ResponseEntity.ok(elMeterService.getElectricMeterWithLastData(request.getAddress(),request.getCompanyName()));
+    }
+
+    @PostMapping("/data/report")
+    public ResponseEntity<GetElmeterReportResponse> getElmeterReportResponseResponseEntity(@RequestBody GetElmeterReportRequest request){
+        return ResponseEntity.ok(elMeterService.getElmeterReportResponseResponseEntity(request));
     }
 
 }
