@@ -1,15 +1,27 @@
 package org.lci.volts.server.service;
 
 import lombok.RequiredArgsConstructor;
-import org.lci.volts.server.model.ElMeterAvrFifteenMinuteLoad;
-import org.lci.volts.server.model.ElMeterDTO;
-import org.lci.volts.server.model.ElMeterDataDTO;
-import org.lci.volts.server.model.GetAddListAndElMeterNamesDTO;
-import org.lci.volts.server.model.responce.*;
+import org.lci.volts.server.model.dto.ElMeterDTO;
+import org.lci.volts.server.model.dto.ElMeterDataDTO;
+import org.lci.volts.server.model.dto.GetAddListAndElMeterNamesDTO;
+import org.lci.volts.server.model.dto.TotPowerDTO;
+import org.lci.volts.server.model.record.ElMeterAvrFifteenMinuteLoad;
+import org.lci.volts.server.model.request.electric.data.GetElmeterReportRequest;
+import org.lci.volts.server.model.request.electric.monthly.SetElMeterMonthlyRequest;
+import org.lci.volts.server.model.responce.electric.GetAddListAndElMeterNamesResponse;
+import org.lci.volts.server.model.responce.electric.GetAddressListElMeterResponse;
+import org.lci.volts.server.model.responce.electric.GetElmeterReportResponse;
+import org.lci.volts.server.model.responce.electric.data.ElMeterReadResponse;
+import org.lci.volts.server.model.responce.electric.data.GetElMeterAndDataResponse;
+import org.lci.volts.server.model.responce.electric.data.GetElMeterResponse;
+import org.lci.volts.server.model.responce.electric.data.GetElectricMeterDailyTotPowerResponse;
+import org.lci.volts.server.model.responce.electric.monthly.SetElMeterMonthlyResponse;
 import org.lci.volts.server.persistence.ElectricMeter;
 import org.lci.volts.server.persistence.ElectricMeterData;
+import org.lci.volts.server.persistence.ElectricMeterMonthlyData;
 import org.lci.volts.server.repository.ElMeterRpository;
 import org.lci.volts.server.repository.ElectricMeterDataRepository;
+import org.lci.volts.server.repository.ElectricMeterMonthlyDataRepository;
 import org.lci.volts.server.repository.ElectricMeterRepository;
 import org.springframework.data.convert.ReadingConverter;
 import org.springframework.stereotype.Service;
@@ -18,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.time.*;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -29,7 +42,8 @@ import java.util.Set;
 public class ElMeterService {
     private final ElMeterRpository repository;
     private final ElectricMeterRepository electricMeterRepository;
-    private final ElectricMeterDataRepository electricMeterDataRepository;
+    private final ElectricMeterDataRepository dataRepository;
+    private final ElectricMeterMonthlyDataRepository monthlyDataRepository;
 
     public ElMeterReadResponse setReadData(ElMeterDataDTO elMeterData) {
         return new ElMeterReadResponse(repository.saveElmeterData(elMeterData));
@@ -63,15 +77,15 @@ public class ElMeterService {
 
     public GetElMeterAndDataResponse getElectricMeterWithLastData(final int address, final String companyName) {
         final ElectricMeterData foundMeterWithData =
-                electricMeterDataRepository.findAllElMetersWitDatalastRead(address, companyName).orElseThrow();
+                dataRepository.findAllElMetersWitDatalastRead(address, companyName).orElseThrow();
         final Set<ElectricMeterData> foundAvrMeterData =
-                electricMeterDataRepository.findAvrElMetersData(address, companyName).orElseThrow();
+                dataRepository.findAvrElMetersData(address, companyName).orElseThrow();
         var traf=getDailyTotPowerTariff(address,companyName);
         return new GetElMeterAndDataResponse(foundMeterWithData.getMeter().getName(), address,
                 new ElMeterDataDTO(
                         BigDecimal.valueOf(foundMeterWithData.getMeter().getId()),
-                        foundMeterWithData.getVoltageL1(), foundMeterWithData.getVoltageL1(),
-                        foundMeterWithData.getVoltageL1(),
+                        foundMeterWithData.getVoltageL1(), foundMeterWithData.getVoltageL2(),
+                        foundMeterWithData.getVoltageL3(),
                         foundMeterWithData.getCurrentL1(), foundMeterWithData.getCurrentL2(),
                         foundMeterWithData.getCurrentL3(),
                         foundMeterWithData.getActivePowerL1(), foundMeterWithData.getActivePowerL2(),
@@ -84,7 +98,7 @@ public class ElMeterService {
     }
 
     public GetElectricMeterDailyTotPowerResponse getDailyTotPowerTariff(final int address, final String companyName) {
-        List<ElectricMeterData> dailyTariff = electricMeterDataRepository.findDaielyRead(address, companyName).orElseThrow();
+        List<ElectricMeterData> dailyTariff = dataRepository.findDaielyRead(address, companyName).orElseThrow();
         LocalDateTime dateTime = LocalDateTime.now();
         return new GetElectricMeterDailyTotPowerResponse(dailyTariff.stream().filter(dailyT -> dailyT.getDate().getDayOfMonth() == dateTime.getDayOfMonth()).map(dailyT -> new TotPowerDTO(dailyT.getTotalActiveEnergyImportTariff1(), dailyT.getDate().toString())).toList());
     }
@@ -134,5 +148,29 @@ public class ElMeterService {
                 powerSum.divide(BigDecimal.valueOf(15), mc),
                 powerFactorSum.divide(BigDecimal.valueOf(15), mc)
         );
+    }
+
+    public GetElmeterReportResponse getElmeterReportResponseResponseEntity(final GetElmeterReportRequest request) {
+        List<ElectricMeterData> foundMeterData=
+                dataRepository.findAllElMetersWitDatalastReadLimit(request.address(),request.companyName(),
+                request.pageLimit()* request.pages()).orElseThrow();
+        List<List<ElMeterDataDTO>> allPages=new ArrayList<>();
+        for(int i=0;i< request.pages();i++){
+            List<ElMeterDataDTO> page=new ArrayList<>();
+            for (int j=0;j< request.pageLimit();j++){
+                page.add(foundMeterData.get((request.pageLimit()*i)+j).toDTO());
+            }
+            allPages.add(page);
+        }
+        return new GetElmeterReportResponse(allPages);
+    }
+
+    public SetElMeterMonthlyResponse setMonthlyReadData(final SetElMeterMonthlyRequest request) {
+        ElectricMeterMonthlyData newMonthlyData=new ElectricMeterMonthlyData();
+        newMonthlyData.setTz(request.tz());
+        newMonthlyData.setTariff1(request.tariff1());
+        newMonthlyData.setTarif2(request.tarif2());
+        monthlyDataRepository.save(newMonthlyData);
+        return new SetElMeterMonthlyResponse(true);
     }
 }

@@ -1,8 +1,8 @@
 package org.lci.volts.server.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.lci.volts.server.model.request.CompanyDataRequest;
-import org.lci.volts.server.model.responce.CompanyDataResponse;
+import org.lci.volts.server.model.request.company.CompanyDataRequest;
+import org.lci.volts.server.model.responce.company.CompanyDataResponse;
 import org.lci.volts.server.service.CompanyService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.CurrentSecurityContext;

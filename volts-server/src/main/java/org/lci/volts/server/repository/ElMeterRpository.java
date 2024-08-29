@@ -1,8 +1,8 @@
 package org.lci.volts.server.repository;
 
 import lombok.RequiredArgsConstructor;
-import org.lci.volts.server.model.ElMeterDTO;
-import org.lci.volts.server.model.ElMeterDataDTO;
+import org.lci.volts.server.model.dto.ElMeterDTO;
+import org.lci.volts.server.model.dto.ElMeterDataDTO;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.stereotype.Repository;
 

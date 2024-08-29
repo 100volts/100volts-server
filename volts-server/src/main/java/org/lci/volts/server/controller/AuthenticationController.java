@@ -1,10 +1,10 @@
 package org.lci.volts.server.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.lci.volts.server.model.request.AuthenticationRequest;
-import org.lci.volts.server.model.request.RegistrationRequest;
-import org.lci.volts.server.model.request.RegistrationWithCompanyRequest;
-import org.lci.volts.server.model.responce.AuthenticationResponse;
+import org.lci.volts.server.model.request.auth.AuthenticationRequest;
+import org.lci.volts.server.model.request.auth.RegistrationRequest;
+import org.lci.volts.server.model.request.company.RegistrationWithCompanyRequest;
+import org.lci.volts.server.model.responce.auth.AuthenticationResponse;
 import org.lci.volts.server.service.AuthenticationService;
 import org.lci.volts.server.service.RegisterService;
 import org.springframework.http.HttpStatus;
