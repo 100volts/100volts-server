@@ -7,6 +7,7 @@ import org.lci.volts.server.model.dto.GetAddListAndElMeterNamesDTO;
 import org.lci.volts.server.model.dto.TotPowerDTO;
 import org.lci.volts.server.model.record.ElMeterAvrFifteenMinuteLoad;
 import org.lci.volts.server.model.request.electric.data.GetElmeterReportRequest;
+import org.lci.volts.server.model.request.electric.monthly.SetElMeterMonthlyRequest;
 import org.lci.volts.server.model.responce.electric.GetAddListAndElMeterNamesResponse;
 import org.lci.volts.server.model.responce.electric.GetAddressListElMeterResponse;
 import org.lci.volts.server.model.responce.electric.GetElmeterReportResponse;
@@ -14,6 +15,7 @@ import org.lci.volts.server.model.responce.electric.data.ElMeterReadResponse;
 import org.lci.volts.server.model.responce.electric.data.GetElMeterAndDataResponse;
 import org.lci.volts.server.model.responce.electric.data.GetElMeterResponse;
 import org.lci.volts.server.model.responce.electric.data.GetElectricMeterDailyTotPowerResponse;
+import org.lci.volts.server.model.responce.electric.monthly.SetElMeterMontlyResponse;
 import org.lci.volts.server.persistence.ElectricMeter;
 import org.lci.volts.server.persistence.ElectricMeterData;
 import org.lci.volts.server.repository.ElMeterRpository;
@@ -157,5 +159,9 @@ public class ElMeterService {
             allPages.add(page);
         }
         return new GetElmeterReportResponse(allPages);
+    }
+
+    public SetElMeterMontlyResponse setMonthlyReadData(final SetElMeterMonthlyRequest request) {
+        return null;
     }
 }

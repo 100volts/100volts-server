@@ -9,6 +9,7 @@ import org.lci.volts.server.model.request.electric.GetElMeterRequest;
 import org.lci.volts.server.model.request.electric.data.GetElMeterLastDataRequest;
 import org.lci.volts.server.model.request.electric.data.GetElectricMeterDailyTotPowerRequest;
 import org.lci.volts.server.model.request.electric.data.GetElmeterReportRequest;
+import org.lci.volts.server.model.request.electric.monthly.SetElMeterMonthlyRequest;
 import org.lci.volts.server.model.responce.electric.ElMetterCreateResponse;
 import org.lci.volts.server.model.responce.electric.GetAddListAndElMeterNamesResponse;
 import org.lci.volts.server.model.responce.electric.GetAddressListElMeterResponse;
@@ -17,6 +18,7 @@ import org.lci.volts.server.model.responce.electric.data.ElMeterReadResponse;
 import org.lci.volts.server.model.responce.electric.data.GetElMeterAndDataResponse;
 import org.lci.volts.server.model.responce.electric.data.GetElMeterResponse;
 import org.lci.volts.server.model.responce.electric.data.GetElectricMeterDailyTotPowerResponse;
+import org.lci.volts.server.model.responce.electric.monthly.SetElMeterMontlyResponse;
 import org.lci.volts.server.service.ElMeterService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -58,8 +60,8 @@ public class ElMeterController {
     }
 
     @PostMapping("/monthly/set")
-    public ResponseEntity<GetElMeterAndDataResponse> setElectricMeterMonthlyData(@RequestBody GetElMeterLastDataRequest request) {
-        return ResponseEntity.ok(elMeterService.getElectricMeterWithLastData(request.getAddress(),request.getCompanyName()));
+    public ResponseEntity<SetElMeterMontlyResponse> setElectricMeterMonthlyData(@RequestBody SetElMeterMonthlyRequest request) {
+        return ResponseEntity.ok(elMeterService.setMonthlyReadData(request));
     }
 
     @PostMapping("/data/last")
