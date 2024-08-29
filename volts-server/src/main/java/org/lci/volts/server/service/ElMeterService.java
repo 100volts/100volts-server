@@ -15,11 +15,13 @@ import org.lci.volts.server.model.responce.electric.data.ElMeterReadResponse;
 import org.lci.volts.server.model.responce.electric.data.GetElMeterAndDataResponse;
 import org.lci.volts.server.model.responce.electric.data.GetElMeterResponse;
 import org.lci.volts.server.model.responce.electric.data.GetElectricMeterDailyTotPowerResponse;
-import org.lci.volts.server.model.responce.electric.monthly.SetElMeterMontlyResponse;
+import org.lci.volts.server.model.responce.electric.monthly.SetElMeterMonthlyResponse;
 import org.lci.volts.server.persistence.ElectricMeter;
 import org.lci.volts.server.persistence.ElectricMeterData;
+import org.lci.volts.server.persistence.ElectricMeterMonthlyData;
 import org.lci.volts.server.repository.ElMeterRpository;
 import org.lci.volts.server.repository.ElectricMeterDataRepository;
+import org.lci.volts.server.repository.ElectricMeterMonthlyDataRepository;
 import org.lci.volts.server.repository.ElectricMeterRepository;
 import org.springframework.data.convert.ReadingConverter;
 import org.springframework.stereotype.Service;
@@ -40,7 +42,8 @@ import java.util.Set;
 public class ElMeterService {
     private final ElMeterRpository repository;
     private final ElectricMeterRepository electricMeterRepository;
-    private final ElectricMeterDataRepository electricMeterDataRepository;
+    private final ElectricMeterDataRepository dataRepository;
+    private final ElectricMeterMonthlyDataRepository monthlyDataRepository;
 
     public ElMeterReadResponse setReadData(ElMeterDataDTO elMeterData) {
         return new ElMeterReadResponse(repository.saveElmeterData(elMeterData));
@@ -74,9 +77,9 @@ public class ElMeterService {
 
     public GetElMeterAndDataResponse getElectricMeterWithLastData(final int address, final String companyName) {
         final ElectricMeterData foundMeterWithData =
-                electricMeterDataRepository.findAllElMetersWitDatalastRead(address, companyName).orElseThrow();
+                dataRepository.findAllElMetersWitDatalastRead(address, companyName).orElseThrow();
         final Set<ElectricMeterData> foundAvrMeterData =
-                electricMeterDataRepository.findAvrElMetersData(address, companyName).orElseThrow();
+                dataRepository.findAvrElMetersData(address, companyName).orElseThrow();
         var traf=getDailyTotPowerTariff(address,companyName);
         return new GetElMeterAndDataResponse(foundMeterWithData.getMeter().getName(), address,
                 new ElMeterDataDTO(
@@ -95,7 +98,7 @@ public class ElMeterService {
     }
 
     public GetElectricMeterDailyTotPowerResponse getDailyTotPowerTariff(final int address, final String companyName) {
-        List<ElectricMeterData> dailyTariff = electricMeterDataRepository.findDaielyRead(address, companyName).orElseThrow();
+        List<ElectricMeterData> dailyTariff = dataRepository.findDaielyRead(address, companyName).orElseThrow();
         LocalDateTime dateTime = LocalDateTime.now();
         return new GetElectricMeterDailyTotPowerResponse(dailyTariff.stream().filter(dailyT -> dailyT.getDate().getDayOfMonth() == dateTime.getDayOfMonth()).map(dailyT -> new TotPowerDTO(dailyT.getTotalActiveEnergyImportTariff1(), dailyT.getDate().toString())).toList());
     }
@@ -148,7 +151,8 @@ public class ElMeterService {
     }
 
     public GetElmeterReportResponse getElmeterReportResponseResponseEntity(final GetElmeterReportRequest request) {
-        List<ElectricMeterData> foundMeterData=electricMeterDataRepository.findAllElMetersWitDatalastReadLimit(request.address(),request.companyName(),
+        List<ElectricMeterData> foundMeterData=
+                dataRepository.findAllElMetersWitDatalastReadLimit(request.address(),request.companyName(),
                 request.pageLimit()* request.pages()).orElseThrow();
         List<List<ElMeterDataDTO>> allPages=new ArrayList<>();
         for(int i=0;i< request.pages();i++){
@@ -161,7 +165,12 @@ public class ElMeterService {
         return new GetElmeterReportResponse(allPages);
     }
 
-    public SetElMeterMontlyResponse setMonthlyReadData(final SetElMeterMonthlyRequest request) {
-        return null;
+    public SetElMeterMonthlyResponse setMonthlyReadData(final SetElMeterMonthlyRequest request) {
+        ElectricMeterMonthlyData newMonthlyData=new ElectricMeterMonthlyData();
+        newMonthlyData.setTz(request.tz());
+        newMonthlyData.setTariff1(request.tariff1());
+        newMonthlyData.setTarif2(request.tarif2());
+        monthlyDataRepository.save(newMonthlyData);
+        return new SetElMeterMonthlyResponse(true);
     }
 }

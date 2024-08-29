@@ -1,4 +1,4 @@
 package org.lci.volts.server.model.responce.electric.monthly;
 
-public record SetElMeterMontlyResponse() {
+public record SetElMeterMonthlyResponse(boolean done) {
 }

@@ -16,6 +16,7 @@ import java.sql.Date;
 @Table(name = "electric_meter_monthly_data")
 public class ElectricMeterMonthlyData {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     @Column(name="energy_import_tariff_1")
     private BigDecimal tariff1;

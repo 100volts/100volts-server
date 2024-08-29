@@ -18,7 +18,7 @@ import org.lci.volts.server.model.responce.electric.data.ElMeterReadResponse;
 import org.lci.volts.server.model.responce.electric.data.GetElMeterAndDataResponse;
 import org.lci.volts.server.model.responce.electric.data.GetElMeterResponse;
 import org.lci.volts.server.model.responce.electric.data.GetElectricMeterDailyTotPowerResponse;
-import org.lci.volts.server.model.responce.electric.monthly.SetElMeterMontlyResponse;
+import org.lci.volts.server.model.responce.electric.monthly.SetElMeterMonthlyResponse;
 import org.lci.volts.server.service.ElMeterService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -60,7 +60,7 @@ public class ElMeterController {
     }
 
     @PostMapping("/monthly/set")
-    public ResponseEntity<SetElMeterMontlyResponse> setElectricMeterMonthlyData(@RequestBody SetElMeterMonthlyRequest request) {
+    public ResponseEntity<SetElMeterMonthlyResponse> setElectricMeterMonthlyData(@RequestBody SetElMeterMonthlyRequest request) {
         return ResponseEntity.ok(elMeterService.setMonthlyReadData(request));
     }
 
