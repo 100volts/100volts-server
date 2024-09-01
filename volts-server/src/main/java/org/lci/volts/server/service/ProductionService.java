@@ -10,8 +10,10 @@ import org.lci.volts.server.model.responce.production.CreteProductionResponse;
 import org.lci.volts.server.model.responce.production.GetProductionAllResponse;
 import org.lci.volts.server.model.responce.production.GetProductionResponse;
 import org.lci.volts.server.persistence.production.Production;
+import org.lci.volts.server.persistence.production.ProductionData;
 import org.lci.volts.server.persistence.production.ProductionGroup;
 import org.lci.volts.server.persistence.production.Units;
+import org.lci.volts.server.repository.production.ProductionDataRepository;
 import org.lci.volts.server.repository.production.ProductionGroupRepository;
 import org.lci.volts.server.repository.production.ProductionRepository;
 import org.lci.volts.server.repository.production.UnitsRepository;
@@ -27,6 +29,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductionService {
     private final ProductionRepository productionRepository;
+    private final ProductionDataRepository productionDataRepository;
     private final UnitsRepository unitsRepository;
     private final CompanyService companyService;
     private final ProductionGroupRepository groupRepository;
@@ -57,7 +60,11 @@ public class ProductionService {
     }
 
     public AddProductionDataResponse addProductionData(AddProductionDataRequest request) {
-
+        ProductionData newDate=new ProductionData();
+        var prod=productionRepository.findAllProductionByCompanyName(request.productionName(),request.companyName()).orElseThrow();
+        newDate.setProduction(prod.getId());
+        newDate.setValue(request.value());
+        productionDataRepository.save(newDate);
         return new AddProductionDataResponse(true);
     }
 
