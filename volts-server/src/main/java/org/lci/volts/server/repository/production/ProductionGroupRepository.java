@@ -1,6 +1,6 @@
 package org.lci.volts.server.repository.production;
 
-import org.lci.volts.server.persistence.ProductionGroup;
+import org.lci.volts.server.persistence.production.ProductionGroup;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

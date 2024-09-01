@@ -16,9 +16,9 @@ import org.lci.volts.server.model.responce.electric.data.GetElMeterAndDataRespon
 import org.lci.volts.server.model.responce.electric.data.GetElMeterResponse;
 import org.lci.volts.server.model.responce.electric.data.GetElectricMeterDailyTotPowerResponse;
 import org.lci.volts.server.model.responce.electric.monthly.SetElMeterMonthlyResponse;
-import org.lci.volts.server.persistence.ElectricMeter;
-import org.lci.volts.server.persistence.ElectricMeterData;
-import org.lci.volts.server.persistence.ElectricMeterMonthlyData;
+import org.lci.volts.server.persistence.electric.ElectricMeter;
+import org.lci.volts.server.persistence.electric.ElectricMeterData;
+import org.lci.volts.server.persistence.electric.ElectricMeterMonthlyData;
 import org.lci.volts.server.repository.electric.ElMeterRpository;
 import org.lci.volts.server.repository.electric.ElectricMeterDataRepository;
 import org.lci.volts.server.repository.electric.ElectricMeterMonthlyDataRepository;

@@ -1,13 +1,17 @@
 package org.lci.volts.server.service;
 
 import lombok.RequiredArgsConstructor;
+import org.lci.volts.server.model.request.production.AddProductionDataRequest;
 import org.lci.volts.server.model.request.production.CreteProductionRequest;
+import org.lci.volts.server.model.request.production.GetProductionAllRequest;
 import org.lci.volts.server.model.request.production.GetProductionRequest;
+import org.lci.volts.server.model.responce.production.AddProductionDataResponse;
 import org.lci.volts.server.model.responce.production.CreteProductionResponse;
+import org.lci.volts.server.model.responce.production.GetProductionAllResponse;
 import org.lci.volts.server.model.responce.production.GetProductionResponse;
-import org.lci.volts.server.persistence.Production;
-import org.lci.volts.server.persistence.ProductionGroup;
-import org.lci.volts.server.persistence.Units;
+import org.lci.volts.server.persistence.production.Production;
+import org.lci.volts.server.persistence.production.ProductionGroup;
+import org.lci.volts.server.persistence.production.Units;
 import org.lci.volts.server.repository.production.ProductionGroupRepository;
 import org.lci.volts.server.repository.production.ProductionRepository;
 import org.lci.volts.server.repository.production.UnitsRepository;
@@ -29,7 +33,7 @@ public class ProductionService {
 
     public GetProductionResponse getProdByName(final GetProductionRequest request) {
         return new GetProductionResponse(
-                productionRepository.findAllElMetersByCompanyName(request.name(), request.companyName()).orElseThrow().toDto());
+                productionRepository.findAllProductionByCompanyName(request.name(), request.companyName()).orElseThrow().toDto());
     }
 
     public CreteProductionResponse createProdByName(CreteProductionRequest request) {
@@ -50,5 +54,15 @@ public class ProductionService {
 
     public ProductionGroup getGroupFromName(final String name,final String companyName){
         return groupRepository.findByName(name,companyName).orElseThrow();
+    }
+
+    public AddProductionDataResponse addProductionData(AddProductionDataRequest request) {
+
+        return new AddProductionDataResponse(true);
+    }
+
+    public GetProductionAllResponse getProdAllByName(GetProductionAllRequest request) {
+        return new GetProductionAllResponse(
+                productionRepository.findAllProductionsAllCompanyName( request.companyName()).orElseThrow().stream().map(Production::toDto).toList());
     }
 }

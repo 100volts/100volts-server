@@ -1,4 +1,4 @@
-package org.lci.volts.server.persistence;
+package org.lci.volts.server.persistence.electric;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

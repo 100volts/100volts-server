@@ -1,4 +1,4 @@
-package org.lci.volts.server.persistence;
+package org.lci.volts.server.persistence.production;
 
 import jakarta.persistence.*;
 import lombok.Getter;

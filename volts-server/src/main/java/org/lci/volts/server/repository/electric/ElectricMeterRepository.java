@@ -1,6 +1,6 @@
 package org.lci.volts.server.repository.electric;
 
-import org.lci.volts.server.persistence.ElectricMeter;
+import org.lci.volts.server.persistence.electric.ElectricMeter;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
