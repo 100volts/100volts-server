@@ -19,10 +19,10 @@ import org.lci.volts.server.model.responce.electric.monthly.SetElMeterMonthlyRes
 import org.lci.volts.server.persistence.ElectricMeter;
 import org.lci.volts.server.persistence.ElectricMeterData;
 import org.lci.volts.server.persistence.ElectricMeterMonthlyData;
-import org.lci.volts.server.repository.ElMeterRpository;
-import org.lci.volts.server.repository.ElectricMeterDataRepository;
-import org.lci.volts.server.repository.ElectricMeterMonthlyDataRepository;
-import org.lci.volts.server.repository.ElectricMeterRepository;
+import org.lci.volts.server.repository.electric.ElMeterRpository;
+import org.lci.volts.server.repository.electric.ElectricMeterDataRepository;
+import org.lci.volts.server.repository.electric.ElectricMeterMonthlyDataRepository;
+import org.lci.volts.server.repository.electric.ElectricMeterRepository;
 import org.springframework.data.convert.ReadingConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

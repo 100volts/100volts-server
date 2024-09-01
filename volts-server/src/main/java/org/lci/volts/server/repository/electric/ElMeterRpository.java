@@ -1,4 +1,4 @@
-package org.lci.volts.server.repository;
+package org.lci.volts.server.repository.electric;
 
 import lombok.RequiredArgsConstructor;
 import org.lci.volts.server.model.dto.ElMeterDTO;

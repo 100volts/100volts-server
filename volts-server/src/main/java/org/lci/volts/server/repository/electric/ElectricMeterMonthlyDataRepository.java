@@ -1,4 +1,4 @@
-package org.lci.volts.server.repository;
+package org.lci.volts.server.repository.electric;
 
 import org.lci.volts.server.persistence.ElectricMeterMonthlyData;
 import org.springframework.data.jpa.repository.JpaRepository;

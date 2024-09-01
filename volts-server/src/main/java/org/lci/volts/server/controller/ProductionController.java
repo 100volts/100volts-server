@@ -27,4 +27,9 @@ public class ProductionController {
     public ResponseEntity<CreteProductionResponse> createProductionByName(@RequestBody final CreteProductionRequest request) {
         return ResponseEntity.ok(productionService.createProdByName(request));
     }
+
+    @PostMapping
+    public ResponseEntity<CreteProductionResponse> addProductionByName(@RequestBody final CreteProductionRequest request) {
+        return ResponseEntity.ok(productionService.createProdByName(request));
+    }
 }
