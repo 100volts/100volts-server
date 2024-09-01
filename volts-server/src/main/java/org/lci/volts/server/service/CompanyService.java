@@ -23,6 +23,10 @@ public class CompanyService {
         return new CompanyDataResponse(foundCompany.getName());
     }
 
+    public Company getCompanyFromName(String companyName) {
+        return companyRepository.findByName(companyName).orElseThrow();
+    }
+
     public CompanyDataResponse getCompanyDataForUser(String userName) {
         CompanyUser companyUser=userRepository.findByEmail(userName).orElseThrow();
         Company foundCompany=companyUser.getCompany();

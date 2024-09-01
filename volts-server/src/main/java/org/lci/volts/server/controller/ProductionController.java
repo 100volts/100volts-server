@@ -1,7 +1,9 @@
 package org.lci.volts.server.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.lci.volts.server.model.request.production.CreteProductionRequest;
 import org.lci.volts.server.model.request.production.GetProductionRequest;
+import org.lci.volts.server.model.responce.production.CreteProductionResponse;
 import org.lci.volts.server.model.responce.production.GetProductionResponse;
 import org.lci.volts.server.persistence.Production;
 import org.lci.volts.server.service.ProductionService;
@@ -20,5 +22,9 @@ public class ProductionController {
     @PostMapping
     public ResponseEntity<GetProductionResponse> getProductionByName(@RequestBody final GetProductionRequest request) {
         return ResponseEntity.ok(productionService.getProdByName(request));
+    }
+    @PostMapping
+    public ResponseEntity<CreteProductionResponse> createProductionByName(@RequestBody final CreteProductionRequest request) {
+        return ResponseEntity.ok(productionService.createProdByName(request));
     }
 }
