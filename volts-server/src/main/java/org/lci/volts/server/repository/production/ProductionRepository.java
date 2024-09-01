@@ -10,6 +10,6 @@ import java.util.Optional;
 public interface ProductionRepository extends JpaRepository<Production, Long> {
     @Query("SELECT u FROM Production u WHERE u.name= ?1 AND u.company.name= ?2 ORDER BY u.id ASC Limit 1")
     Optional<Production> findAllProductionByCompanyName(final String name, final String companyName);
-    @Query("SELECT u FROM Production u WHERE u.name= ?1 ORDER BY u.company.name ASC")
+    @Query("SELECT u FROM Production u WHERE u.company.name= ?1 ORDER BY u.name ASC")
     Optional<List<Production>> findAllProductionsAllCompanyName(final String companyName);
 }
