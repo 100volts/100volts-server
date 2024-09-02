@@ -1,14 +1,8 @@
 package org.lci.volts.server.service;
 
 import lombok.RequiredArgsConstructor;
-import org.lci.volts.server.model.request.production.AddProductionDataRequest;
-import org.lci.volts.server.model.request.production.CreteProductionRequest;
-import org.lci.volts.server.model.request.production.GetProductionAllRequest;
-import org.lci.volts.server.model.request.production.GetProductionRequest;
-import org.lci.volts.server.model.responce.production.AddProductionDataResponse;
-import org.lci.volts.server.model.responce.production.CreteProductionResponse;
-import org.lci.volts.server.model.responce.production.GetProductionAllResponse;
-import org.lci.volts.server.model.responce.production.GetProductionResponse;
+import org.lci.volts.server.model.request.production.*;
+import org.lci.volts.server.model.responce.production.*;
 import org.lci.volts.server.persistence.production.Production;
 import org.lci.volts.server.persistence.production.ProductionData;
 import org.lci.volts.server.persistence.production.ProductionGroup;
@@ -74,5 +68,17 @@ public class ProductionService {
     public GetProductionAllResponse getProdAllByName(GetProductionAllRequest request) {
         return new GetProductionAllResponse(
                 productionRepository.findAllProductionsAllCompanyName( request.companyName()).orElseThrow().stream().map(Production::toDto).toList());
+    }
+
+    public DeleteProductionResponse deleteProductionByName(final DeleteProductionRequest request) {
+        Production foundProduction=productionRepository.findAllProductionByCompanyName(request.prodName(), request.companyName()).orElseThrow();
+        //0 delete data
+        //ProductionGroup foundPodGroup=groupRepository.findByName(request.prodName(), request.companyName());
+        //1 delete group
+        List<ProductionData> foundProdData=productionDataRepository.findAllProductionByCompanyName(foundProduction.getId()).orElseThrow();
+        productionDataRepository.deleteAll(foundProdData);
+        //2 delete production
+        productionRepository.delete(foundProduction);
+        return new DeleteProductionResponse(true);
     }
 }
