@@ -6,11 +6,13 @@ import org.lci.volts.server.model.dto.ElMeterDataDTO;
 import org.lci.volts.server.model.dto.GetAddListAndElMeterNamesDTO;
 import org.lci.volts.server.model.dto.TotPowerDTO;
 import org.lci.volts.server.model.record.ElMeterAvrFifteenMinuteLoad;
+import org.lci.volts.server.model.request.electric.GetElMeterNameRequest;
 import org.lci.volts.server.model.request.electric.data.GetElmeterReportRequest;
 import org.lci.volts.server.model.request.electric.monthly.SetElMeterMonthlyRequest;
 import org.lci.volts.server.model.responce.electric.GetAddListAndElMeterNamesResponse;
 import org.lci.volts.server.model.responce.electric.GetAddressListElMeterResponse;
-import org.lci.volts.server.model.responce.electric.GetElmeterReportResponse;
+import org.lci.volts.server.model.responce.electric.GetElMeterNameResponse;
+import org.lci.volts.server.model.responce.electric.GetElMeterReportResponse;
 import org.lci.volts.server.model.responce.electric.data.ElMeterReadResponse;
 import org.lci.volts.server.model.responce.electric.data.GetElMeterAndDataResponse;
 import org.lci.volts.server.model.responce.electric.data.GetElMeterResponse;
@@ -150,7 +152,7 @@ public class ElMeterService {
         );
     }
 
-    public GetElmeterReportResponse getElmeterReportResponseResponseEntity(final GetElmeterReportRequest request) {
+    public GetElMeterReportResponse getElmeterReportResponseResponseEntity(final GetElmeterReportRequest request) {
         List<ElectricMeterData> foundMeterData=
                 dataRepository.findAllElMetersWitDatalastReadLimit(request.address(),request.companyName(),
                 request.pageLimit()* request.pages()).orElseThrow();
@@ -162,7 +164,7 @@ public class ElMeterService {
             }
             allPages.add(page);
         }
-        return new GetElmeterReportResponse(allPages);
+        return new GetElMeterReportResponse(allPages);
     }
 
     public SetElMeterMonthlyResponse setMonthlyReadData(final SetElMeterMonthlyRequest request) {
@@ -172,5 +174,12 @@ public class ElMeterService {
         newMonthlyData.setTarif2(request.tarif2());
         monthlyDataRepository.save(newMonthlyData);
         return new SetElMeterMonthlyResponse(true);
+    }
+
+    public GetElMeterNameResponse getElMeterNameForCompany(GetElMeterNameRequest request) {
+        Set<ElectricMeter> foundElectrics=electricMeterRepository.findAllElMetersByCompanyName(request.companyName()).orElseThrow();
+        List<String> response=new ArrayList<>();
+        foundElectrics.forEach(electricMeter -> response.add(electricMeter.getName()));
+        return new GetElMeterNameResponse(response);
     }
 }

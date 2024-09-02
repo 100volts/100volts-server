@@ -4,5 +4,5 @@ import org.lci.volts.server.model.dto.ElMeterDataDTO;
 
 import java.util.List;
 
-public record GetElmeterReportResponse(List<List<ElMeterDataDTO>> meters) {
+public record GetElMeterReportResponse(List<List<ElMeterDataDTO>> meters) {
 }
