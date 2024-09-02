@@ -21,6 +21,8 @@ import org.springframework.data.convert.ReadingConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -46,6 +48,7 @@ public class ProductionService {
         newProduction.setCompany(companyService.getCompanyFromName(request.companyName()));
         newProduction.setUnits(getUnitsFromName(request.unitsName()));
         newProduction.setGroups(List.of(getGroupFromName(request.groupName(),request.companyName())));
+        newProduction.setTs(Date.valueOf(LocalDate.now()));
 
         productionRepository.save(newProduction);
         return new CreteProductionResponse(true);
