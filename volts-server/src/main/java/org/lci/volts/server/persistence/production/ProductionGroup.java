@@ -4,19 +4,22 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.lci.volts.server.persistence.Company;
-import org.lci.volts.server.persistence.electric.ElectricMeter;
-
-import java.util.List;
 
 @Entity
 @Setter
 @Getter
 @Table(name = "production_group")
+@AllArgsConstructor
+@NoArgsConstructor
 public class ProductionGroup {
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "production_group_seq_gen")
+    @SequenceGenerator(name = "production_group_seq_gen", sequenceName = "production_group_seq", allocationSize = 1)
     private Long id;
     @Column(name = "production_group_name")
     private String name;
@@ -25,11 +28,5 @@ public class ProductionGroup {
     @ManyToOne
     @JoinColumn(name = "company")
     private Company company;
-    @ManyToMany
-    @JoinTable(
-            name = "electric_meter_production_group",
-            joinColumns = @JoinColumn(name = "production_group"),
-            inverseJoinColumns = @JoinColumn(name = "electric_meter")
-    )
-    private List<ElectricMeter> electricMeters;
+
 }

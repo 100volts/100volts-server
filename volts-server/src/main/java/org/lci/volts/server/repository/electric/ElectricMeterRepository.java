@@ -9,8 +9,11 @@ import java.util.Set;
 
 public interface ElectricMeterRepository extends JpaRepository<ElectricMeter, Long> {
     @Query("SELECT u FROM ElectricMeter u WHERE u.address= ?1")
-    Optional<ElectricMeter> findByAddress(int address);
+    Optional<ElectricMeter> findByAddress(final int address);
 
     @Query("SELECT u FROM ElectricMeter u WHERE u.company.name= ?1 ORDER BY u.address ASC ")
-    Optional<Set<ElectricMeter>> findAllElMetersByCompanyName(String name);
+    Optional<Set<ElectricMeter>> findAllElMetersByCompanyName(final String name);
+
+    @Query("SELECT u FROM ElectricMeter u WHERE u.company.name= ?1 AND u.name= ?2 ORDER BY u.address ASC limit 1")
+    Optional<ElectricMeter> findAllElMetersByCompanyNameAndNAme(final String name,final String companyName);
 }

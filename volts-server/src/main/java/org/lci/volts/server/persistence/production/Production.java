@@ -8,9 +8,11 @@ import lombok.Getter;
 import lombok.Setter;
 import org.lci.volts.server.model.dto.*;
 import org.lci.volts.server.persistence.Company;
+import org.lci.volts.server.persistence.electric.ElectricMeter;
 
 import java.sql.Date;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Setter
@@ -20,7 +22,7 @@ public class Production {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name="production_name")
+    @Column(name = "production_name")
     private String name;
     @Column
     private String description;
@@ -39,20 +41,27 @@ public class Production {
             inverseJoinColumns = @JoinColumn(name = "production_group")
     )
     private List<ProductionGroup> groups;
+    @ManyToMany
+    @JoinTable(
+            name = "electric_meter_production",
+            joinColumns = @JoinColumn(name = "production"),
+            inverseJoinColumns = @JoinColumn(name = "electric_meter")
+    )
+    private Set<ElectricMeter> electricMeters;
 
     public ProductionDTO toDto() {
-        return new ProductionDTO(name,description,ts.toString(),
+        return new ProductionDTO(name, description, ts.toString(),
                 new UnitDTO(units.getName(), getUnits().getValue()),
                 new CompanyDTO(company.getName()),
-                getGroupDTOS()
+                getGroupDTOS(),
+                electricMeters.stream().map(electricMeter ->
+                        new ElMeterDTO(electricMeter.getId().intValue(), electricMeter.getAddress(), electricMeter.getName())
+                ).toList()
         );
     }
 
     private List<GroupDTO> getGroupDTOS() {
         return groups.stream().map(group ->
-                new GroupDTO(group.getName(), group.getDescription(),
-                        group.getElectricMeters().stream()
-                                .map(meter -> new ElMeterDTO(meter.getId().intValue(), meter.getAddress(), meter.getName())).toList())
-        ).toList();
+                new GroupDTO(group.getName(), group.getDescription())).toList();
     }
 }

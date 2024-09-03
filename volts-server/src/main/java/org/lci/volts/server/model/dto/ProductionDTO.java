@@ -2,7 +2,6 @@ package org.lci.volts.server.model.dto;
 
 import lombok.*;
 
-import java.sql.Date;
 import java.util.List;
 
 @Data
@@ -17,4 +16,5 @@ public class ProductionDTO {
     private UnitDTO units;
     private CompanyDTO company;
     private List<GroupDTO> groups;
+    private List<ElMeterDTO> electricMeters;
 }

@@ -47,6 +47,19 @@ public class ElMeterService {
     private final ElectricMeterDataRepository dataRepository;
     private final ElectricMeterMonthlyDataRepository monthlyDataRepository;
 
+    public Set<ElectricMeter> findAllElectricMeters(final String companyName) {
+        return
+            electricMeterRepository.findAllElMetersByCompanyName(companyName).orElseThrow();
+    }
+
+    public Set<ElectricMeter> findAllElectricMeters(final String[] names,final String companyName) {
+        Set<ElectricMeter> electricMeters = new HashSet<>();
+        for (String name : names) {
+            electricMeters.add(electricMeterRepository.findAllElMetersByCompanyNameAndNAme(name,companyName).orElseThrow());
+        }
+        return electricMeters;
+    }
+
     public ElMeterReadResponse setReadData(ElMeterDataDTO elMeterData) {
         return new ElMeterReadResponse(repository.saveElmeterData(elMeterData));
     }
