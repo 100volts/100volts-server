@@ -14,6 +14,6 @@ public interface ElectricMeterRepository extends JpaRepository<ElectricMeter, Lo
     @Query("SELECT u FROM ElectricMeter u WHERE u.company.name= ?1 ORDER BY u.address ASC ")
     Optional<Set<ElectricMeter>> findAllElMetersByCompanyName(final String name);
 
-    @Query("SELECT u FROM ElectricMeter u WHERE u.company.name= ?1 AND u.name= ?2 ORDER BY u.address ASC limit 1")
+    @Query("SELECT u FROM ElectricMeter u WHERE u.name= ?1 AND u.company.name= ?2  ORDER BY u.address ASC limit 1")
     Optional<ElectricMeter> findAllElMetersByCompanyNameAndNAme(final String name,final String companyName);
 }
