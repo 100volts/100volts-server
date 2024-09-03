@@ -6,23 +6,25 @@ import org.lci.volts.server.model.dto.ElMeterDataDTO;
 import org.lci.volts.server.model.dto.GetAddListAndElMeterNamesDTO;
 import org.lci.volts.server.model.dto.TotPowerDTO;
 import org.lci.volts.server.model.record.ElMeterAvrFifteenMinuteLoad;
+import org.lci.volts.server.model.request.electric.GetElMeterNameRequest;
 import org.lci.volts.server.model.request.electric.data.GetElmeterReportRequest;
 import org.lci.volts.server.model.request.electric.monthly.SetElMeterMonthlyRequest;
 import org.lci.volts.server.model.responce.electric.GetAddListAndElMeterNamesResponse;
 import org.lci.volts.server.model.responce.electric.GetAddressListElMeterResponse;
-import org.lci.volts.server.model.responce.electric.GetElmeterReportResponse;
+import org.lci.volts.server.model.responce.electric.GetElMeterNameResponse;
+import org.lci.volts.server.model.responce.electric.GetElMeterReportResponse;
 import org.lci.volts.server.model.responce.electric.data.ElMeterReadResponse;
 import org.lci.volts.server.model.responce.electric.data.GetElMeterAndDataResponse;
 import org.lci.volts.server.model.responce.electric.data.GetElMeterResponse;
 import org.lci.volts.server.model.responce.electric.data.GetElectricMeterDailyTotPowerResponse;
 import org.lci.volts.server.model.responce.electric.monthly.SetElMeterMonthlyResponse;
-import org.lci.volts.server.persistence.ElectricMeter;
-import org.lci.volts.server.persistence.ElectricMeterData;
-import org.lci.volts.server.persistence.ElectricMeterMonthlyData;
-import org.lci.volts.server.repository.ElMeterRpository;
-import org.lci.volts.server.repository.ElectricMeterDataRepository;
-import org.lci.volts.server.repository.ElectricMeterMonthlyDataRepository;
-import org.lci.volts.server.repository.ElectricMeterRepository;
+import org.lci.volts.server.persistence.electric.ElectricMeter;
+import org.lci.volts.server.persistence.electric.ElectricMeterData;
+import org.lci.volts.server.persistence.electric.ElectricMeterMonthlyData;
+import org.lci.volts.server.repository.electric.ElMeterRpository;
+import org.lci.volts.server.repository.electric.ElectricMeterDataRepository;
+import org.lci.volts.server.repository.electric.ElectricMeterMonthlyDataRepository;
+import org.lci.volts.server.repository.electric.ElectricMeterRepository;
 import org.springframework.data.convert.ReadingConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,6 +46,19 @@ public class ElMeterService {
     private final ElectricMeterRepository electricMeterRepository;
     private final ElectricMeterDataRepository dataRepository;
     private final ElectricMeterMonthlyDataRepository monthlyDataRepository;
+
+    public Set<ElectricMeter> findAllElectricMeters(final String companyName) {
+        return
+            electricMeterRepository.findAllElMetersByCompanyName(companyName).orElseThrow();
+    }
+
+    public Set<ElectricMeter> findAllElectricMeters(final String[] names,final String companyName) {
+        Set<ElectricMeter> electricMeters = new HashSet<>();
+        for (String name : names) {
+            electricMeters.add(electricMeterRepository.findAllElMetersByCompanyNameAndNAme(name,companyName).orElseThrow());
+        }
+        return electricMeters;
+    }
 
     public ElMeterReadResponse setReadData(ElMeterDataDTO elMeterData) {
         return new ElMeterReadResponse(repository.saveElmeterData(elMeterData));
@@ -150,7 +165,7 @@ public class ElMeterService {
         );
     }
 
-    public GetElmeterReportResponse getElmeterReportResponseResponseEntity(final GetElmeterReportRequest request) {
+    public GetElMeterReportResponse getElmeterReportResponseResponseEntity(final GetElmeterReportRequest request) {
         List<ElectricMeterData> foundMeterData=
                 dataRepository.findAllElMetersWitDatalastReadLimit(request.address(),request.companyName(),
                 request.pageLimit()* request.pages()).orElseThrow();
@@ -162,7 +177,7 @@ public class ElMeterService {
             }
             allPages.add(page);
         }
-        return new GetElmeterReportResponse(allPages);
+        return new GetElMeterReportResponse(allPages);
     }
 
     public SetElMeterMonthlyResponse setMonthlyReadData(final SetElMeterMonthlyRequest request) {
@@ -172,5 +187,12 @@ public class ElMeterService {
         newMonthlyData.setTarif2(request.tarif2());
         monthlyDataRepository.save(newMonthlyData);
         return new SetElMeterMonthlyResponse(true);
+    }
+
+    public GetElMeterNameResponse getElMeterNameForCompany(GetElMeterNameRequest request) {
+        Set<ElectricMeter> foundElectrics=electricMeterRepository.findAllElMetersByCompanyName(request.companyName()).orElseThrow();
+        List<String> response=new ArrayList<>();
+        foundElectrics.forEach(electricMeter -> response.add(electricMeter.getName()));
+        return new GetElMeterNameResponse(response);
     }
 }

@@ -3,7 +3,6 @@ package org.lci.volts.server.model.dto;
 
 import lombok.*;
 
-import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -13,5 +12,4 @@ import java.util.List;
 public class GroupDTO {
     private String name;
     private String description;
-    private List<ElMeterDTO> electricMeters;
 }
