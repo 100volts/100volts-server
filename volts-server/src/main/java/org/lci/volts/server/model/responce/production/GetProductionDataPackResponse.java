@@ -1,6 +1,9 @@
 package org.lci.volts.server.model.responce.production;
 
-import java.math.BigDecimal;
+import org.lci.volts.server.model.dto.ProductionDataDTO;
 
-public record GetProductionDataPackResponse(BigDecimal value) {
+import java.math.BigDecimal;
+import java.util.List;
+
+public record GetProductionDataPackResponse(List<ProductionDataDTO> last10) {
 }

@@ -36,7 +36,7 @@ public class ProductionController {
     }
 
     @PostMapping("/company/data/pack")
-    public ResponseEntity<AddProductionDataResponse> getProductionDataPack(@RequestBody final GetProductionDataPackRequest request) {
-        return ResponseEntity.ok(null);//productionService.addProductionData(request));
+    public ResponseEntity<GetProductionDataPackResponse> getProductionDataPack(@RequestBody final GetProductionDataPackRequest request) {
+        return ResponseEntity.ok(productionService.getProductionDataPack(request));
     }
 }

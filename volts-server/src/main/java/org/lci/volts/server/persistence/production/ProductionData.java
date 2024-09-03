@@ -3,8 +3,10 @@ package org.lci.volts.server.persistence.production;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.lci.volts.server.model.dto.ProductionDataDTO;
 
 import java.math.BigDecimal;
+import java.sql.Date;
 
 @Entity
 @Setter
@@ -19,4 +21,13 @@ public class ProductionData {
     private BigDecimal value;
     @Column
     private long production;
+    @Column
+    private Date ts;
+
+    public ProductionDataDTO toDTO(){
+        ProductionDataDTO dto = new ProductionDataDTO();
+        dto.setDate(ts==null?null:ts.toString());
+        dto.setValues(value);
+        return dto;
+    }
 }

@@ -103,4 +103,10 @@ public class ProductionService {
         productionRepository.delete(foundProduction);
         return new DeleteProductionResponse(true);
     }
+
+    public GetProductionDataPackResponse getProductionDataPack(final GetProductionDataPackRequest request) {
+        Production foundProduction = productionRepository.findAllProductionByCompanyName(request.productionName(), request.companyName()).orElseThrow();
+        List<ProductionData> foundData=productionDataRepository.getlast10Data(foundProduction.getId()).orElseThrow();
+        return new GetProductionDataPackResponse(foundData.stream().map(ProductionData::toDTO).toList());
+    }
 }
