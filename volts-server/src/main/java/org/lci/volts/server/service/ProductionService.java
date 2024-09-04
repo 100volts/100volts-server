@@ -83,6 +83,7 @@ public class ProductionService {
         var prod = productionRepository.findAllProductionByCompanyName(request.productionName(), request.companyName()).orElseThrow();
         newDate.setProduction(prod.getId());
         newDate.setValue(request.value());
+        newDate.setTs(request.date());
         productionDataRepository.save(newDate);
         return new AddProductionDataResponse(true);
     }
