@@ -110,4 +110,11 @@ public class ProductionService {
         List<ProductionData> foundData=productionDataRepository.getlast10Data(foundProduction.getId()).orElseThrow();
         return new GetProductionDataPackResponse(foundData.stream().map(ProductionData::toDTO).toList());
     }
+
+    public ProductionDataReportResponse getProductionDataReport(final ProductionDataReportRequest request) {
+        Production foundProduction = productionRepository.findAllProductionByCompanyName(request.productionName(), request.companyName()).orElseThrow();
+        List<ProductionData> foundProdData = productionDataRepository.findAllProductionByCompanyName(foundProduction.getId()).orElseThrow();
+
+        return new ProductionDataReportResponse(foundProdData.stream().map(ProductionData::toDTO).toList());
+    }
 }
