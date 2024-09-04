@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Month;
 import java.sql.Date;
 import java.time.LocalDate;
@@ -124,7 +125,7 @@ public class ProductionService {
                 BigDecimal sumValue=BigDecimal.ZERO;
                 List<ProductionData> productionDataList=groupedByMonth.get(month);
                 for (ProductionData productionData:productionDataList) {
-                    sumValue=sumValue.add(productionData.getValue());
+                    sumValue=sumValue.add(productionData.getValue().setScale(0, RoundingMode.HALF_UP));
                 }
                 groupedByMonthDTO.add(new MonthValueDTO(month,sumValue));
             }
