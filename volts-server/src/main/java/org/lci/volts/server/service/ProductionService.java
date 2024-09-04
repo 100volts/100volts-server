@@ -1,6 +1,9 @@
 package org.lci.volts.server.service;
 
 import lombok.RequiredArgsConstructor;
+import org.lci.volts.server.model.dto.MonthValueDTO;
+import org.lci.volts.server.model.dto.ProductionDTO;
+import org.lci.volts.server.model.dto.ProductionPackageDTO;
 import org.lci.volts.server.model.request.production.*;
 import org.lci.volts.server.model.responce.production.*;
 import org.lci.volts.server.persistence.Company;
@@ -17,10 +20,15 @@ import org.springframework.data.convert.ReadingConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.time.Month;
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -36,8 +44,23 @@ public class ProductionService {
     private final ElMeterService elMeterService;
 
     public GetProductionResponse getProdByName(final GetProductionRequest request) {
+        Production foundProduction = productionRepository.findAllProductionByCompanyName(request.name(), request.companyName()).orElseThrow();
+
+        List<ProductionData> last6Months=productionDataRepository.getLast6Months(foundProduction.getId(),LocalDate.now()).orElseThrow();
+        Map<Month, List<ProductionData>> groupedByMonth=last6Months.stream().collect(Collectors.groupingBy(pd->pd.getTs().toLocalDate().getMonth()));
+        Set<Month> prodMonts=groupedByMonth.keySet();
+        List<MonthValueDTO> groupedByMonthDTO=new ArrayList<>();
+        for(Month month:prodMonts){
+            BigDecimal sumValue=BigDecimal.ZERO;
+            List<ProductionData> productionDataList=groupedByMonth.get(month);
+            for (ProductionData productionData:productionDataList) {
+                sumValue=sumValue.add(productionData.getValue());
+            }
+            groupedByMonthDTO.add(new MonthValueDTO(month,sumValue));
+        }
+
         return new GetProductionResponse(
-                productionRepository.findAllProductionByCompanyName(request.name(), request.companyName()).orElseThrow().toDto());
+                productionRepository.findAllProductionByCompanyName(request.name(), request.companyName()).orElseThrow().toDto(),groupedByMonthDTO);
     }
 
     public CreteProductionResponse createProdByName(CreteProductionRequest request) {
@@ -89,8 +112,28 @@ public class ProductionService {
     }
 
     public GetProductionAllResponse getProdAllByName(GetProductionAllRequest request) {
-        return new GetProductionAllResponse(
-                productionRepository.findAllProductionsAllCompanyName(request.companyName()).orElseThrow().stream().map(Production::toDto).toList());
+        List<Production> foundProd=productionRepository.findAllProductionsAllCompanyName(request.companyName()).orElseThrow();
+        List<ProductionDTO> foundProdDTO=foundProd.stream().map(Production::toDto).toList();
+        List<ProductionPackageDTO> productionPackageDTOS=new ArrayList<>();
+        for (Production production:foundProd) {
+            List<ProductionData> last6Months=productionDataRepository.getLast6Months(production.getId(),LocalDate.now()).orElseThrow();
+            Map<Month, List<ProductionData>> groupedByMonth=last6Months.stream().collect(Collectors.groupingBy(pd->pd.getTs().toLocalDate().getMonth()));
+            Set<Month> prodMonts=groupedByMonth.keySet();
+            List<MonthValueDTO> groupedByMonthDTO=new ArrayList<>();
+            for(Month month:prodMonts){
+                BigDecimal sumValue=BigDecimal.ZERO;
+                List<ProductionData> productionDataList=groupedByMonth.get(month);
+                for (ProductionData productionData:productionDataList) {
+                    sumValue=sumValue.add(productionData.getValue());
+                }
+                groupedByMonthDTO.add(new MonthValueDTO(month,sumValue));
+            }
+            productionPackageDTOS.add(production.toPackageDTO(groupedByMonthDTO));
+        }
+
+
+
+        return new GetProductionAllResponse(productionPackageDTOS);
     }
 
     public DeleteProductionResponse deleteProductionByName(final DeleteProductionRequest request) {

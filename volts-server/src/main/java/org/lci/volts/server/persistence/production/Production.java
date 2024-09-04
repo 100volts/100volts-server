@@ -60,6 +60,18 @@ public class Production {
         );
     }
 
+    public ProductionPackageDTO toPackageDTO(final List<MonthValueDTO> monthlyData) {
+        return new ProductionPackageDTO(name, description, ts.toString(),
+                new UnitDTO(units.getName(), getUnits().getValue()),
+                new CompanyDTO(company.getName()),
+                getGroupDTOS(),
+                electricMeters.stream().map(electricMeter ->
+                        new ElMeterDTO(electricMeter.getId().intValue(), electricMeter.getAddress(), electricMeter.getName())
+                ).toList(),
+                monthlyData
+        );
+    }
+
     private List<GroupDTO> getGroupDTOS() {
         return groups.stream().map(group ->
                 new GroupDTO(group.getName(), group.getDescription())).toList();
