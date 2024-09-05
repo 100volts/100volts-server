@@ -49,4 +49,9 @@ public class ProductionController {
     public ResponseEntity<GetProductionDataPackResponse> getProductionDataPack(@RequestBody final GetProductionDataPackRequest request) {
         return ResponseEntity.ok(productionService.getProductionDataPack(request));
     }
+
+    @DeleteMapping("/data")
+    public ResponseEntity<DeleteProductionDataResponse> deleteProductionData(@RequestBody final DeleteProductionDataRequest request){
+        return ResponseEntity.ok(new DeleteProductionDataResponse(productionService.deleteProductionDate(request)));
+    }
 }

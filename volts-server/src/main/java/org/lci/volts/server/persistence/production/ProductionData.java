@@ -28,6 +28,7 @@ public class ProductionData {
         ProductionDataDTO dto = new ProductionDataDTO();
         dto.setDate(ts==null?null:ts.toString());
         dto.setValues(value);
+        dto.setId(id);
         return dto;
     }
 }

@@ -171,4 +171,10 @@ public class ProductionService {
         foundElectrics.forEach(electricMeter -> response.add(electricMeter.getName()));
         return new ProductionGroupResponse(foundGroups.stream().map(ProductionGroup::getName).toList(),response);
     }
+
+    public boolean deleteProductionDate(DeleteProductionDataRequest request) {
+        ProductionData foundData=productionDataRepository.getDataById(request.id());
+        productionDataRepository.delete(foundData);
+        return true;
+    }
 }
