@@ -12,6 +12,7 @@ import org.lci.volts.server.persistence.production.Production;
 import org.lci.volts.server.persistence.production.ProductionData;
 import org.lci.volts.server.persistence.production.ProductionGroup;
 import org.lci.volts.server.persistence.production.Units;
+import org.lci.volts.server.repository.electric.ElectricMeterRepository;
 import org.lci.volts.server.repository.production.ProductionDataRepository;
 import org.lci.volts.server.repository.production.ProductionGroupRepository;
 import org.lci.volts.server.repository.production.ProductionRepository;
@@ -41,6 +42,7 @@ public class ProductionService {
     private final UnitsRepository unitsRepository;
     private final CompanyService companyService;
     private final ProductionGroupRepository groupRepository;
+    private final  ElectricMeterRepository electricMeterRepository;
 
     private final ElMeterService elMeterService;
 
@@ -160,5 +162,13 @@ public class ProductionService {
         List<ProductionData> foundProdData = productionDataRepository.findAllProductionByCompanyName(foundProduction.getId()).orElseThrow();
 
         return new ProductionDataReportResponse(foundProdData.stream().map(ProductionData::toDTO).toList());
+    }
+
+    public ProductionGroupResponse getProductionGroup(ProductionGroupRequest request) {
+        List<ProductionGroup> foundGroups=groupRepository.findAllByName(request.companyName()).orElseThrow();
+        Set<ElectricMeter> foundElectrics=electricMeterRepository.findAllElMetersByCompanyName(request.companyName()).orElseThrow();
+        List<String> response=new ArrayList<>();
+        foundElectrics.forEach(electricMeter -> response.add(electricMeter.getName()));
+        return new ProductionGroupResponse(foundGroups.stream().map(ProductionGroup::getName).toList(),response);
     }
 }
