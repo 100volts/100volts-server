@@ -18,4 +18,5 @@ public class ProductionPackageDTO {
     private List<GroupDTO> groups;
     private List<ElMeterDTO> electricMeters;
     private List<MonthValueDTO> monthlyData;
+    private List<ProductionDataDTO> last10;
 }

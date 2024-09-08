@@ -60,7 +60,7 @@ public class Production {
         );
     }
 
-    public ProductionPackageDTO toPackageDTO(final List<MonthValueDTO> monthlyData) {
+    public ProductionPackageDTO toPackageDTO(final List<MonthValueDTO> monthlyData,final List<ProductionDataDTO> last10) {
         return new ProductionPackageDTO(name, description, ts.toString(),
                 new UnitDTO(units.getName(), getUnits().getValue()),
                 new CompanyDTO(company.getName()),
@@ -68,7 +68,7 @@ public class Production {
                 electricMeters.stream().map(electricMeter ->
                         new ElMeterDTO(electricMeter.getId().intValue(), electricMeter.getAddress(), electricMeter.getName())
                 ).toList(),
-                monthlyData
+                monthlyData,last10
         );
     }
 

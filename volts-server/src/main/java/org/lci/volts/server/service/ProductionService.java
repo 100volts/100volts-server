@@ -3,6 +3,7 @@ package org.lci.volts.server.service;
 import lombok.RequiredArgsConstructor;
 import org.lci.volts.server.model.dto.MonthValueDTO;
 import org.lci.volts.server.model.dto.ProductionDTO;
+import org.lci.volts.server.model.dto.ProductionDataDTO;
 import org.lci.volts.server.model.dto.ProductionPackageDTO;
 import org.lci.volts.server.model.request.production.*;
 import org.lci.volts.server.model.responce.production.*;
@@ -131,7 +132,10 @@ public class ProductionService {
                 }
                 groupedByMonthDTO.add(new MonthValueDTO(month,sumValue));
             }
-            productionPackageDTOS.add(production.toPackageDTO(groupedByMonthDTO));
+            //get last 10 from db
+            List<ProductionData> foundData=productionDataRepository.getlast10Data(production.getId()).orElseThrow();
+
+            productionPackageDTOS.add(production.toPackageDTO(groupedByMonthDTO,foundData.stream().map(ProductionData::toDTO).toList()));
         }
 
 
