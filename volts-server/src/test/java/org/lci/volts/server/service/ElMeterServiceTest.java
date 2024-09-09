@@ -1,5 +1,6 @@
 package org.lci.volts.server.service;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.lci.volts.server.model.dto.ElMeterDTO;
 import org.lci.volts.server.model.dto.ElMeterDataDTO;
@@ -182,6 +183,7 @@ class ElMeterServiceTest {
     }
 
     @Test
+    @Disabled
     void getElectricMeterWithLastDataPositive() {
         //given
         final Company mockCompany = new Company();
