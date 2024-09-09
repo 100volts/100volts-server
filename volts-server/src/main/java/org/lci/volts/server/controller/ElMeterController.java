@@ -1,6 +1,7 @@
 package org.lci.volts.server.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.lci.volts.server.model.dto.DailyElMeterEnergyDTO;
 import org.lci.volts.server.model.dto.ElMeterDTO;
 import org.lci.volts.server.model.dto.ElMeterDataDTO;
 import org.lci.volts.server.model.request.electric.ElMeterCreationRequest;
@@ -20,6 +21,8 @@ import org.lci.volts.server.model.responce.electric.monthly.SetElMeterMonthlyRes
 import org.lci.volts.server.service.ElMeterService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("elmeter")
@@ -60,6 +63,11 @@ public class ElMeterController {
     @PostMapping("company/address/list/names")
     public ResponseEntity<GetAddListAndElMeterNamesResponse> getAddressListWithNameElectricMeterForCompany(@RequestBody GetAddressListElMeterRequest request) {
         return ResponseEntity.ok(elMeterService.getAddressListWithNamesElectricMeterForCompany(request.getCompanyName()));
+    }
+
+    @PostMapping("company/monthly/energy")
+    public ResponseEntity<List<DailyElMeterEnergyDTO>> getMonthlyEnergyData(@RequestBody GetElMeterNameRequest request){
+        return ResponseEntity.ok(elMeterService.getSevenDayEnergy(1,request.companyName()));
     }
 
     @PostMapping("/monthly/set")

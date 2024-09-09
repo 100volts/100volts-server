@@ -27,10 +27,7 @@ import java.math.RoundingMode;
 import java.time.Month;
 import java.sql.Date;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -62,7 +59,7 @@ public class ProductionService {
             }
             groupedByMonthDTO.add(new MonthValueDTO(month,sumValue));
         }
-
+        groupedByMonthDTO.sort(Comparator.comparing(MonthValueDTO::month));
         return new GetProductionResponse(
                 productionRepository.findAllProductionByCompanyName(request.name(), request.companyName()).orElseThrow().toDto(),groupedByMonthDTO);
     }
@@ -132,15 +129,20 @@ public class ProductionService {
                 }
                 groupedByMonthDTO.add(new MonthValueDTO(month,sumValue));
             }
+            groupedByMonthDTO.sort(Comparator.comparing(MonthValueDTO::month));
+
             //get last 10 from db
             List<ProductionData> foundData=productionDataRepository.getlast10Data(production.getId()).orElseThrow();
 
             productionPackageDTOS.add(production.toPackageDTO(groupedByMonthDTO,foundData.stream().map(ProductionData::toDTO).toList()));
         }
-
-
-
         return new GetProductionAllResponse(productionPackageDTOS);
+    }
+
+    public List<ProductionDataDTO> getWeeklyProduction(){
+
+
+        return null;
     }
 
     public DeleteProductionResponse deleteProductionByName(final DeleteProductionRequest request) {

@@ -1,10 +1,7 @@
 package org.lci.volts.server.service;
 
 import lombok.RequiredArgsConstructor;
-import org.lci.volts.server.model.dto.ElMeterDTO;
-import org.lci.volts.server.model.dto.ElMeterDataDTO;
-import org.lci.volts.server.model.dto.GetAddListAndElMeterNamesDTO;
-import org.lci.volts.server.model.dto.TotPowerDTO;
+import org.lci.volts.server.model.dto.*;
 import org.lci.volts.server.model.record.ElMeterAvrFifteenMinuteLoad;
 import org.lci.volts.server.model.request.electric.GetElMeterNameRequest;
 import org.lci.volts.server.model.request.electric.data.GetElmeterReportRequest;
@@ -48,14 +45,13 @@ public class ElMeterService {
     private final ElectricMeterMonthlyDataRepository monthlyDataRepository;
 
     public Set<ElectricMeter> findAllElectricMeters(final String companyName) {
-        return
-            electricMeterRepository.findAllElMetersByCompanyName(companyName).orElseThrow();
+        return electricMeterRepository.findAllElMetersByCompanyName(companyName).orElseThrow();
     }
 
-    public Set<ElectricMeter> findAllElectricMeters(final String[] names,final String companyName) {
+    public Set<ElectricMeter> findAllElectricMeters(final String[] names, final String companyName) {
         Set<ElectricMeter> electricMeters = new HashSet<>();
         for (String name : names) {
-            electricMeters.add(electricMeterRepository.findAllElMetersByCompanyNameAndNAme(name,companyName).orElseThrow());
+            electricMeters.add(electricMeterRepository.findAllElMetersByCompanyNameAndNAme(name, companyName).orElseThrow());
         }
         return electricMeters;
     }
@@ -74,42 +70,65 @@ public class ElMeterService {
     }
 
     public GetAddressListElMeterResponse getAddressListElectricMeterForCompany(final String companyId) {
-        Set<ElectricMeter> allMetersFound =
-                electricMeterRepository.findAllElMetersByCompanyName(companyId).orElseThrow();
+        Set<ElectricMeter> allMetersFound = electricMeterRepository.findAllElMetersByCompanyName(companyId).orElseThrow();
         int[] allMeterAddresses = allMetersFound.stream().mapToInt(ElectricMeter::getAddress).toArray();
         return new GetAddressListElMeterResponse(allMeterAddresses);
     }
 
     public GetAddListAndElMeterNamesResponse getAddressListWithNamesElectricMeterForCompany(final String companyId) {
-        Set<ElectricMeter> allMetersFound =
-                electricMeterRepository.findAllElMetersByCompanyName(companyId).orElseThrow();
-        List<GetAddListAndElMeterNamesDTO> meterWithAddresses =
-                allMetersFound.stream().map(meter ->
-                                new GetAddListAndElMeterNamesDTO(meter.getName(), meter.getAddress()))
-                        .toList();//collect(Collectors.toUnmodifiableList());
+        Set<ElectricMeter> allMetersFound = electricMeterRepository.findAllElMetersByCompanyName(companyId).orElseThrow();
+        List<GetAddListAndElMeterNamesDTO> meterWithAddresses = allMetersFound.stream().map(meter -> new GetAddListAndElMeterNamesDTO(meter.getName(), meter.getAddress())).toList();//collect(Collectors.toUnmodifiableList());
         return new GetAddListAndElMeterNamesResponse(meterWithAddresses);
     }
 
     public GetElMeterAndDataResponse getElectricMeterWithLastData(final int address, final String companyName) {
-        final ElectricMeterData foundMeterWithData =
-                dataRepository.findAllElMetersWitDatalastRead(address, companyName).orElseThrow();
-        final Set<ElectricMeterData> foundAvrMeterData =
-                dataRepository.findAvrElMetersData(address, companyName).orElseThrow();
-        var traf=getDailyTotPowerTariff(address,companyName);
-        return new GetElMeterAndDataResponse(foundMeterWithData.getMeter().getName(), address,
-                new ElMeterDataDTO(
-                        BigDecimal.valueOf(foundMeterWithData.getMeter().getId()),
+        final ElectricMeterData foundMeterWithData = dataRepository.findAllElMetersWitDatalastRead(address, companyName).orElseThrow();
+        final Set<ElectricMeterData> foundAvrMeterData = dataRepository.findAvrElMetersData(address, companyName).orElseThrow();
+        var traf = getDailyTotPowerTariff(address, companyName);
+        LocalDateTime startOfYesterday = LocalDate.now().minusDays(1).atStartOfDay();
+        LocalDateTime endOfYesterday = LocalDate.now().minusDays(1).atTime(LocalTime.MAX);
+        List<DailyElMeterEnergyDTO> lastWeekEnergy=getSevenDayEnergy(address,companyName);
+
+        ElectricMeterData yesterdays = dataRepository.getYesterdays(address, companyName, startOfYesterday, endOfYesterday).orElseThrow();
+        return new GetElMeterAndDataResponse(
+                foundMeterWithData.getMeter().getName(),
+                address,
+                new ElMeterDataDTO(BigDecimal.valueOf(foundMeterWithData.getMeter().getId()),
                         foundMeterWithData.getVoltageL1(), foundMeterWithData.getVoltageL2(),
-                        foundMeterWithData.getVoltageL3(),
-                        foundMeterWithData.getCurrentL1(), foundMeterWithData.getCurrentL2(),
-                        foundMeterWithData.getCurrentL3(),
+                        foundMeterWithData.getVoltageL3(), foundMeterWithData.getCurrentL1(),
+                        foundMeterWithData.getCurrentL2(), foundMeterWithData.getCurrentL3(),
                         foundMeterWithData.getActivePowerL1(), foundMeterWithData.getActivePowerL2(),
                         foundMeterWithData.getActivePowerL3(), foundMeterWithData.getPowerFactorL1(),
                         foundMeterWithData.getPowerFactorL2(), foundMeterWithData.getPowerFactorL3(),
                         foundMeterWithData.getTotalActivePower(),
-                        foundMeterWithData.getTotalActiveEnergyImportTariff1(),
-                        foundMeterWithData.getTotalActiveEnergyImportTariff2()), getAvrData(foundAvrMeterData),traf.dailyTariff()
-        );
+                        BigDecimal.valueOf(
+                                foundMeterWithData.getTotalActiveEnergyImportTariff1().longValue() - yesterdays.getTotalActiveEnergyImportTariff1().longValue()),
+                        foundMeterWithData.getTotalActiveEnergyImportTariff2()),
+                getAvrData(foundAvrMeterData),
+                traf.dailyTariff(),
+                lastWeekEnergy);
+    }
+
+    public List<DailyElMeterEnergyDTO> getSevenDayEnergy(final int address,final String companyName) {
+        LocalDateTime startOfYesterday = LocalDate.now().minusDays(1).atStartOfDay();
+        LocalDateTime endOfYesterday = LocalDate.now().minusDays(1).atTime(LocalTime.MAX);
+        final ElectricMeterData foundMeterWithDataLast = dataRepository.findAllElMetersWitDatalastRead(address, companyName).orElseThrow();
+        final ElectricMeterData yesterdays = dataRepository.getYesterdays(address, companyName, startOfYesterday, endOfYesterday).orElseThrow();
+        List<DailyElMeterEnergyDTO> sevenDayEnergy = new ArrayList<>();
+        sevenDayEnergy.add(new DailyElMeterEnergyDTO(foundMeterWithDataLast.getDate().toString(),foundMeterWithDataLast.getDate().getDayOfWeek(), BigDecimal.valueOf(foundMeterWithDataLast.getTotalActiveEnergyImportTariff1().longValue() - yesterdays.getTotalActiveEnergyImportTariff1().longValue())));
+        ElectricMeterData temp=yesterdays;
+
+        ElectricMeterData tempy;
+        for (int i = 0; i < 7; i++) {
+            startOfYesterday = startOfYesterday.minusDays(1);
+            endOfYesterday = endOfYesterday.minusDays(1);
+            tempy=dataRepository.getYesterdays(address, companyName, startOfYesterday, endOfYesterday).orElse(null);
+            if(tempy!=null){
+            sevenDayEnergy.add(new DailyElMeterEnergyDTO(temp.getDate().toString(),
+                    temp.getDate().getDayOfWeek(), BigDecimal.valueOf(temp.getTotalActiveEnergyImportTariff1().longValue() - tempy.getTotalActiveEnergyImportTariff1().longValue())));
+            temp=tempy;}
+        }
+        return sevenDayEnergy;
     }
 
     public GetElectricMeterDailyTotPowerResponse getDailyTotPowerTariff(final int address, final String companyName) {
@@ -122,8 +141,7 @@ public class ElMeterService {
         Set<BigDecimal> voltage = new HashSet<>();
         Set<BigDecimal> current = new HashSet<>();
         Set<BigDecimal> power = new HashSet<>();
-        Set<BigDecimal> powerFactor =
-                new HashSet<>();
+        Set<BigDecimal> powerFactor = new HashSet<>();
         MathContext mc = new MathContext(5);
 
         data.forEach(electricMeterData -> {
@@ -133,18 +151,11 @@ public class ElMeterService {
             var vSumAvr = vl1l2l3.divide(BigDecimal.valueOf(3L), mc);
 
             voltage.add(vSumAvr);
-            current.add(electricMeterData.getCurrentL1()
-                    .add(electricMeterData.getCurrentL2().add(electricMeterData.getCurrentL3()))
-                    .divide(BigDecimal.valueOf(3L), mc));
-            power.add(electricMeterData.getActivePowerL1()
-                    .add(electricMeterData.getActivePowerL2().add(electricMeterData.getActivePowerL3()))
-                    .divide(BigDecimal.valueOf(3L), mc));
-            powerFactor.add(electricMeterData.getPowerFactorL1()
-                    .add(electricMeterData.getPowerFactorL2().add(electricMeterData.getPowerFactorL3()))
-                    .divide(BigDecimal.valueOf(3L), mc));
+            current.add(electricMeterData.getCurrentL1().add(electricMeterData.getCurrentL2().add(electricMeterData.getCurrentL3())).divide(BigDecimal.valueOf(3L), mc));
+            power.add(electricMeterData.getActivePowerL1().add(electricMeterData.getActivePowerL2().add(electricMeterData.getActivePowerL3())).divide(BigDecimal.valueOf(3L), mc));
+            powerFactor.add(electricMeterData.getPowerFactorL1().add(electricMeterData.getPowerFactorL2().add(electricMeterData.getPowerFactorL3())).divide(BigDecimal.valueOf(3L), mc));
         });
-        BigDecimal volltsSum = BigDecimal.ZERO, currentSum = BigDecimal.ZERO, powerSum = BigDecimal.ZERO,
-                powerFactorSum = BigDecimal.ZERO;
+        BigDecimal volltsSum = BigDecimal.ZERO, currentSum = BigDecimal.ZERO, powerSum = BigDecimal.ZERO, powerFactorSum = BigDecimal.ZERO;
         for (BigDecimal v : voltage) {
             volltsSum = volltsSum.add(v);
         }
@@ -157,23 +168,16 @@ public class ElMeterService {
         for (BigDecimal p : power) {
             powerSum = powerSum.add(p);
         }
-        return new ElMeterAvrFifteenMinuteLoad(
-                volltsSum.divide(BigDecimal.valueOf(15), mc),
-                currentSum.divide(BigDecimal.valueOf(15), mc),
-                powerSum.divide(BigDecimal.valueOf(15), mc),
-                powerFactorSum.divide(BigDecimal.valueOf(15), mc)
-        );
+        return new ElMeterAvrFifteenMinuteLoad(volltsSum.divide(BigDecimal.valueOf(15), mc), currentSum.divide(BigDecimal.valueOf(15), mc), powerSum.divide(BigDecimal.valueOf(15), mc), powerFactorSum.divide(BigDecimal.valueOf(15), mc));
     }
 
     public GetElMeterReportResponse getElmeterReportResponseResponseEntity(final GetElmeterReportRequest request) {
-        List<ElectricMeterData> foundMeterData=
-                dataRepository.findAllElMetersWitDatalastReadLimit(request.address(),request.companyName(),
-                request.pageLimit()* request.pages()).orElseThrow();
-        List<List<ElMeterDataDTO>> allPages=new ArrayList<>();
-        for(int i=0;i< request.pages();i++){
-            List<ElMeterDataDTO> page=new ArrayList<>();
-            for (int j=0;j< request.pageLimit();j++){
-                page.add(foundMeterData.get((request.pageLimit()*i)+j).toDTO());
+        List<ElectricMeterData> foundMeterData = dataRepository.findAllElMetersWitDatalastReadLimit(request.address(), request.companyName(), request.pageLimit() * request.pages()).orElseThrow();
+        List<List<ElMeterDataDTO>> allPages = new ArrayList<>();
+        for (int i = 0; i < request.pages(); i++) {
+            List<ElMeterDataDTO> page = new ArrayList<>();
+            for (int j = 0; j < request.pageLimit(); j++) {
+                page.add(foundMeterData.get((request.pageLimit() * i) + j).toDTO());
             }
             allPages.add(page);
         }
@@ -181,7 +185,7 @@ public class ElMeterService {
     }
 
     public SetElMeterMonthlyResponse setMonthlyReadData(final SetElMeterMonthlyRequest request) {
-        ElectricMeterMonthlyData newMonthlyData=new ElectricMeterMonthlyData();
+        ElectricMeterMonthlyData newMonthlyData = new ElectricMeterMonthlyData();
         newMonthlyData.setTz(request.tz());
         newMonthlyData.setTariff1(request.tariff1());
         newMonthlyData.setTarif2(request.tarif2());
@@ -190,8 +194,8 @@ public class ElMeterService {
     }
 
     public GetElMeterNameResponse getElMeterNameForCompany(GetElMeterNameRequest request) {
-        Set<ElectricMeter> foundElectrics=electricMeterRepository.findAllElMetersByCompanyName(request.companyName()).orElseThrow();
-        List<String> response=new ArrayList<>();
+        Set<ElectricMeter> foundElectrics = electricMeterRepository.findAllElMetersByCompanyName(request.companyName()).orElseThrow();
+        List<String> response = new ArrayList<>();
         foundElectrics.forEach(electricMeter -> response.add(electricMeter.getName()));
         return new GetElMeterNameResponse(response);
     }
