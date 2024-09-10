@@ -183,4 +183,21 @@ public class ProductionService {
         productionDataRepository.delete(foundData);
         return true;
     }
+    @Transactional
+    public UpdateProductionResponse updateProd(UpdateProductionRequest request) {
+        Company foundCompany = companyService.getCompanyFromName(request.companyName());
+        Production foundProduction = productionRepository.findAllProductionByCompanyName(request.prodName(), request.companyName()).orElseThrow();
+        Set<ElectricMeter>electric=elMeterService.findAllElectricMeters(request.elMeterNames(),request.companyName());
+        //productionRepository.delete(foundProduction);
+        foundProduction.setName(request.prodNameNew());
+        foundProduction.setDescription(request.prodDescription());
+        foundProduction.getGroups().clear();
+        foundProduction.getGroups().add(cascadeGroupFromName(request.groupName(), request.companyName(), foundCompany));
+        foundProduction.getElectricMeters().clear();
+        foundProduction.getElectricMeters().addAll(electric);
+        foundProduction.setUnits(getUnitsFromName(request.unitsName()));
+
+        productionRepository.save(foundProduction);
+        return new UpdateProductionResponse(true);
+    }
 }

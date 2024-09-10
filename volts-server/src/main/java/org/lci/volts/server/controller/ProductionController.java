@@ -17,6 +17,10 @@ public class ProductionController {
     public ResponseEntity<GetProductionResponse> getProductionByName(@RequestBody final GetProductionRequest request) {
         return ResponseEntity.ok(productionService.getProdByName(request));
     }
+    @PutMapping("/company")
+    public ResponseEntity<UpdateProductionResponse> updateProductionByName(@RequestBody final UpdateProductionRequest request) {
+        return ResponseEntity.ok(productionService.updateProd(request));
+    }
     @DeleteMapping
     public ResponseEntity<DeleteProductionResponse> deleteProductionByName(@RequestBody final DeleteProductionRequest request) {
         return ResponseEntity.ok(productionService.deleteProductionByName(request));
