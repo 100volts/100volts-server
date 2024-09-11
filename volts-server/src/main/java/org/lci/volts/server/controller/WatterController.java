@@ -19,6 +19,6 @@ public class WatterController {
     }
     @PutMapping
     public ResponseEntity<Boolean> createWatter(@RequestBody CreateWatterRequest request){
-        return ResponseEntity.ok(watterService.createWatterRequest(request));
+        return ResponseEntity.ok(watterService.createUpdateWatterRequest(request));
     }
 }

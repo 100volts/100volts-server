@@ -9,5 +9,7 @@ import java.util.Optional;
 
 public interface WatterRepository extends JpaRepository<Watter, Long> {
     @Query("SELECT u FROM Watter u WHERE u.company.name= ?1 ORDER BY u.ts ASC ")
-    Optional<List<Watter>> getAllWatterForCompany(String companyName);
+    Optional<List<Watter>> getAllWatterForCompany(final String companyName);
+    @Query("SELECT u FROM Watter u WHERE u.company.name= ?1 AND u.name=?2 ORDER BY u.ts ASC ")
+    Optional<Watter> getWatterByNameAndCompanyName(final String companyName,final String name);
 }

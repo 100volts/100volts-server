@@ -12,7 +12,6 @@ import org.lci.volts.server.repository.CompanyRepository;
 import org.lci.volts.server.repository.WatterDataRepository;
 import org.lci.volts.server.repository.WatterRepository;
 import org.springframework.data.convert.ReadingConverter;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,7 +40,16 @@ public class WatterService {
         return data.stream().map(WatterData::toDTO).toList();
     }
 
-    public Boolean createWatterRequest(CreateWatterRequest request) {
+    public Boolean createUpdateWatterRequest(CreateWatterRequest request) {
+        if(request.nameNew()==null||request.nameNew().isEmpty()){
+            createWatterRequest(request);
+        } else {
+            updateWatterRequest(request);
+        }
+        return true;
+    }
+
+    public void createWatterRequest(CreateWatterRequest request) {
         Company company= companyRepo.findByName(request.companyName()).orElseThrow();
         Watter watter= new Watter();
         watter.setCompany(company);
@@ -49,6 +57,15 @@ public class WatterService {
         watter.setDescription(request.description());
         watter.setTs(Date.valueOf(LocalDate.now()));
         watterRepo.save(watter);
-        return true;
+    }
+
+    public void updateWatterRequest(CreateWatterRequest request) {
+        Company company= companyRepo.findByName(request.companyName()).orElseThrow();
+        Watter watter= watterRepo.getWatterByNameAndCompanyName(request.companyName(),request.name()).orElseThrow();
+        watter.setCompany(company);
+        watter.setName(request.nameNew());
+        watter.setDescription(request.description());
+        watter.setTs(Date.valueOf(LocalDate.now()));
+        watterRepo.save(watter);
     }
 }
