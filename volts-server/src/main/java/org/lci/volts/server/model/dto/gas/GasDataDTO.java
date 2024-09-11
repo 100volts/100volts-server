@@ -1,4 +1,6 @@
 package org.lci.volts.server.model.dto.gas;
 
-public record GasDataDTO() {
+import java.math.BigDecimal;
+
+public record GasDataDTO(BigDecimal value, String date) {
 }

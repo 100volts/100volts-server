@@ -13,6 +13,7 @@ import java.sql.Date;
 @Table(name = "gas")
 public class Gas {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(name = "gas_name")
     private String name;

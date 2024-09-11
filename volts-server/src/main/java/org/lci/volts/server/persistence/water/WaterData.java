@@ -15,7 +15,8 @@ import java.util.Date;
 @Table(name = "water_data")
 public class WaterData {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "water_data_seq_gen")
+    @SequenceGenerator(name = "water_data_seq_gen", sequenceName = "water_data_seq", allocationSize = 1)
     private Long id;
     private BigDecimal value;
     private Date ts;

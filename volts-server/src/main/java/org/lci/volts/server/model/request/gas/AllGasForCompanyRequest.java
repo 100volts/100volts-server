@@ -1,4 +1,6 @@
 package org.lci.volts.server.model.request.gas;
 
-public class AllGasForCompanyRequest {
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public record AllGasForCompanyRequest(@JsonProperty("company_name") String companyName) {
 }

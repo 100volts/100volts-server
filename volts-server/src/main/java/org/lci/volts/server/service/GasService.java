@@ -1,7 +1,7 @@
 package org.lci.volts.server.service;
 
 import lombok.RequiredArgsConstructor;
-import org.lci.volts.server.model.dto.GasDTO;
+import org.lci.volts.server.model.dto.gas.GasDTO;
 import org.lci.volts.server.model.dto.gas.GasDataDTO;
 import org.lci.volts.server.model.request.gas.CreateGasDataRequest;
 import org.lci.volts.server.model.request.gas.CreateGasRequest;
