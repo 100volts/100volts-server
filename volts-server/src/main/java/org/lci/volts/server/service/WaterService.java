@@ -3,6 +3,7 @@ package org.lci.volts.server.service;
 import lombok.RequiredArgsConstructor;
 import org.lci.volts.server.model.dto.WaterDTO;
 import org.lci.volts.server.model.dto.WaterDataDTO;
+import org.lci.volts.server.model.request.water.CreateWaterDataRequest;
 import org.lci.volts.server.model.request.water.CreateWaterRequest;
 import org.lci.volts.server.model.responce.water.AllWaterForCompanyResponse;
 import org.lci.volts.server.persistence.Company;
@@ -67,5 +68,15 @@ public class WaterService {
         water.setDescription(request.description());
         water.setTs(Date.valueOf(LocalDate.now()));
         waterRepo.save(water);
+    }
+
+    public Boolean addWaterDateRequest(CreateWaterDataRequest request) {
+        Water water= waterRepo.getWaterByNameAndCompanyName(request.companyName(),request.waterMeterName()).orElseThrow();
+        WaterData waterData= new WaterData();
+        waterData.setWater(water);
+        waterData.setValue(request.value());
+        waterData.setTs(Date.valueOf(LocalDate.now()));
+        waterDataRepo.save(waterData);
+        return true;
     }
 }

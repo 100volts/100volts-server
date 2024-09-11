@@ -15,6 +15,7 @@ import java.util.Date;
 @Table(name = "water_data")
 public class WaterData {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private BigDecimal value;
     private Date ts;

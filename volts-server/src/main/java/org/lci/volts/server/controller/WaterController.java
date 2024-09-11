@@ -1,6 +1,7 @@
 package org.lci.volts.server.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.lci.volts.server.model.request.water.CreateWaterDataRequest;
 import org.lci.volts.server.model.request.water.CreateWaterRequest;
 import org.lci.volts.server.model.responce.water.AllWaterForCompanyResponse;
 import org.lci.volts.server.service.WaterService;
@@ -20,5 +21,9 @@ public class WaterController {
     @PutMapping
     public ResponseEntity<Boolean> createWater(@RequestBody CreateWaterRequest request){
         return ResponseEntity.ok(waterService.createUpdateWaterRequest(request));
+    }
+    @PutMapping("/data")
+    public ResponseEntity<Boolean> puWaterData(@RequestBody CreateWaterDataRequest request){
+        return ResponseEntity.ok(waterService.addWaterDateRequest(request));
     }
 }
