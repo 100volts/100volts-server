@@ -7,6 +7,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.lci.volts.server.model.dto.*;
+import org.lci.volts.server.model.dto.electricity.ElMeterDTO;
+import org.lci.volts.server.model.dto.electricity.MonthValueDTO;
+import org.lci.volts.server.model.dto.production.*;
 import org.lci.volts.server.persistence.Company;
 import org.lci.volts.server.persistence.electric.ElectricMeter;
 
@@ -60,7 +63,7 @@ public class Production {
         );
     }
 
-    public ProductionPackageDTO toPackageDTO(final List<MonthValueDTO> monthlyData,final List<ProductionDataDTO> last10) {
+    public ProductionPackageDTO toPackageDTO(final List<MonthValueDTO> monthlyData, final List<ProductionDataDTO> last10) {
         return new ProductionPackageDTO(name, description, ts.toString(),
                 new UnitDTO(units.getName(), getUnits().getValue()),
                 new CompanyDTO(company.getName()),

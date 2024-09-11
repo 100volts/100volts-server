@@ -1,10 +1,10 @@
 package org.lci.volts.server.service;
 
 import lombok.RequiredArgsConstructor;
-import org.lci.volts.server.model.dto.MonthValueDTO;
-import org.lci.volts.server.model.dto.ProductionDTO;
-import org.lci.volts.server.model.dto.ProductionDataDTO;
-import org.lci.volts.server.model.dto.ProductionPackageDTO;
+import org.lci.volts.server.model.dto.electricity.MonthValueDTO;
+import org.lci.volts.server.model.dto.production.ProductionDTO;
+import org.lci.volts.server.model.dto.production.ProductionDataDTO;
+import org.lci.volts.server.model.dto.production.ProductionPackageDTO;
 import org.lci.volts.server.model.request.production.*;
 import org.lci.volts.server.model.responce.production.*;
 import org.lci.volts.server.persistence.Company;

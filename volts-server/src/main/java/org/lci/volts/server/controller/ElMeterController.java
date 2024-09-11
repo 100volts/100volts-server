@@ -1,9 +1,9 @@
 package org.lci.volts.server.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.lci.volts.server.model.dto.DailyElMeterEnergyDTO;
-import org.lci.volts.server.model.dto.ElMeterDTO;
-import org.lci.volts.server.model.dto.ElMeterDataDTO;
+import org.lci.volts.server.model.dto.electricity.DailyElMeterEnergyDTO;
+import org.lci.volts.server.model.dto.electricity.ElMeterDTO;
+import org.lci.volts.server.model.dto.electricity.ElMeterDataDTO;
 import org.lci.volts.server.model.request.electric.ElMeterCreationRequest;
 import org.lci.volts.server.model.request.electric.GetAddressListElMeterRequest;
 import org.lci.volts.server.model.request.electric.GetElMeterNameRequest;

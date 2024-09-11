@@ -1,8 +1,7 @@
-package org.lci.volts.server.model.dto;
+package org.lci.volts.server.model.dto.electricity;
 
 import java.math.BigDecimal;
 import java.time.Month;
-import java.time.DayOfWeek;
 
 public record MonthValueDTO(Month month, BigDecimal value) {
 }

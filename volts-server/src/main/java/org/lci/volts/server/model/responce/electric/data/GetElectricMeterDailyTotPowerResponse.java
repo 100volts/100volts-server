@@ -1,6 +1,6 @@
 package org.lci.volts.server.model.responce.electric.data;
 
-import org.lci.volts.server.model.dto.TotPowerDTO;
+import org.lci.volts.server.model.dto.electricity.TotPowerDTO;
 
 import java.util.List;
 

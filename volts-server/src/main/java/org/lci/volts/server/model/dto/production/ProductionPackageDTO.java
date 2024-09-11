@@ -1,6 +1,9 @@
-package org.lci.volts.server.model.dto;
+package org.lci.volts.server.model.dto.production;
 
 import lombok.*;
+import org.lci.volts.server.model.dto.CompanyDTO;
+import org.lci.volts.server.model.dto.electricity.ElMeterDTO;
+import org.lci.volts.server.model.dto.electricity.MonthValueDTO;
 
 import java.util.List;
 

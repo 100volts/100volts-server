@@ -1,4 +1,4 @@
-package org.lci.volts.server.model.dto;
+package org.lci.volts.server.model.dto.production;
 
 
 import lombok.*;

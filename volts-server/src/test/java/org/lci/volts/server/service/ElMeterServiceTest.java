@@ -2,8 +2,8 @@ package org.lci.volts.server.service;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.lci.volts.server.model.dto.ElMeterDTO;
-import org.lci.volts.server.model.dto.ElMeterDataDTO;
+import org.lci.volts.server.model.dto.electricity.ElMeterDTO;
+import org.lci.volts.server.model.dto.electricity.ElMeterDataDTO;
 import org.lci.volts.server.model.responce.electric.GetAddListAndElMeterNamesResponse;
 import org.lci.volts.server.model.responce.electric.GetAddressListElMeterResponse;
 import org.lci.volts.server.model.responce.electric.data.ElMeterReadResponse;

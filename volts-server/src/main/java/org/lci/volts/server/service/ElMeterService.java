@@ -1,7 +1,7 @@
 package org.lci.volts.server.service;
 
 import lombok.RequiredArgsConstructor;
-import org.lci.volts.server.model.dto.*;
+import org.lci.volts.server.model.dto.electricity.*;
 import org.lci.volts.server.model.record.ElMeterAvrFifteenMinuteLoad;
 import org.lci.volts.server.model.request.electric.GetElMeterNameRequest;
 import org.lci.volts.server.model.request.electric.data.GetElmeterReportRequest;

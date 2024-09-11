@@ -1,8 +1,8 @@
 package org.lci.volts.server.service;
 
 import lombok.RequiredArgsConstructor;
-import org.lci.volts.server.model.dto.WaterDTO;
-import org.lci.volts.server.model.dto.WaterDataDTO;
+import org.lci.volts.server.model.dto.water.WaterDTO;
+import org.lci.volts.server.model.dto.water.WaterDataDTO;
 import org.lci.volts.server.model.request.water.CreateWaterDataRequest;
 import org.lci.volts.server.model.request.water.CreateWaterRequest;
 import org.lci.volts.server.model.responce.water.AllWaterForCompanyResponse;

@@ -1,7 +1,6 @@
 package org.lci.volts.server.model.responce.production;
 
-import org.lci.volts.server.model.dto.ProductionDTO;
-import org.lci.volts.server.model.dto.ProductionPackageDTO;
+import org.lci.volts.server.model.dto.production.ProductionPackageDTO;
 
 import java.util.List;
 

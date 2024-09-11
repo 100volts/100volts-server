@@ -1,6 +1,5 @@
 package org.lci.volts.server.repository.electric;
 
-import org.lci.volts.server.model.dto.DailyElMeterEnergyDTO;
 import org.lci.volts.server.persistence.electric.ElectricMeterData;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

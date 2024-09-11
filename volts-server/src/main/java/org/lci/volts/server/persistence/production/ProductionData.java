@@ -3,7 +3,7 @@ package org.lci.volts.server.persistence.production;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.lci.volts.server.model.dto.ProductionDataDTO;
+import org.lci.volts.server.model.dto.production.ProductionDataDTO;
 
 import java.math.BigDecimal;
 import java.sql.Date;

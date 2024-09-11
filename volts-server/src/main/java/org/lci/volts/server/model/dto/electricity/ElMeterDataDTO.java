@@ -1,4 +1,4 @@
-package org.lci.volts.server.model.dto;
+package org.lci.volts.server.model.dto.electricity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
