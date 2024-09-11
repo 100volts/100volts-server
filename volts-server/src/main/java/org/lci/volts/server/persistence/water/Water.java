@@ -29,8 +29,4 @@ public class Water {
     @ManyToOne
     @JoinColumn(name = "company")
     private Company company;
-
-    public WaterDTO toDTO(List<WaterDataDTO> data) {
-        return new WaterDTO(name,description,ts.toString(),data);
-    }
 }
