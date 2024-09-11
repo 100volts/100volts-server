@@ -9,6 +9,7 @@ import org.lci.volts.server.model.dto.water.WaterDataDTO;
 import org.lci.volts.server.persistence.Company;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.List;
 
 @Entity
@@ -24,7 +25,7 @@ public class Water {
     @Column
     private String description;
     @Column
-    private Date ts;
+    private Timestamp ts;
     @ManyToOne
     @JoinColumn(name = "company")
     private Company company;

@@ -7,7 +7,7 @@ import lombok.Setter;
 import org.lci.volts.server.model.dto.water.WaterDataDTO;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.sql.Timestamp;
 
 @Entity
 @Setter
@@ -19,7 +19,7 @@ public class WaterData {
     @SequenceGenerator(name = "water_data_seq_gen", sequenceName = "water_data_seq", allocationSize = 1)
     private Long id;
     private BigDecimal value;
-    private Date ts;
+    private Timestamp ts;
     @ManyToOne
     @JoinColumn(name = "water_meter")
     private Water water;

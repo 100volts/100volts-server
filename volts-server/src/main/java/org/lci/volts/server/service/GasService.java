@@ -17,7 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -33,7 +35,7 @@ public class GasService {
         List<Gas> allGas= gasRepo.getAllGasForCompany(companyName).orElseThrow();
         List<GasData>allGasData= gasDataRepo.getAllGasDataForCompany(companyName).orElse(null);
         return new AllGasForCompanyResponse(allGas.stream().map(gas ->
-                new GasDTO(gas.getName(), gas.getDescription(),gas.getTs().toString(),gasDataToDataDTOList( allGasData.stream().filter(gasData -> gasData.getGas().equals(gas)).toList()))
+                new GasDTO(gas.getName(), gas.getDescription(),gas.getTs().toString(),gasDataToDataDTOList( allGasData.stream().limit(2).filter(gasData -> gasData.getGas().equals(gas)).toList()))
         ).toList());
     }
 
@@ -75,7 +77,7 @@ public class GasService {
         GasData gasData= new GasData();
         gasData.setGas(gas);
         gasData.setValue(request.value());
-        gasData.setTs(Date.valueOf(LocalDate.now()));
+        gasData.setTs(Timestamp.valueOf(LocalDateTime.now()));
         gasDataRepo.save(gasData);
         return true;
     }

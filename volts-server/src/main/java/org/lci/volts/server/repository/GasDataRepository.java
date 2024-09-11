@@ -8,6 +8,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface GasDataRepository extends JpaRepository<GasData, Long> {
-    @Query("SELECT u FROM GasData u WHERE u.gas.company.name= ?1 ORDER BY u.ts ASC ")
+    @Query("SELECT u FROM GasData u WHERE u.gas.company.name= ?1 ORDER BY u.value DESC ")
     Optional<List<GasData>> getAllGasDataForCompany(String companyName);
 }
