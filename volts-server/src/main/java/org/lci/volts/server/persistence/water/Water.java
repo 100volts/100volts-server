@@ -1,11 +1,11 @@
-package org.lci.volts.server.persistence.watter;
+package org.lci.volts.server.persistence.water;
 
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.lci.volts.server.model.dto.WatterDTO;
-import org.lci.volts.server.model.dto.WatterDataDTO;
+import org.lci.volts.server.model.dto.WaterDTO;
+import org.lci.volts.server.model.dto.WaterDataDTO;
 import org.lci.volts.server.persistence.Company;
 
 import java.sql.Date;
@@ -14,12 +14,12 @@ import java.util.List;
 @Entity
 @Setter
 @Getter
-@Table(name = "watter")
-public class Watter {
+@Table(name = "water")
+public class Water {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "watter_name")
+    @Column(name = "water_name")
     private String name;
     @Column
     private String description;
@@ -29,7 +29,7 @@ public class Watter {
     @JoinColumn(name = "company")
     private Company company;
 
-    public WatterDTO toDTO(List<WatterDataDTO> data) {
-        return new WatterDTO(name,description,ts.toString(),data);
+    public WaterDTO toDTO(List<WaterDataDTO> data) {
+        return new WaterDTO(name,description,ts.toString(),data);
     }
 }
