@@ -4,5 +4,5 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
 
-public record WaterDTO(String name, String description, String date, BigDecimal value, List<WaterDataDTO> data) {
+public record WaterDTO(String name, String description, String date, BigDecimal value, WaterDataDTO data) {
 }

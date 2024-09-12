@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.MathContext;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -33,36 +34,35 @@ public class WaterService {
     private final WaterRepository waterRepo;
     private final WaterDataRepository waterDataRepo;
     private final CompanyRepository companyRepo;
-    private record MeterTempData(BigDecimal value, String name){}
+
+    private record MeterTempData(BigDecimal value, String name) {
+    }
 
     public AllWaterForCompanyResponse getAllWaterForCompany(String companyName) {
         List<Water> allWater = waterRepo.getAllWaterForCompany(companyName).orElseThrow();
-        List<WaterData> allWaterData = waterDataRepo.getAllWaterDataForCompany(companyName,Timestamp.valueOf(LocalDateTime.now().minusDays(3))).orElse(null);
-        if(allWaterData==null) return null;
-        return new AllWaterForCompanyResponse(
-                allWater.stream().map(water ->
-                        new WaterDTO(
-                                water.getName(),
-                                water.getDescription(),
-                                water.getTs().toString(),
-                                getMetValue(allWaterData,water),
-                                waterDataToDataDTOList(
-                                        allWaterData.stream()
-                                                .filter(waterData -> waterData.getWater().equals(water))
-                                                .limit(2).toList()))).toList());
+        List<WaterData> allWaterData = waterDataRepo.getAllWaterDataForCompany(companyName, Timestamp.valueOf(LocalDateTime.now().minusDays(3))).orElse(null);
+        if (allWaterData == null) return null;
+        List<WaterDTO> watter = allWater.stream().map(water -> {
+            List<WaterDataDTO> data = waterDataToDataDTOList(allWaterData.stream().filter(waterData -> waterData.getWater().equals(water)).limit(2).toList());
+            WaterDataDTO waterDataDTO = data.isEmpty() ? null : data.get(0);
+            return new WaterDTO(water.getName(), water.getDescription(), water.getTs().toString(), getMetValue(allWaterData, water), waterDataDTO);
+        }).toList();
+        List<String> waterMeterNames=allWater.stream().map(Water::getName).toList();
+        BigDecimal sumValues=BigDecimal.ZERO;
+        for(WaterDTO waterDTO:watter) {
+            sumValues=sumValues.add(waterDTO.value());
+        }
+        return new AllWaterForCompanyResponse(watter,sumValues,waterMeterNames);
     }
 
-    private BigDecimal  getMetValue(final List<WaterData> watterData,final Water waterMeter) {
+    private BigDecimal getMetValue(final List<WaterData> watterData, final Water waterMeter) {
         assert waterMeter != null;
         assert watterData != null;
         assert !watterData.isEmpty();
-        List<BigDecimal> values =
-        watterData.stream()
-                .filter(waterData -> waterData.getWater().equals(waterMeter))
-                .limit(2)
-                .map(WaterData::getValue).toList();
-        BigDecimal value=values.get(0);
-        return value.subtract(values.get(1));
+        List<BigDecimal> values = watterData.stream().filter(waterData -> waterData.getWater().equals(waterMeter)).limit(2).map(WaterData::getValue).toList();
+        if (values.isEmpty()) return BigDecimal.ZERO;
+        BigDecimal value = values.get(0);
+        return values.size()<2?value:value.subtract(values.get(1)).round(new MathContext(2));
     }
 
     private List<WaterDataDTO> waterDataToDataDTOList(List<WaterData> data) {
