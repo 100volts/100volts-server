@@ -9,6 +9,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface WaterDataRepository extends JpaRepository<WaterData, Long> {
-    @Query("SELECT u FROM WaterData u WHERE u.water.company.name= ?1 AND u.ts>?2 ORDER BY u.value DESC ")
-    Optional<List<WaterData>> getAllWaterDataForCompany(String companyName, Timestamp ts);
+    @Query("SELECT u FROM WaterData u WHERE u.water.company.name= ?1 ORDER BY u.value DESC ")
+    Optional<List<WaterData>> getAllWaterDataForCompany(String companyName);
 }

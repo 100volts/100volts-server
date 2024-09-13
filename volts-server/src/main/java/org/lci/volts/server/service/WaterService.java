@@ -40,7 +40,7 @@ public class WaterService {
 
     public AllWaterForCompanyResponse getAllWaterForCompany(String companyName) {
         List<Water> allWater = waterRepo.getAllWaterForCompany(companyName).orElseThrow();
-        List<WaterData> allWaterData = waterDataRepo.getAllWaterDataForCompany(companyName, Timestamp.valueOf(LocalDateTime.now().minusDays(3))).orElse(null);
+        List<WaterData> allWaterData = waterDataRepo.getAllWaterDataForCompany(companyName).orElse(null);
         if (allWaterData == null) return null;
         List<WaterDTO> watter = allWater.stream().map(water -> {
             List<WaterDataDTO> data = waterDataToDataDTOList(allWaterData.stream().filter(waterData -> waterData.getWater().equals(water)).limit(2).toList());
