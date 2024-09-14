@@ -31,9 +31,6 @@ public class WaterService {
     private final WaterDataRepository waterDataRepo;
     private final CompanyRepository companyRepo;
 
-    private record MeterTempData(BigDecimal value, String name) {
-    }
-
     public AllWaterForCompanyResponse getAllWaterForCompany(String companyName) {
         List<Water> allWater = waterRepo.getAllWaterForCompany(companyName).orElseThrow();
         List<WaterData> allWaterData = waterDataRepo.getAllWaterDataForCompany(companyName).orElse(null);
