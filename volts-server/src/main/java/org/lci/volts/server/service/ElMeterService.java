@@ -89,7 +89,26 @@ public class ElMeterService {
         LocalDateTime endOfYesterday = LocalDate.now().minusDays(1).atTime(LocalTime.MAX);
         List<DailyElMeterEnergyDTO> lastWeekEnergy=getSevenDayEnergy(address,companyName);
 
-        ElectricMeterData yesterdays = dataRepository.getYesterdays(address, companyName, startOfYesterday, endOfYesterday).orElseThrow();
+        ElectricMeterData yesterdays = dataRepository.getYesterdays(address, companyName, startOfYesterday, endOfYesterday).orElse(null);
+        if (yesterdays != null) {
+            return new GetElMeterAndDataResponse(
+                    foundMeterWithData.getMeter().getName(),
+                    address,
+                    new ElMeterDataDTO(BigDecimal.valueOf(foundMeterWithData.getMeter().getId()),
+                            foundMeterWithData.getVoltageL1(), foundMeterWithData.getVoltageL2(),
+                            foundMeterWithData.getVoltageL3(), foundMeterWithData.getCurrentL1(),
+                            foundMeterWithData.getCurrentL2(), foundMeterWithData.getCurrentL3(),
+                            foundMeterWithData.getActivePowerL1(), foundMeterWithData.getActivePowerL2(),
+                            foundMeterWithData.getActivePowerL3(), foundMeterWithData.getPowerFactorL1(),
+                            foundMeterWithData.getPowerFactorL2(), foundMeterWithData.getPowerFactorL3(),
+                            foundMeterWithData.getTotalActivePower(),
+                            BigDecimal.valueOf(
+                                    foundMeterWithData.getTotalActiveEnergyImportTariff1().longValue() - yesterdays.getTotalActiveEnergyImportTariff1().longValue()),
+                            foundMeterWithData.getTotalActiveEnergyImportTariff2()),
+                    getAvrData(foundAvrMeterData),
+                    traf.dailyTariff(),
+                    lastWeekEnergy);
+        }
         return new GetElMeterAndDataResponse(
                 foundMeterWithData.getMeter().getName(),
                 address,
@@ -101,8 +120,7 @@ public class ElMeterService {
                         foundMeterWithData.getActivePowerL3(), foundMeterWithData.getPowerFactorL1(),
                         foundMeterWithData.getPowerFactorL2(), foundMeterWithData.getPowerFactorL3(),
                         foundMeterWithData.getTotalActivePower(),
-                        BigDecimal.valueOf(
-                                foundMeterWithData.getTotalActiveEnergyImportTariff1().longValue() - yesterdays.getTotalActiveEnergyImportTariff1().longValue()),
+                        BigDecimal.ZERO,
                         foundMeterWithData.getTotalActiveEnergyImportTariff2()),
                 getAvrData(foundAvrMeterData),
                 traf.dailyTariff(),
@@ -113,12 +131,16 @@ public class ElMeterService {
         LocalDateTime startOfYesterday = LocalDate.now().minusDays(1).atStartOfDay();
         LocalDateTime endOfYesterday = LocalDate.now().minusDays(1).atTime(LocalTime.MAX);
         final ElectricMeterData foundMeterWithDataLast = dataRepository.findAllElMetersWitDatalastRead(address, companyName).orElseThrow();
-        final ElectricMeterData yesterdays = dataRepository.getYesterdays(address, companyName, startOfYesterday, endOfYesterday).orElseThrow();
+        final ElectricMeterData yesterdays = dataRepository.getYesterdays(address, companyName, startOfYesterday, endOfYesterday).orElse(null);
         List<DailyElMeterEnergyDTO> sevenDayEnergy = new ArrayList<>();
+        if(yesterdays==null) {
+            return sevenDayEnergy;
+        }
         sevenDayEnergy.add(new DailyElMeterEnergyDTO(foundMeterWithDataLast.getDate().toString(),foundMeterWithDataLast.getDate().getDayOfWeek(), BigDecimal.valueOf(foundMeterWithDataLast.getTotalActiveEnergyImportTariff1().longValue() - yesterdays.getTotalActiveEnergyImportTariff1().longValue())));
         ElectricMeterData temp=yesterdays;
 
         ElectricMeterData tempy;
+
         for (int i = 0; i < 7; i++) {
             startOfYesterday = startOfYesterday.minusDays(1);
             endOfYesterday = endOfYesterday.minusDays(1);
