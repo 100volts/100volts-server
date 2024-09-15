@@ -108,7 +108,7 @@ public class GasService {
         GasData gasData= new GasData();
         gasData.setGas(gas);
         gasData.setValue(request.value());
-        gasData.setTs(Timestamp.valueOf(LocalDateTime.now()));
+        gasData.setTs(Timestamp.valueOf(request.date()));
         gasDataRepo.save(gasData);
         return true;
     }

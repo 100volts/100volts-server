@@ -95,7 +95,7 @@ public class WaterService {
         WaterData waterData = new WaterData();
         waterData.setWater(water);
         waterData.setValue(request.value());
-        waterData.setTs(Timestamp.valueOf(LocalDateTime.now()));
+        waterData.setTs(Timestamp.valueOf(request.date()));
         waterDataRepo.save(waterData);
         return true;
     }
