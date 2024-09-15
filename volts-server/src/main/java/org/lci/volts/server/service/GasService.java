@@ -3,17 +3,13 @@ package org.lci.volts.server.service;
 import lombok.RequiredArgsConstructor;
 import org.lci.volts.server.model.dto.gas.GasDTO;
 import org.lci.volts.server.model.dto.gas.GasDataDTO;
-import org.lci.volts.server.model.dto.water.WaterDTO;
-import org.lci.volts.server.model.dto.water.WaterDataDTO;
+import org.lci.volts.server.model.dto.gas.GasFullDTO;
 import org.lci.volts.server.model.request.gas.CreateGasDataRequest;
 import org.lci.volts.server.model.request.gas.CreateGasRequest;
 import org.lci.volts.server.model.responce.gas.AllGasForCompanyResponse;
-import org.lci.volts.server.model.responce.water.AllWaterForCompanyResponse;
 import org.lci.volts.server.persistence.Company;
 import org.lci.volts.server.persistence.gas.Gas;
 import org.lci.volts.server.persistence.gas.GasData;
-import org.lci.volts.server.persistence.water.Water;
-import org.lci.volts.server.persistence.water.WaterData;
 import org.lci.volts.server.repository.CompanyRepository;
 import org.lci.volts.server.repository.GasDataRepository;
 import org.lci.volts.server.repository.GasRepository;
@@ -26,7 +22,6 @@ import java.math.MathContext;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -111,5 +106,15 @@ public class GasService {
         gasData.setTs(Timestamp.valueOf(request.date()));
         gasDataRepo.save(gasData);
         return true;
+    }
+
+    public List<GasFullDTO> getMonthlyData(final String company, final Date from, final Date to) {
+        List<Gas> monthlyGas=gasRepo.getAllGasForCompanyForData(company,from,to).orElse(null);
+        List<GasData> monthlyGasData=gasDataRepo.getAllGasForCompanyForData(company,from,to).orElse(null);
+        List<GasFullDTO> gas = monthlyGas.stream().map(g -> {
+            List<GasDataDTO> data = gasDataToDataDTOList(monthlyGasData.stream().filter(waterData -> waterData.getGas().equals(g)).limit(2).toList());
+            return new GasFullDTO(g.getName(), g.getDescription(), g.getTs().toString(), getMetValue(monthlyGasData, g), data);
+        }).toList();
+        return gas;
     }
 }
