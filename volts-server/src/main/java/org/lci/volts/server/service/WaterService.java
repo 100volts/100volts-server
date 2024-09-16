@@ -5,7 +5,9 @@ import org.lci.volts.server.model.dto.water.WaterDTO;
 import org.lci.volts.server.model.dto.water.WaterDataDTO;
 import org.lci.volts.server.model.request.water.CreateWaterDataRequest;
 import org.lci.volts.server.model.request.water.CreateWaterRequest;
+import org.lci.volts.server.model.request.water.WaterReportRequest;
 import org.lci.volts.server.model.responce.water.AllWaterForCompanyResponse;
+import org.lci.volts.server.model.responce.water.WaterReportResponse;
 import org.lci.volts.server.persistence.Company;
 import org.lci.volts.server.persistence.water.Water;
 import org.lci.volts.server.persistence.water.WaterData;
@@ -98,5 +100,11 @@ public class WaterService {
         waterData.setTs(Timestamp.valueOf(request.date()));
         waterDataRepo.save(waterData);
         return true;
+    }
+
+    public WaterReportResponse getReport(WaterReportRequest request) {
+        List<WaterData> report=waterDataRepo.getAllWaterDataReport(request.companyName(), request.name()).orElse(null);
+        if (report == null) return null;
+        return new WaterReportResponse(report.stream().map(WaterData::toDTO).toList());
     }
 }

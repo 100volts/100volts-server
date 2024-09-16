@@ -3,7 +3,9 @@ package org.lci.volts.server.controller;
 import lombok.RequiredArgsConstructor;
 import org.lci.volts.server.model.request.water.CreateWaterDataRequest;
 import org.lci.volts.server.model.request.water.CreateWaterRequest;
+import org.lci.volts.server.model.request.water.WaterReportRequest;
 import org.lci.volts.server.model.responce.water.AllWaterForCompanyResponse;
+import org.lci.volts.server.model.responce.water.WaterReportResponse;
 import org.lci.volts.server.service.WaterService;
 import org.lci.volts.server.model.request.water.AllWaterForCompanyRequest;
 import org.springframework.http.ResponseEntity;
@@ -25,5 +27,9 @@ public class WaterController {
     @PutMapping("/data")
     public ResponseEntity<Boolean> puWaterData(@RequestBody CreateWaterDataRequest request){
         return ResponseEntity.ok(waterService.addWaterDateRequest(request));
+    }
+    @PostMapping("/report")
+    public ResponseEntity<WaterReportResponse> waterReport(@RequestBody WaterReportRequest request){
+        return ResponseEntity.ok(waterService.getReport(request));
     }
 }
