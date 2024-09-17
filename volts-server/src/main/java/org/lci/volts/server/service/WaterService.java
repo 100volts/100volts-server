@@ -5,6 +5,7 @@ import org.lci.volts.server.model.dto.water.WaterDTO;
 import org.lci.volts.server.model.dto.water.WaterDataDTO;
 import org.lci.volts.server.model.request.water.CreateWaterDataRequest;
 import org.lci.volts.server.model.request.water.CreateWaterRequest;
+import org.lci.volts.server.model.request.water.DeleteWaterDataRequest;
 import org.lci.volts.server.model.request.water.WaterReportRequest;
 import org.lci.volts.server.model.responce.water.AllWaterForCompanyResponse;
 import org.lci.volts.server.model.responce.water.WaterReportResponse;
@@ -106,5 +107,11 @@ public class WaterService {
         List<WaterData> report=waterDataRepo.getAllWaterDataReport(request.companyName(), request.name()).orElse(null);
         if (report == null) return null;
         return new WaterReportResponse(report.stream().map(WaterData::toDTO).toList());
+    }
+
+    public Boolean deleteData(final DeleteWaterDataRequest request) {
+        WaterData foundDataForDelete=waterDataRepo.getAllWaterDataForDelete(request.companyName(), request.name(),request.value()).orElseThrow();
+        waterDataRepo.delete(foundDataForDelete);
+        return true;
     }
 }
