@@ -3,11 +3,11 @@ package org.lci.volts.server.controller;
 import lombok.RequiredArgsConstructor;
 import org.lci.volts.server.model.dto.gas.GasDTO;
 import org.lci.volts.server.model.dto.gas.GasFullDTO;
-import org.lci.volts.server.model.request.gas.AllGasForCompanyRequest;
-import org.lci.volts.server.model.request.gas.CreateGasDataRequest;
-import org.lci.volts.server.model.request.gas.CreateGasRequest;
-import org.lci.volts.server.model.request.gas.MonthlyGasRequest;
+import org.lci.volts.server.model.request.gas.*;
+import org.lci.volts.server.model.request.water.WaterReportRequest;
 import org.lci.volts.server.model.responce.gas.AllGasForCompanyResponse;
+import org.lci.volts.server.model.responce.gas.GasReportResponse;
+import org.lci.volts.server.model.responce.water.WaterReportResponse;
 import org.lci.volts.server.service.GasService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +30,10 @@ public class GasController {
     @PutMapping("/data")
     public ResponseEntity<Boolean> puGasData(@RequestBody CreateGasDataRequest request){
         return ResponseEntity.ok(gasService.addGasDateRequest(request));
+    }
+    @PostMapping("/report")
+    public ResponseEntity<GasReportResponse> gasReport(@RequestBody GasReportRequest request){
+        return ResponseEntity.ok(gasService.getReport(request));
     }
     @PostMapping("/monthly")
     public ResponseEntity<List<GasFullDTO>> getMonthlyData(@RequestBody MonthlyGasRequest request){

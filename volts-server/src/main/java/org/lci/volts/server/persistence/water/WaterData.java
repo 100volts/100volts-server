@@ -25,6 +25,6 @@ public class WaterData {
     private Water water;
 
     public WaterDataDTO toDTO() {
-        return new WaterDataDTO(value,ts.toString());
+        return new WaterDataDTO(value,ts.toLocalDateTime().toString());
     }
 }

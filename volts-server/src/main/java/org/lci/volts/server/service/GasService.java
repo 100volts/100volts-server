@@ -6,7 +6,9 @@ import org.lci.volts.server.model.dto.gas.GasDataDTO;
 import org.lci.volts.server.model.dto.gas.GasFullDTO;
 import org.lci.volts.server.model.request.gas.CreateGasDataRequest;
 import org.lci.volts.server.model.request.gas.CreateGasRequest;
+import org.lci.volts.server.model.request.gas.GasReportRequest;
 import org.lci.volts.server.model.responce.gas.AllGasForCompanyResponse;
+import org.lci.volts.server.model.responce.gas.GasReportResponse;
 import org.lci.volts.server.persistence.Company;
 import org.lci.volts.server.persistence.gas.Gas;
 import org.lci.volts.server.persistence.gas.GasData;
@@ -116,5 +118,11 @@ public class GasService {
             return new GasFullDTO(g.getName(), g.getDescription(), g.getTs().toString(), getMetValue(monthlyGasData, g), data);
         }).toList();
         return gas;
+    }
+
+    public GasReportResponse getReport(GasReportRequest request) {
+        List<GasData> foundGasReport=gasDataRepo.getGasReport(request.companyName(),request.name()).orElse(null);
+        if(foundGasReport==null){return null;}
+        return new GasReportResponse(foundGasReport.stream().map(GasData::toDTO).toList());
     }
 }

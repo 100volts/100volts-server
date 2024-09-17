@@ -25,6 +25,6 @@ public class GasData {
     private Gas gas;
 
     public GasDataDTO toDTO() {
-        return new GasDataDTO(value,ts.toString());
+        return new GasDataDTO(value,ts.toLocalDateTime().toString());
     }
 }
