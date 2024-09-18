@@ -39,26 +39,30 @@ public class WaterService {
         List<WaterData> allWaterData = waterDataRepo.getAllWaterDataForCompany(companyName).orElse(null);
         if (allWaterData == null) return null;
         List<WaterDTO> watter = allWater.stream().map(water -> {
-            List<WaterDataDTO> data = waterDataToDataDTOList(allWaterData.stream().filter(waterData -> waterData.getWater().equals(water)).limit(2).toList());
+            List<WaterDataDTO> data = waterDataToDataDTOList(
+                    allWaterData.stream().filter(waterData -> waterData.getWater().equals(water)).limit(2).toList());
             WaterDataDTO waterDataDTO = data.isEmpty() ? null : data.get(0);
-            return new WaterDTO(water.getName(), water.getDescription(), water.getTs().toString(), getMetValue(allWaterData, water), waterDataDTO);
+            return new WaterDTO(water.getName(), water.getDescription(), water.getTs().toString(),
+                    getMetValue(allWaterData, water), waterDataDTO);
         }).toList();
-        List<String> waterMeterNames=allWater.stream().map(Water::getName).toList();
-        BigDecimal sumValues=BigDecimal.ZERO;
-        for(WaterDTO waterDTO:watter) {
-            sumValues=sumValues.add(waterDTO.value());
+        List<String> waterMeterNames = allWater.stream().map(Water::getName).toList();
+        BigDecimal sumValues = BigDecimal.ZERO;
+        for (WaterDTO waterDTO : watter) {
+            sumValues = sumValues.add(waterDTO.value());
         }
-        return new AllWaterForCompanyResponse(watter,sumValues,waterMeterNames);
+        return new AllWaterForCompanyResponse(watter, sumValues, waterMeterNames);
     }
 
     private BigDecimal getMetValue(final List<WaterData> watterData, final Water waterMeter) {
         assert waterMeter != null;
         assert watterData != null;
         assert !watterData.isEmpty();
-        List<BigDecimal> values = watterData.stream().filter(waterData -> waterData.getWater().equals(waterMeter)).limit(2).map(WaterData::getValue).toList();
+        List<BigDecimal> values =
+                watterData.stream().filter(waterData -> waterData.getWater().equals(waterMeter)).limit(2)
+                        .map(WaterData::getValue).toList();
         if (values.isEmpty()) return BigDecimal.ZERO;
         BigDecimal value = values.get(0);
-        return values.size()<2?value:value.subtract(values.get(1)).round(new MathContext(2));
+        return values.size() < 2 ? value : value.subtract(values.get(1)).round(new MathContext(2));
     }
 
     private List<WaterDataDTO> waterDataToDataDTOList(List<WaterData> data) {
@@ -89,12 +93,16 @@ public class WaterService {
         Water water = waterRepo.getWaterByNameAndCompanyName(request.companyName(), request.name()).orElseThrow();
         water.setCompany(company);
         water.setName(request.nameNew());
-        water.setDescription(request.description());
+        if (request.description() != null && !request.description().isEmpty()) {
+            water.setDescription(request.description());
+        }
+
         waterRepo.save(water);
     }
 
     public Boolean addWaterDateRequest(CreateWaterDataRequest request) {
-        Water water = waterRepo.getWaterByNameAndCompanyName(request.companyName(), request.waterMeterName()).orElseThrow();
+        Water water =
+                waterRepo.getWaterByNameAndCompanyName(request.companyName(), request.waterMeterName()).orElseThrow();
         WaterData waterData = new WaterData();
         waterData.setWater(water);
         waterData.setValue(request.value());
@@ -104,13 +112,16 @@ public class WaterService {
     }
 
     public WaterReportResponse getReport(WaterReportRequest request) {
-        List<WaterData> report=waterDataRepo.getAllWaterDataReport(request.companyName(), request.name()).orElse(null);
+        List<WaterData> report =
+                waterDataRepo.getAllWaterDataReport(request.companyName(), request.name()).orElse(null);
         if (report == null) return null;
         return new WaterReportResponse(report.stream().map(WaterData::toDTO).toList());
     }
 
     public Boolean deleteData(final DeleteWaterDataRequest request) {
-        WaterData foundDataForDelete=waterDataRepo.getAllWaterDataForDelete(request.companyName(), request.name(),request.value()).orElseThrow();
+        WaterData foundDataForDelete =
+                waterDataRepo.getAllWaterDataForDelete(request.companyName(), request.name(), request.value())
+                        .orElseThrow();
         waterDataRepo.delete(foundDataForDelete);
         return true;
     }
