@@ -5,6 +5,7 @@ import org.lci.volts.server.persistence.gas.GasData;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
@@ -14,6 +15,8 @@ public interface GasDataRepository extends JpaRepository<GasData, Long> {
     Optional<List<GasData>> getAllGasDataForCompany(String companyName);
     @Query("SELECT u FROM GasData u WHERE u.gas.company.name= ?1 AND u.ts> ?2 AND u.ts< ?3 ORDER BY u.ts ASC ")
     Optional<List<GasData>> getAllGasForCompanyForData(final String companyName, final Date start, final Date end);
-    @Query("SELECT u FROM GasData u WHERE u.gas.company.name= ?1 AND u.gas.name= ?2 ORDER BY u.ts ASC ")
+    @Query("SELECT u FROM GasData u WHERE u.gas.company.name= ?1 AND u.gas.name= ?2 ORDER BY u.ts DESC ")
     Optional<List<GasData>> getGasReport(String companyName, String gasMeterName);
+    @Query("SELECT u FROM GasData u WHERE u.gas.company.name= ?1 AND u.gas.name= ?2 AND u.value=?3 ORDER BY u.ts ASC ")
+    Optional<GasData> getData(String companyName, String meterName, BigDecimal gasDataValue);
 }

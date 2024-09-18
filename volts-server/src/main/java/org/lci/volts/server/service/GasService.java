@@ -6,6 +6,7 @@ import org.lci.volts.server.model.dto.gas.GasDataDTO;
 import org.lci.volts.server.model.dto.gas.GasFullDTO;
 import org.lci.volts.server.model.request.gas.CreateGasDataRequest;
 import org.lci.volts.server.model.request.gas.CreateGasRequest;
+import org.lci.volts.server.model.request.gas.DeleteGasRequest;
 import org.lci.volts.server.model.request.gas.GasReportRequest;
 import org.lci.volts.server.model.responce.gas.AllGasForCompanyResponse;
 import org.lci.volts.server.model.responce.gas.GasReportResponse;
@@ -124,5 +125,12 @@ public class GasService {
         List<GasData> foundGasReport=gasDataRepo.getGasReport(request.companyName(),request.name()).orElse(null);
         if(foundGasReport==null){return null;}
         return new GasReportResponse(foundGasReport.stream().map(GasData::toDTO).toList());
+    }
+
+    public boolean deleteData(final DeleteGasRequest request) {
+        GasData foundDelete=gasDataRepo.getData(request.companyName(),request.name(),request.value()).orElse(null);
+        if(foundDelete==null){return false;}
+        gasDataRepo.delete(foundDelete);
+        return true;
     }
 }
