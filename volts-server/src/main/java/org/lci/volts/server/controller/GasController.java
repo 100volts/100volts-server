@@ -6,6 +6,7 @@ import org.lci.volts.server.model.dto.gas.GasFullDTO;
 import org.lci.volts.server.model.request.gas.*;
 import org.lci.volts.server.model.request.water.WaterReportRequest;
 import org.lci.volts.server.model.responce.gas.AllGasForCompanyResponse;
+import org.lci.volts.server.model.responce.gas.DeleteGasResponse;
 import org.lci.volts.server.model.responce.gas.GasReportResponse;
 import org.lci.volts.server.model.responce.water.WaterReportResponse;
 import org.lci.volts.server.service.GasService;
@@ -30,6 +31,10 @@ public class GasController {
     @PutMapping("/data")
     public ResponseEntity<Boolean> puGasData(@RequestBody CreateGasDataRequest request){
         return ResponseEntity.ok(gasService.addGasDateRequest(request));
+    }
+    @DeleteMapping("/data")
+    public ResponseEntity<DeleteGasResponse> deleteGasData(@RequestBody DeleteGasRequest request){
+        return ResponseEntity.ok(new DeleteGasResponse(gasService.deleteData(request)));
     }
     @PostMapping("/report")
     public ResponseEntity<GasReportResponse> gasReport(@RequestBody GasReportRequest request){
