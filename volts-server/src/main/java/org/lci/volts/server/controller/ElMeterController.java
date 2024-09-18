@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.lci.volts.server.model.dto.electricity.DailyElMeterEnergyDTO;
 import org.lci.volts.server.model.dto.electricity.ElMeterDTO;
 import org.lci.volts.server.model.dto.electricity.ElMeterDataDTO;
+import org.lci.volts.server.model.dto.electricity.PutElectricMeterRequest;
 import org.lci.volts.server.model.request.electric.ElMeterCreationRequest;
 import org.lci.volts.server.model.request.electric.GetAddressListElMeterRequest;
 import org.lci.volts.server.model.request.electric.GetElMeterNameRequest;
@@ -30,6 +31,10 @@ import java.util.List;
 public class ElMeterController {
     private final ElMeterService elMeterService;
 
+    @PutMapping
+    public ResponseEntity<PutElectricMeterResponse> createUpdateElectricMeter(@RequestBody PutElectricMeterRequest request){
+        return ResponseEntity.ok(elMeterService.createUpdateElectricMeter(request));
+    }
     @PostMapping("/data")
     public ResponseEntity<ElMeterReadResponse> insertData(
             @RequestBody ElMeterDataDTO request
