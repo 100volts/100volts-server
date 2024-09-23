@@ -1,7 +1,9 @@
 package org.lci.volts.server.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.lci.volts.server.model.request.electric.settings.ElMeterSettingsForCompanyRequest;
 import org.lci.volts.server.model.request.electric.settings.ElectricMeterSettingRequest;
+import org.lci.volts.server.model.responce.electric.settings.ElMeterSettingsForCompanyResponse;
 import org.lci.volts.server.model.responce.electric.settings.ElectricMeterSettingResponse;
 import org.lci.volts.server.service.ElMeterService;
 import org.springframework.http.ResponseEntity;
@@ -19,5 +21,10 @@ public class ElectricMeterRemoteController {
     @PostMapping("/settings/controller")
     public ResponseEntity<ElectricMeterSettingResponse> readSetting(@RequestBody ElectricMeterSettingRequest request){
         return ResponseEntity.ok(elMeterService.getSettings(request));
+    }
+
+    @PostMapping("/settings")
+    public ResponseEntity<ElMeterSettingsForCompanyResponse> allSettingsForElMeters(@RequestBody ElMeterSettingsForCompanyRequest request){
+        return ResponseEntity.ok(elMeterService.getSettingsForAllMeters(request));
     }
 }
