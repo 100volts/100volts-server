@@ -23,4 +23,6 @@ public class ElectricMeter {
     private String name;
     @Column(name = "el_meter_address")
     private int address;
+    @Column(name="read_time_gap")
+    private int readTimeGap;
 }

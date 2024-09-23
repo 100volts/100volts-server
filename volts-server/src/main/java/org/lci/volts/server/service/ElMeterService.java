@@ -6,12 +6,14 @@ import org.lci.volts.server.model.record.ElMeterAvrFifteenMinuteLoad;
 import org.lci.volts.server.model.request.electric.GetElMeterNameRequest;
 import org.lci.volts.server.model.request.electric.data.GetElmeterReportRequest;
 import org.lci.volts.server.model.request.electric.monthly.SetElMeterMonthlyRequest;
+import org.lci.volts.server.model.request.electric.settings.ElectricMeterSettingRequest;
 import org.lci.volts.server.model.responce.electric.*;
 import org.lci.volts.server.model.responce.electric.data.ElMeterReadResponse;
 import org.lci.volts.server.model.responce.electric.data.GetElMeterAndDataResponse;
 import org.lci.volts.server.model.responce.electric.data.GetElMeterResponse;
 import org.lci.volts.server.model.responce.electric.data.GetElectricMeterDailyTotPowerResponse;
 import org.lci.volts.server.model.responce.electric.monthly.SetElMeterMonthlyResponse;
+import org.lci.volts.server.model.responce.electric.settings.ElectricMeterSettingResponse;
 import org.lci.volts.server.persistence.Company;
 import org.lci.volts.server.persistence.electric.ElectricMeter;
 import org.lci.volts.server.persistence.electric.ElectricMeterData;
@@ -256,5 +258,10 @@ public class ElMeterService {
         newMeter.setAddress(request.address());
         newMeter.setCompany(company);
         electricMeterRepository.save(newMeter);
+    }
+
+    public ElectricMeterSettingResponse getSettings(ElectricMeterSettingRequest request) {
+        ElectricMeter foundMeter=electricMeterRepository.getReferenceById(request.id());
+        return new ElectricMeterSettingResponse(foundMeter.getAddress(), foundMeter.getReadTimeGap());
     }
 }
