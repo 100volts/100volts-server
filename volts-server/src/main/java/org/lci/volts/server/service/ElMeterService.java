@@ -272,8 +272,12 @@ public class ElMeterService {
         Set<ElectricMeter> allMetersForCompany = electricMeterRepository.findAllElMetersByCompanyName(request.companyName()).orElse(Set.of());
         List<ElMeterSettings> foundSettings = new ArrayList<>();
         allMetersForCompany.forEach(meter -> {
-            ElectricMeterData data = dataRepository.findAllElMetersWitDatalastRead(meter.getAddress(), request.companyName()).orElseThrow();
-            foundSettings.add(new ElMeterSettings(meter.getAddress(), data.getDate().toString(), meter.getReadTimeGap()));
+            ElectricMeterData data = dataRepository.findAllElMetersWitDatalastRead(meter.getAddress(), request.companyName()).orElse(null);
+            if (data == null) {
+                foundSettings.add(new ElMeterSettings(meter.getAddress(), meter.getName(), LocalDateTime.now().toString(), meter.getReadTimeGap()));
+            } else {
+                foundSettings.add(new ElMeterSettings(meter.getAddress(), meter.getName(), data.getDate().toString(), meter.getReadTimeGap()));
+            }
         });
         return new ElMeterSettingsForCompanyResponse(foundSettings);
     }
