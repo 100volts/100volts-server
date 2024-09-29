@@ -2,16 +2,21 @@ package org.lci.volts.server.service;
 
 import lombok.RequiredArgsConstructor;
 import org.lci.volts.server.model.dto.electricity.*;
+import org.lci.volts.server.model.dto.settings.ElMeterSettings;
 import org.lci.volts.server.model.record.ElMeterAvrFifteenMinuteLoad;
 import org.lci.volts.server.model.request.electric.GetElMeterNameRequest;
 import org.lci.volts.server.model.request.electric.data.GetElmeterReportRequest;
 import org.lci.volts.server.model.request.electric.monthly.SetElMeterMonthlyRequest;
+import org.lci.volts.server.model.request.electric.settings.ElMeterSettingsForCompanyRequest;
+import org.lci.volts.server.model.request.electric.settings.ElectricMeterSettingRequest;
 import org.lci.volts.server.model.responce.electric.*;
 import org.lci.volts.server.model.responce.electric.data.ElMeterReadResponse;
 import org.lci.volts.server.model.responce.electric.data.GetElMeterAndDataResponse;
 import org.lci.volts.server.model.responce.electric.data.GetElMeterResponse;
 import org.lci.volts.server.model.responce.electric.data.GetElectricMeterDailyTotPowerResponse;
 import org.lci.volts.server.model.responce.electric.monthly.SetElMeterMonthlyResponse;
+import org.lci.volts.server.model.responce.electric.settings.ElMeterSettingsForCompanyResponse;
+import org.lci.volts.server.model.responce.electric.settings.ElectricMeterSettingResponse;
 import org.lci.volts.server.persistence.Company;
 import org.lci.volts.server.persistence.electric.ElectricMeter;
 import org.lci.volts.server.persistence.electric.ElectricMeterData;
@@ -251,10 +256,29 @@ public class ElMeterService {
 
     private void createNewMeter(PutElectricMeterRequest request) {
         ElectricMeter newMeter = new ElectricMeter();
-        Company company=companyService.getCompanyFromName(request.companyName());
+        Company company = companyService.getCompanyFromName(request.companyName());
         newMeter.setName(request.meterName());
         newMeter.setAddress(request.address());
         newMeter.setCompany(company);
         electricMeterRepository.save(newMeter);
+    }
+
+    public ElectricMeterSettingResponse getSettings(ElectricMeterSettingRequest request) {
+        ElectricMeter foundMeter = electricMeterRepository.getReferenceById(request.id());
+        return new ElectricMeterSettingResponse(foundMeter.getAddress(), foundMeter.getReadTimeGap());
+    }
+
+    public ElMeterSettingsForCompanyResponse getSettingsForAllMeters(final ElMeterSettingsForCompanyRequest request) {
+        Set<ElectricMeter> allMetersForCompany = electricMeterRepository.findAllElMetersByCompanyName(request.companyName()).orElse(Set.of());
+        List<ElMeterSettings> foundSettings = new ArrayList<>();
+        allMetersForCompany.forEach(meter -> {
+            ElectricMeterData data = dataRepository.findAllElMetersWitDatalastRead(meter.getAddress(), request.companyName()).orElse(null);
+            if (data == null) {
+                foundSettings.add(new ElMeterSettings(meter.getAddress(), meter.getName(), LocalDateTime.now().toString(), meter.getReadTimeGap()));
+            } else {
+                foundSettings.add(new ElMeterSettings(meter.getAddress(), meter.getName(), data.getDate().toString(), meter.getReadTimeGap()));
+            }
+        });
+        return new ElMeterSettingsForCompanyResponse(foundSettings);
     }
 }
