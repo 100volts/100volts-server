@@ -1,7 +1,6 @@
 package org.lci.volts.server.service;
 
 import lombok.RequiredArgsConstructor;
-import org.lci.volts.server.model.dto.electricity.DailyElMeterEnergyDTO;
 import org.lci.volts.server.model.dto.gas.DailyGasMeterEnergyDTO;
 import org.lci.volts.server.model.dto.gas.GasDTO;
 import org.lci.volts.server.model.dto.gas.GasDataDTO;
@@ -13,12 +12,11 @@ import org.lci.volts.server.model.request.gas.GasReportRequest;
 import org.lci.volts.server.model.responce.gas.AllGasForCompanyResponse;
 import org.lci.volts.server.model.responce.gas.GasReportResponse;
 import org.lci.volts.server.persistence.Company;
-import org.lci.volts.server.persistence.electric.ElectricMeterData;
 import org.lci.volts.server.persistence.gas.Gas;
 import org.lci.volts.server.persistence.gas.GasData;
 import org.lci.volts.server.repository.CompanyRepository;
-import org.lci.volts.server.repository.GasDataRepository;
-import org.lci.volts.server.repository.GasRepository;
+import org.lci.volts.server.repository.gas.GasDataRepository;
+import org.lci.volts.server.repository.gas.GasRepository;
 import org.springframework.data.convert.ReadingConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -177,5 +175,10 @@ public class GasService {
             }
         }
         return sevenDayEnergy;
+    }
+
+    public List<DailyGasMeterEnergyDTO> getSixMonthData(String s, String s1) {
+
+        return
     }
 }

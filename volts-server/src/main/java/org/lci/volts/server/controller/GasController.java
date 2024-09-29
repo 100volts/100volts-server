@@ -38,6 +38,10 @@ public class GasController {
     public ResponseEntity<GetSevenDayDataResponse> getGasSevenData(@RequestBody GetSevenDayDataRequest request){
         return ResponseEntity.ok(new GetSevenDayDataResponse(gasService.getSevenDayEnergy(request.gasMeterName(),request.companyName())));
     }
+    @PostMapping("/data/seven")
+    public ResponseEntity<GetSevenDayDataResponse> getGasSixMonthData(@RequestBody GetSevenDayDataRequest request){
+        return ResponseEntity.ok(new GetSevenDayDataResponse(gasService.getSixMonthData(request.gasMeterName(),request.companyName())));
+    }
     @DeleteMapping("/data")
     public ResponseEntity<DeleteGasResponse> deleteGasData(@RequestBody DeleteGasRequest request){
         return ResponseEntity.ok(new DeleteGasResponse(gasService.deleteData(request)));

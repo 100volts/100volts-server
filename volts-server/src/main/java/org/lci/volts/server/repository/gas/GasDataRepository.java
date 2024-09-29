@@ -1,6 +1,5 @@
-package org.lci.volts.server.repository;
+package org.lci.volts.server.repository.gas;
 
-import org.lci.volts.server.persistence.gas.Gas;
 import org.lci.volts.server.persistence.gas.GasData;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
