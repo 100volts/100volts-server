@@ -41,8 +41,8 @@ public class GasService {
         List<GasData>allGasData= gasDataRepo.getAllGasDataForCompany(companyName).orElse(null);
         if (allGasData == null) return null;
         List<GasDTO> gas = allGas.stream().map(g -> {
-            List<GasDataDTO> data = gasDataToDataDTOList(allGasData.stream().filter(waterData -> waterData.getGas().equals(g)).limit(2).toList());
-            GasDataDTO waterDataDTO = data.isEmpty() ? null : data.get(0);
+            List<GasDataDTO> data = gasDataToDataDTOList(allGasData.stream().filter(waterData -> waterData.getGas().equals(g)).limit(10).toList());
+            List<GasDataDTO> waterDataDTO = data.isEmpty() ? null : data;
             return new GasDTO(g.getName(), g.getDescription(), g.getTs().toString(), getMetValue(allGasData, g), waterDataDTO);
         }).toList();
         List<String> waterMeterNames=allGas.stream().map(Gas::getName).toList();
@@ -65,7 +65,10 @@ public class GasService {
         List<BigDecimal> values = watterData.stream().filter(waterData -> waterData.getGas().equals(waterMeter)).limit(2).map(GasData::getValue).toList();
         if (values.isEmpty()) return BigDecimal.ZERO;
         BigDecimal value = values.get(0);
-        return values.size()<2?value:value.subtract(values.get(1)).round(new MathContext(2));
+        if(values.size()<2)
+                return value;
+        var kokreturn=value.subtract(values.get(1)).round(new MathContext(2));
+        return kokreturn;
     }
 
     private List<GasDataDTO> gasDataToDataDTOList(List<GasData> data){
