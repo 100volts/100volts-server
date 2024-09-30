@@ -38,7 +38,7 @@ public class GasController {
     public ResponseEntity<GetSevenDayDataResponse> getGasSevenData(@RequestBody GetSevenDayDataRequest request){
         return ResponseEntity.ok(new GetSevenDayDataResponse(gasService.getSevenDayEnergy(request.gasMeterName(),request.companyName())));
     }
-    @PostMapping("/data/seven")
+    @PostMapping("/data/six/monts")
     public ResponseEntity<GetSevenDayDataResponse> getGasSixMonthData(@RequestBody GetSevenDayDataRequest request){
         return ResponseEntity.ok(new GetSevenDayDataResponse(gasService.getSixMonthData(request.gasMeterName(),request.companyName())));
     }

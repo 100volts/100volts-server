@@ -179,6 +179,6 @@ public class GasService {
 
     public List<DailyGasMeterEnergyDTO> getSixMonthData(String s, String s1) {
 
-        return
+        return null;
     }
 }
