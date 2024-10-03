@@ -1,10 +1,7 @@
 package org.lci.volts.server.service;
 
 import lombok.RequiredArgsConstructor;
-import org.lci.volts.server.model.dto.gas.DailyGasMeterEnergyDTO;
-import org.lci.volts.server.model.dto.gas.GasDTO;
-import org.lci.volts.server.model.dto.gas.GasDataDTO;
-import org.lci.volts.server.model.dto.gas.GasFullDTO;
+import org.lci.volts.server.model.dto.gas.*;
 import org.lci.volts.server.model.request.gas.CreateGasDataRequest;
 import org.lci.volts.server.model.request.gas.CreateGasRequest;
 import org.lci.volts.server.model.request.gas.DeleteGasRequest;
@@ -14,8 +11,10 @@ import org.lci.volts.server.model.responce.gas.GasReportResponse;
 import org.lci.volts.server.persistence.Company;
 import org.lci.volts.server.persistence.gas.Gas;
 import org.lci.volts.server.persistence.gas.GasData;
+import org.lci.volts.server.persistence.gas.GasMonthlyData;
 import org.lci.volts.server.repository.CompanyRepository;
 import org.lci.volts.server.repository.gas.GasDataRepository;
+import org.lci.volts.server.repository.gas.GasMonthlyDataRepository;
 import org.lci.volts.server.repository.gas.GasRepository;
 import org.springframework.data.convert.ReadingConverter;
 import org.springframework.stereotype.Service;
@@ -30,6 +29,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -39,6 +39,7 @@ public class GasService {
     private final GasRepository gasRepo;
     private final GasDataRepository gasDataRepo;
     private final CompanyRepository companyRepo;
+    private final GasMonthlyDataRepository monthlyRepo;
 
     public AllGasForCompanyResponse getAllGasForCompany(String companyName) {
         List<Gas> allGas = gasRepo.getAllGasForCompany(companyName).orElseThrow();
@@ -177,8 +178,8 @@ public class GasService {
         return sevenDayEnergy;
     }
 
-    public List<DailyGasMeterEnergyDTO> getSixMonthData(String s, String s1) {
-
-        return null;
+    public List<MonthlyGasMeterEnergyDTO> getSixMonthData(String meterName, String companyName) {
+        List<GasMonthlyData> foundData=monthlyRepo.findAll6Back(meterName,companyName).orElseThrow();
+        return foundData.stream().map(GasMonthlyData::toDTO).toList();
     }
 }

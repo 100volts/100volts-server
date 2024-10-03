@@ -4,12 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.lci.volts.server.model.dto.gas.DailyGasMeterEnergyDTO;
 import org.lci.volts.server.model.dto.gas.GasDTO;
 import org.lci.volts.server.model.dto.gas.GasFullDTO;
+import org.lci.volts.server.model.dto.gas.MonthlyGasMeterEnergyDTO;
 import org.lci.volts.server.model.request.gas.*;
 import org.lci.volts.server.model.request.water.WaterReportRequest;
-import org.lci.volts.server.model.responce.gas.AllGasForCompanyResponse;
-import org.lci.volts.server.model.responce.gas.DeleteGasResponse;
-import org.lci.volts.server.model.responce.gas.GasReportResponse;
-import org.lci.volts.server.model.responce.gas.GetSevenDayDataResponse;
+import org.lci.volts.server.model.responce.gas.*;
 import org.lci.volts.server.model.responce.water.WaterReportResponse;
 import org.lci.volts.server.service.GasService;
 import org.springframework.http.ResponseEntity;
@@ -39,8 +37,8 @@ public class GasController {
         return ResponseEntity.ok(new GetSevenDayDataResponse(gasService.getSevenDayEnergy(request.gasMeterName(),request.companyName())));
     }
     @PostMapping("/data/six/monts")
-    public ResponseEntity<GetSevenDayDataResponse> getGasSixMonthData(@RequestBody GetSevenDayDataRequest request){
-        return ResponseEntity.ok(new GetSevenDayDataResponse(gasService.getSixMonthData(request.gasMeterName(),request.companyName())));
+    public ResponseEntity<GetGasSixMonthDataResponse> getGasSixMonthData(@RequestBody GetSevenDayDataRequest request){
+        return ResponseEntity.ok(new GetGasSixMonthDataResponse(gasService.getSixMonthData(request.gasMeterName(),request.companyName())));
     }
     @DeleteMapping("/data")
     public ResponseEntity<DeleteGasResponse> deleteGasData(@RequestBody DeleteGasRequest request){

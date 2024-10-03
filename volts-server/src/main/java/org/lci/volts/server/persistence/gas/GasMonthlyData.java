@@ -1,12 +1,10 @@
 package org.lci.volts.server.persistence.gas;
 
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.lci.volts.server.model.dto.gas.MonthlyGasMeterEnergyDTO;
 
 import java.math.BigDecimal;
 import java.sql.Date;
@@ -22,6 +20,13 @@ public class GasMonthlyData {
     private BigDecimal valueMeter;
     @Column(name = "value_tariff")
     private BigDecimal valueTariff;
+    @ManyToOne
+    @JoinColumn(name = "gas_meter")
+    private Gas gas;
     @Column(name = "ts")
     private Date ts;
+
+    public final MonthlyGasMeterEnergyDTO toDTO(){
+        return new MonthlyGasMeterEnergyDTO(ts.toLocalDate().getMonth(), valueMeter,valueTariff);
+    }
 }
