@@ -132,13 +132,14 @@ public class ElMeterService {
     }
 
     public List<DailyElMeterEnergyDTO> getSevenDayEnergy(final int address, final String companyName) {
+        //TODO tests dis
         LocalDateTime startOfYesterday = LocalDate.now().minusDays(1).atStartOfDay();
         LocalDateTime endOfYesterday = LocalDate.now().minusDays(1).atTime(LocalTime.MAX);
         ElectricMeterData foundMeterWithDataLast = dataRepository.findAllElMetersWitDatalastRead(address, companyName).orElseThrow();
         ElectricMeterData yesterdays = getFirstYesterdays(address, companyName, startOfYesterday, endOfYesterday);
         List<DailyElMeterEnergyDTO> sevenDayEnergy = new ArrayList<>();
 
-        sevenDayEnergy.add(new DailyElMeterEnergyDTO(foundMeterWithDataLast.getDate().toString(), foundMeterWithDataLast.getDate().getDayOfWeek(), BigDecimal.valueOf(foundMeterWithDataLast.getTotalActiveEnergyImportTariff1().longValue() - yesterdays.getTotalActiveEnergyImportTariff1().longValue())));
+        //sevenDayEnergy.add(new DailyElMeterEnergyDTO(foundMeterWithDataLast.getDate().toString(), foundMeterWithDataLast.getDate().getDayOfWeek(), BigDecimal.valueOf(foundMeterWithDataLast.getTotalActiveEnergyImportTariff1().longValue() - yesterdays.getTotalActiveEnergyImportTariff1().longValue())));
         ElectricMeterData temp = yesterdays;
 
 
