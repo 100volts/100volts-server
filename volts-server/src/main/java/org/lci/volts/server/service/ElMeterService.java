@@ -141,6 +141,7 @@ public class ElMeterService {
         sevenDayEnergy.add(new DailyElMeterEnergyDTO(foundMeterWithDataLast.getDate().toString(), foundMeterWithDataLast.getDate().getDayOfWeek(), BigDecimal.valueOf(foundMeterWithDataLast.getTotalActiveEnergyImportTariff1().longValue() - yesterdays.getTotalActiveEnergyImportTariff1().longValue())));
         ElectricMeterData temp = yesterdays;
 
+
         ElectricMeterData tempy;
 
         for (int i = 0; i < 7; i++) {
