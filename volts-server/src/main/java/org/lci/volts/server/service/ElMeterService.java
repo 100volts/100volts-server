@@ -145,7 +145,7 @@ public class ElMeterService {
 
         ElectricMeterData tempy;
 
-        for (int i = 0; i < 7; i++) {
+        for (int i = 1; i < 7; i++) {
             startOfYesterday = startOfYesterday.minusDays(1);
             endOfYesterday = endOfYesterday.minusDays(1);
             tempy = dataRepository.getYesterdays(address, companyName, startOfYesterday, endOfYesterday).orElse(null);

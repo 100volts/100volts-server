@@ -2,6 +2,7 @@ package org.lci.volts.server.service;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.lci.volts.server.model.dto.electricity.DailyElMeterEnergyDTO;
 import org.lci.volts.server.model.dto.electricity.ElMeterDTO;
 import org.lci.volts.server.model.dto.electricity.ElMeterDataDTO;
 import org.lci.volts.server.model.responce.electric.GetAddListAndElMeterNamesResponse;
@@ -268,5 +269,16 @@ class ElMeterServiceTest {
         given(elMeterRpository.createElmeter(mockElMeterDTO)).willThrow(new RuntimeException());
         //when then
         assertThrows(RuntimeException.class,()->elMeterService.createElMeter(mockElMeterDTO));
+    }
+
+    @Test
+    void getElectricMeterWithLastDataTest(){
+        //given
+        final int address=1;
+        final String companyName="COMPANY_NAME";
+        //when
+        List<DailyElMeterEnergyDTO> result=elMeterService.getSevenDayEnergy(address, companyName);
+        assertNotNull(result);
+        //then
     }
 }
