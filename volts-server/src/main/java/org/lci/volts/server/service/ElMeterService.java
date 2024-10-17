@@ -151,6 +151,10 @@ public class ElMeterService {
                 sevenDayEnergy.add(new DailyElMeterEnergyDTO(temp.getDate().toString(),
                         temp.getDate().getDayOfWeek(), BigDecimal.valueOf(temp.getTotalActiveEnergyImportTariff1().longValue() - tempy.getTotalActiveEnergyImportTariff1().longValue())));
                 temp = tempy;
+            } else{
+                sevenDayEnergy.add(new DailyElMeterEnergyDTO(temp.getDate().toString(),
+                        temp.getDate().getDayOfWeek(), BigDecimal.ZERO));
+                //temp = tempy;
             }
         }
         return sevenDayEnergy;
