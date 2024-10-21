@@ -146,20 +146,22 @@ public class ElMeterService {
 
         ElectricMeterData tempy;
 
-        for (int i = 1; i < 7; i++) {
+            do{
             startOfYesterday = startOfYesterday.minusDays(1);
             endOfYesterday = endOfYesterday.minusDays(1);
             tempy = dataRepository.getYesterdays(address, companyName, startOfYesterday, endOfYesterday).orElse(null);
             if (tempy != null&&tempy.getDate()!=null) {
-                sevenDayEnergy.add(new DailyElMeterEnergyDTO(temp.getDate().toString(),
-                        tempy.getDate().getDayOfWeek(), BigDecimal.valueOf(temp.getTotalActiveEnergyImportTariff1().longValue() - tempy.getTotalActiveEnergyImportTariff1().longValue())));
-                temp = tempy;
+                if(temp.getTotalActiveEnergyImportTariff1().longValue() - tempy.getTotalActiveEnergyImportTariff1().longValue()>0){
+                    sevenDayEnergy.add(new DailyElMeterEnergyDTO(temp.getDate().toString(),
+                            tempy.getDate().getDayOfWeek(), BigDecimal.valueOf(temp.getTotalActiveEnergyImportTariff1().longValue() - tempy.getTotalActiveEnergyImportTariff1().longValue())));
+                    temp = tempy;
+                }
             } else{
                 //sevenDayEnergy.add(new DailyElMeterEnergyDTO(temp.getDate().toString(),
-                  //      temp.getDate().getDayOfWeek(), BigDecimal.ZERO));
+                 //       temp.getDate().getDayOfWeek(), BigDecimal.ZERO));
                 //temp = tempy;
             }
-        }
+        }while (sevenDayEnergy.size()<7);
         return sevenDayEnergy;
     }
 
