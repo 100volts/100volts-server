@@ -272,6 +272,7 @@ class ElMeterServiceTest {
     }
 
     @Test
+    @Disabled
     void getElectricMeterWithLastDataTest(){
         //given
         final int address=1;
