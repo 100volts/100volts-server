@@ -152,11 +152,11 @@ public class ElMeterService {
             tempy = dataRepository.getYesterdays(address, companyName, startOfYesterday, endOfYesterday).orElse(null);
             if (tempy != null&&tempy.getDate()!=null) {
                 sevenDayEnergy.add(new DailyElMeterEnergyDTO(temp.getDate().toString(),
-                        temp.getDate().getDayOfWeek(), BigDecimal.valueOf(temp.getTotalActiveEnergyImportTariff1().longValue() - tempy.getTotalActiveEnergyImportTariff1().longValue())));
+                        tempy.getDate().getDayOfWeek(), BigDecimal.valueOf(temp.getTotalActiveEnergyImportTariff1().longValue() - tempy.getTotalActiveEnergyImportTariff1().longValue())));
                 temp = tempy;
             } else{
-                sevenDayEnergy.add(new DailyElMeterEnergyDTO(temp.getDate().toString(),
-                        temp.getDate().getDayOfWeek(), BigDecimal.ZERO));
+                //sevenDayEnergy.add(new DailyElMeterEnergyDTO(temp.getDate().toString(),
+                  //      temp.getDate().getDayOfWeek(), BigDecimal.ZERO));
                 //temp = tempy;
             }
         }
