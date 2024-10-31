@@ -143,9 +143,9 @@ public class ElMeterService {
         }
         ElectricMeterData temp = yesterdays;
 
-
+        int failSafe=0;
         ElectricMeterData tempy;
-
+        boolean flag=true;
             do{
             startOfYesterday = startOfYesterday.minusDays(1);
             endOfYesterday = endOfYesterday.minusDays(1);
@@ -161,7 +161,11 @@ public class ElMeterService {
                  //       temp.getDate().getDayOfWeek(), BigDecimal.ZERO));
                 //temp = tempy;
             }
-        }while (sevenDayEnergy.size()<7);
+                failSafe++;
+                if(failSafe>50||sevenDayEnergy.size()>7){
+                    flag=false;
+                }
+        }while (flag);
         return sevenDayEnergy;
     }
 
