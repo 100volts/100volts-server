@@ -70,10 +70,15 @@ public class ElMeterService {
         return new GetElMeterResponse(foundMeter.getName(), foundMeter.getAddress());
     }
 
-    public GetAddressListElMeterResponse getAddressListElectricMeterForCompany(final String companyId) {
-        Set<ElectricMeter> allMetersFound = electricMeterRepository.findAllElMetersByCompanyName(companyId).orElseThrow();
+    public GetAddressListElMeterResponse getAddressListElectricMeterForCompany(final String companyName) {
+
+        Set<ElectricMeter> allMetersFound = electricMeterRepository.findAllElMetersByCompanyName(companyName).orElseThrow();
         int[] allMeterAddresses = allMetersFound.stream().mapToInt(ElectricMeter::getAddress).toArray();
-        return new GetAddressListElMeterResponse(allMeterAddresses);
+        final List<GetElMeterAndDataResponse> allElMeterDataForCompany=new ArrayList<>();
+        for(int i=0;i<allMeterAddresses.length;i++) {
+            allElMeterDataForCompany.add(getElectricMeterWithLastData(allMeterAddresses[i],companyName));
+        }
+        return new GetAddressListElMeterResponse(allElMeterDataForCompany);
     }
 
     public GetAddListAndElMeterNamesResponse getAddressListWithNamesElectricMeterForCompany(final String companyId) {
