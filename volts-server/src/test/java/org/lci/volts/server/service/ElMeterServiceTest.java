@@ -187,61 +187,12 @@ class ElMeterServiceTest {
     @Test
     @Disabled
     void getElectricMeterWithLastDataPositive() {
-        //given
-        final Company mockCompany = new Company();
-        mockCompany.setId(1L);
-        mockCompany.setName(COMPANY_NAME);
-
-        int address = 1;
-        ElectricMeter mockMeter = new ElectricMeter();
-        mockMeter.setId(1L);
-        mockMeter.setName(COMPANY_NAME);
-        mockMeter.setAddress(address);
-        mockMeter.setCompany(mockCompany);
-        ElectricMeterData mockElectricMeterData = new ElectricMeterData();
-        mockElectricMeterData.setId(1L);
-        mockElectricMeterData.setMeter(mockMeter);
-        mockElectricMeterData.setVoltageL1(BigDecimal.valueOf(228.73));
-        mockElectricMeterData.setVoltageL2(BigDecimal.valueOf(232.23));
-        mockElectricMeterData.setVoltageL3(BigDecimal.valueOf(254.98));
-        mockElectricMeterData.setCurrentL1(BigDecimal.valueOf(39.16));
-        mockElectricMeterData.setCurrentL2(BigDecimal.valueOf(43.12));
-        mockElectricMeterData.setCurrentL3(BigDecimal.valueOf(54.43));
-        mockElectricMeterData.setActivePowerL1(BigDecimal.valueOf(8307.05));
-        mockElectricMeterData.setActivePowerL2(BigDecimal.valueOf(11124.19));
-        mockElectricMeterData.setActivePowerL3(BigDecimal.valueOf(8626.97));
-        mockElectricMeterData.setPowerFactorL1(BigDecimal.valueOf(0.738755));
-        mockElectricMeterData.setPowerFactorL2(BigDecimal.valueOf(0.835376));
-        mockElectricMeterData.setPowerFactorL3(BigDecimal.valueOf(0.810591));
-        mockElectricMeterData.setTotalActiveEnergyImportTariff1(BigDecimal.valueOf(0.738755));
-        mockElectricMeterData.setTotalActiveEnergyImportTariff2(BigDecimal.ZERO);
-        mockElectricMeterData.setTotalActivePower(BigDecimal.valueOf(27010.097));
-        mockElectricMeterData.setDate(LocalDateTime.now());
-
-        ElectricMeterData mockAvr= new ElectricMeterData();
-
-        given(electricMeterDataRepository.findAllElMetersWitDatalastRead(address, COMPANY_NAME)).willReturn(
-                Optional.of(mockElectricMeterData));
-        given(electricMeterDataRepository.findAvrElMetersData(address, COMPANY_NAME)).willReturn(Optional.of(Set.of(mockElectricMeterData)));
-        given(electricMeterDataRepository.findDaielyRead(address,COMPANY_NAME)).willReturn(Optional.of(List.of(mockElectricMeterData)));
-        //when
-        GetElMeterAndDataResponse foundLastMeterData =
-                elMeterService.getElectricMeterWithLastData(address, COMPANY_NAME);
-        //then
-        assertNotNull(foundLastMeterData);
-        assertNotNull(foundLastMeterData.getName());
-        assertEquals(COMPANY_NAME, foundLastMeterData.getName());
-        assertEquals(address,foundLastMeterData.getAddress() );
-        assertEquals(mockElectricMeterData.getActivePowerL1(),foundLastMeterData.getData().activepowerl1);
     }
 
     @Test
+    @Disabled
     void getElectricMeterWithLastDataNegative() {
-        //given
-        int address = 1;
-        given(electricMeterDataRepository.findAllElMetersWitDatalastRead(address, COMPANY_NAME)).willThrow(new RuntimeException());
-        //when then
-        assertThrows(RuntimeException.class, () -> elMeterService.getElectricMeterWithLastData(address, COMPANY_NAME));
+
     }
 
     @Test

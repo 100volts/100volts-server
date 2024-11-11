@@ -80,11 +80,6 @@ public class ElMeterController {
         return ResponseEntity.ok(elMeterService.setMonthlyReadData(request));
     }
 
-    @PostMapping("/data/last")
-    public ResponseEntity<GetElMeterAndDataResponse> getElectricMeterWithLastData(@RequestBody GetElMeterLastDataRequest request) {
-        return ResponseEntity.ok(elMeterService.getElectricMeterWithLastData(request.getAddress(),request.getCompanyName()));
-    }
-
     @PostMapping("/data/daily")
     public ResponseEntity<GetElectricMeterDailyTotPowerResponse> getElectricMeterDailyData(@RequestBody GetElectricMeterDailyTotPowerRequest request) {
         return ResponseEntity.ok(elMeterService.getDailyTotPowerTariff(request.getAddress(),request.getCompanyName()));
