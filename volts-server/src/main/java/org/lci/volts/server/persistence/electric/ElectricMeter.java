@@ -12,9 +12,7 @@ import org.lci.volts.server.persistence.Company;
 @Table(name = "electric_meter")
 public class ElectricMeter {
     @Id
-    @SequenceGenerator(name = "electric_meter_SEQ",
-            sequenceName = "electric_meter_SEQ",
-            allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne
     @JoinColumn(name = "company")
