@@ -49,6 +49,8 @@ dependencies {
     //mongo
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-mongodb', version: '3.2.4'
     testImplementation group: 'de.flapdoodle.embed', name: 'de.flapdoodle.embed.mongo', version: '3.2.4'
+    // in memory database
+    testImplementation group: 'com.h2database', name: 'h2', version: '2.3.232'
     //lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
