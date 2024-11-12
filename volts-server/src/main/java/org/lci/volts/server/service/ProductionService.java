@@ -150,7 +150,7 @@ public class ProductionService {
         //0 delete data
         //ProductionGroup foundPodGroup=groupRepository.findByName(request.prodName(), request.companyName());
         //1 delete group
-        List<ProductionData> foundProdData = productionDataRepository.findAllProductionByCompanyName(foundProduction.getId()).orElseThrow();
+        List<ProductionData> foundProdData = productionDataRepository.findAllProductionByCompanyName(request.prodName(),request.companyName()).orElseThrow();
         productionDataRepository.deleteAll(foundProdData);
         //2 delete production
         productionRepository.delete(foundProduction);
@@ -165,8 +165,7 @@ public class ProductionService {
     }
 
     public ProductionDataReportResponse getProductionDataReport(final ProductionDataReportRequest request) {
-        Production foundProduction = productionRepository.findAllProductionByCompanyName(request.productionName(), request.companyName()).orElseThrow();
-        List<ProductionData> foundProdData = productionDataRepository.findAllProductionByCompanyName(foundProduction.getId()).orElseThrow();
+        List<ProductionData> foundProdData = productionDataRepository.findAllProductionByCompanyName(request.productionName(),request.companyName()).orElseThrow();
 
         return new ProductionDataReportResponse(foundProdData.stream().map(ProductionData::toDTO).toList());
     }
