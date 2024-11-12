@@ -105,7 +105,7 @@ public class ProductionService {
     public AddProductionDataResponse addProductionData(AddProductionDataRequest request) {
         ProductionData newDate = new ProductionData();
         var prod = productionRepository.findAllProductionByCompanyName(request.productionName(), request.companyName()).orElseThrow();
-        newDate.setProduction(prod.getId());
+        newDate.setProduction(prod);
         newDate.setValue(request.value());
         newDate.setTs(request.date());
         productionDataRepository.save(newDate);
@@ -113,12 +113,14 @@ public class ProductionService {
     }
 
     public GetProductionAllResponse getProdAllByName(GetProductionAllRequest request) {
-        List<Production> foundProd=productionRepository.findAllProductionsAllCompanyName(request.companyName()).orElseThrow();
-        List<ProductionDTO> foundProdDTO=foundProd.stream().map(Production::toDto).toList();
+        final String companyName = request.companyName();
+
+        List<Production> foundProd=productionRepository.findAllProductionsAllCompanyName(companyName).orElseThrow();
         List<ProductionPackageDTO> productionPackageDTOS=new ArrayList<>();
-        for (Production production:foundProd) {
-            List<ProductionData> last6Months=productionDataRepository.getLast6Months(production.getId(),LocalDate.now()).orElseThrow();
-            Map<Month, List<ProductionData>> groupedByMonth=last6Months.stream().collect(Collectors.groupingBy(pd->pd.getTs().toLocalDate().getMonth()));
+        List<ProductionData> last6Months=productionDataRepository.getLast6MonthsForCompany(companyName,LocalDate.now()).orElseThrow();
+        foundProd.forEach(production -> {
+            Map<Month, List<ProductionData>> groupedByMonth=last6Months.stream().filter(data->data.getProduction().getName().equals(production.getName()))
+                    .collect(Collectors.groupingBy(pd->pd.getTs().toLocalDate().getMonth()));
             Set<Month> prodMonts=groupedByMonth.keySet();
             List<MonthValueDTO> groupedByMonthDTO=new ArrayList<>();
             for(Month month:prodMonts){
@@ -132,17 +134,15 @@ public class ProductionService {
             groupedByMonthDTO.sort(Comparator.comparing(MonthValueDTO::month));
 
             //get last 10 from db
-            List<ProductionData> foundData=productionDataRepository.getlast10Data(production.getId()).orElseThrow();
-
+            List<ProductionData> foundData=last6Months
+                    .stream()
+                    .filter(data->data.getProduction().getName().equals(production.getName()))
+                    .sorted(Comparator.comparing(ProductionData::getTs).reversed())
+                    .limit(10).toList();
             productionPackageDTOS.add(production.toPackageDTO(groupedByMonthDTO,foundData.stream().map(ProductionData::toDTO).toList()));
-        }
+
+        });
         return new GetProductionAllResponse(productionPackageDTOS);
-    }
-
-    public List<ProductionDataDTO> getWeeklyProduction(){
-
-
-        return null;
     }
 
     public DeleteProductionResponse deleteProductionByName(final DeleteProductionRequest request) {
@@ -150,7 +150,7 @@ public class ProductionService {
         //0 delete data
         //ProductionGroup foundPodGroup=groupRepository.findByName(request.prodName(), request.companyName());
         //1 delete group
-        List<ProductionData> foundProdData = productionDataRepository.findAllProductionByCompanyName(foundProduction.getId()).orElseThrow();
+        List<ProductionData> foundProdData = productionDataRepository.findAllProductionByCompanyName(request.prodName(),request.companyName()).orElseThrow();
         productionDataRepository.deleteAll(foundProdData);
         //2 delete production
         productionRepository.delete(foundProduction);
@@ -158,14 +158,14 @@ public class ProductionService {
     }
 
     public GetProductionDataPackResponse getProductionDataPack(final GetProductionDataPackRequest request) {
-        Production foundProduction = productionRepository.findAllProductionByCompanyName(request.productionName(), request.companyName()).orElseThrow();
-        List<ProductionData> foundData=productionDataRepository.getlast10Data(foundProduction.getId()).orElseThrow();
+        final String companyName = request.companyName();
+        Production foundProduction = productionRepository.findAllProductionByCompanyName(request.productionName(), companyName ).orElseThrow();
+        List<ProductionData> foundData=productionDataRepository.getlast10Data(foundProduction.getName(),companyName).orElseThrow();
         return new GetProductionDataPackResponse(foundData.stream().map(ProductionData::toDTO).toList());
     }
 
     public ProductionDataReportResponse getProductionDataReport(final ProductionDataReportRequest request) {
-        Production foundProduction = productionRepository.findAllProductionByCompanyName(request.productionName(), request.companyName()).orElseThrow();
-        List<ProductionData> foundProdData = productionDataRepository.findAllProductionByCompanyName(foundProduction.getId()).orElseThrow();
+        List<ProductionData> foundProdData = productionDataRepository.findAllProductionByCompanyName(request.productionName(),request.companyName()).orElseThrow();
 
         return new ProductionDataReportResponse(foundProdData.stream().map(ProductionData::toDTO).toList());
     }

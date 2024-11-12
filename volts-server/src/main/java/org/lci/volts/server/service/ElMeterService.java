@@ -1,6 +1,5 @@
 package org.lci.volts.server.service;
 
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.lci.volts.server.model.dto.electricity.*;
 import org.lci.volts.server.model.dto.settings.ElMeterSettings;
@@ -32,7 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
-import java.sql.Date;
 import java.time.*;
 import java.util.*;
 
@@ -211,13 +209,11 @@ public class ElMeterService {
         //TODO tests dis
         LocalDateTime startOfYesterday = LocalDate.now().minusDays(1).atStartOfDay();
         LocalDateTime endOfYesterday = LocalDate.now().minusDays(1).atTime(LocalTime.MAX);
-        //ElectricMeterData foundMeterWithDataLast = dataRepository.findAllElMetersWitDatalastRead(address, companyName).orElse(null);
         ElectricMeterData foundMeterWithDataLast = meterData.get(0);
         if(Objects.isNull(foundMeterWithDataLast)){
             return null;
         }
-//        ElectricMeterData yesterdays = getFirstYesterdays(address, companyName, startOfYesterday, endOfYesterday);
-        ElectricMeterData yesterdays = getFirstYesterdaysnoDbCall(meterData,address, companyName, startOfYesterday, endOfYesterday);
+        ElectricMeterData yesterdays = getfirstyesterdaysnodbcall(meterData,address, companyName, startOfYesterday, endOfYesterday);
         List<DailyElMeterEnergyDTO> sevenDayEnergy = new ArrayList<>();
         if(foundMeterWithDataLast!=null){
             sevenDayEnergy.add(new DailyElMeterEnergyDTO(foundMeterWithDataLast.getDate().toString(), foundMeterWithDataLast.getDate().getDayOfWeek(), BigDecimal.valueOf(foundMeterWithDataLast.getTotalActiveEnergyImportTariff1().longValue() - yesterdays.getTotalActiveEnergyImportTariff1().longValue())));
@@ -230,7 +226,6 @@ public class ElMeterService {
         do{
             startOfYesterday = startOfYesterday.minusDays(1);
             endOfYesterday = endOfYesterday.minusDays(1);
-            //tempy = dataRepository.getYesterdays(address, companyName, startOfYesterday, endOfYesterday).orElse(null);
             final LocalDateTime finalEndOfYesterday = endOfYesterday;
             final LocalDateTime finalStartOfYesterday = startOfYesterday;
             tempy =meterData.stream().filter(dataYesterday-> dataYesterday.getDate().isAfter(
@@ -242,10 +237,6 @@ public class ElMeterService {
                             tempy.getDate().getDayOfWeek(), BigDecimal.valueOf(temp.getTotalActiveEnergyImportTariff1().longValue() - tempy.getTotalActiveEnergyImportTariff1().longValue())));
                     temp = tempy;
                 }
-            } else{
-                //sevenDayEnergy.add(new DailyElMeterEnergyDTO(temp.getDate().toString(),
-                //       temp.getDate().getDayOfWeek(), BigDecimal.ZERO));
-                //temp = tempy;
             }
             failSafe++;
             if(failSafe>50||sevenDayEnergy.size()>7){
@@ -283,10 +274,6 @@ public class ElMeterService {
                             tempy.getDate().getDayOfWeek(), BigDecimal.valueOf(temp.getTotalActiveEnergyImportTariff1().longValue() - tempy.getTotalActiveEnergyImportTariff1().longValue())));
                     temp = tempy;
                 }
-            } else{
-                //sevenDayEnergy.add(new DailyElMeterEnergyDTO(temp.getDate().toString(),
-                 //       temp.getDate().getDayOfWeek(), BigDecimal.ZERO));
-                //temp = tempy;
             }
                 failSafe++;
                 if(failSafe>50||sevenDayEnergy.size()>7){
@@ -296,7 +283,7 @@ public class ElMeterService {
         return sevenDayEnergy;
     }
 
-    private ElectricMeterData getFirstYesterdaysnoDbCall(final List<ElectricMeterData> meterData,int address, String companyName, LocalDateTime startOfYesterday, LocalDateTime endOfYesterday) {
+    private ElectricMeterData getfirstyesterdaysnodbcall(final List<ElectricMeterData> meterData, int address, String companyName, LocalDateTime startOfYesterday, LocalDateTime endOfYesterday) {
         ElectricMeterData yesterdays;
         do{
             final LocalDateTime finalStartOfYesterday = startOfYesterday;
@@ -304,7 +291,6 @@ public class ElMeterService {
             yesterdays =meterData.stream().filter(dataYesterday-> dataYesterday.getDate().isAfter(
                     finalStartOfYesterday)&&dataYesterday.getDate().isBefore(finalEndOfYesterday)).findFirst().orElse(null);
 
-            //yesterdays=dataRepository.getYesterdays(address, companyName, startOfYesterday, endOfYesterday).orElse(null);
             startOfYesterday = startOfYesterday.minusDays(1);
             endOfYesterday = endOfYesterday.minusDays(1);
         }while (yesterdays==null);
