@@ -334,6 +334,7 @@ public class ElMeterService {
         for (BigDecimal v : voltage) {
             volltsSum = volltsSum.add(v);
         }
+        final var dataSize=BigDecimal.valueOf(Long.valueOf(data.size()));
         for (BigDecimal c : current) {
             currentSum = currentSum.add(c);
         }
@@ -343,7 +344,7 @@ public class ElMeterService {
         for (BigDecimal p : power) {
             powerSum = powerSum.add(p);
         }
-        return new ElMeterAvrFifteenMinuteLoad(volltsSum.divide(BigDecimal.valueOf(15), mc), currentSum.divide(BigDecimal.valueOf(15), mc), powerSum.divide(BigDecimal.valueOf(15), mc), powerFactorSum.divide(BigDecimal.valueOf(15), mc));
+        return new ElMeterAvrFifteenMinuteLoad(volltsSum.divide(dataSize, mc), currentSum.divide(dataSize, mc), powerSum.divide(dataSize, mc), powerFactorSum.divide(dataSize, mc));
     }
 
     public GetElMeterReportResponse getElmeterReportResponseResponseEntity(final GetElmeterReportRequest request) {
