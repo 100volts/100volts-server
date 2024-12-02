@@ -127,7 +127,7 @@ public class ProductionService {
         final String companyName = request.companyName();
 
         List<Production> foundProd = productionRepository.findAllProductionsAllCompanyName(companyName).orElseThrow();
-        var allElectricMeterDataForProductions = getAllMeterForACompanyAndTherirLastsReadData(companyName, foundProd);
+        final List<ProdWhitStartEndData> allElectricMeterDataForProductions = getAllMeterForACompanyAndTherirLastsReadData(companyName, foundProd);
         List<ProductionPackageDTO> productionPackageDTOS = new ArrayList<>();
         List<ProductionData> last6Months =
                 productionDataRepository.getLast6MonthsForCompany(companyName, LocalDate.now()).orElseThrow();
@@ -145,7 +145,8 @@ public class ProductionService {
                 }
                 groupedByMonthDTO.add(new MonthValueDTO(month, sumValue));
             }
-            groupedByMonthDTO.sort(Comparator.comparing(MonthValueDTO::month));
+            //creation of el-meter data for prod
+            List<ElMeterWithDataDTO> elData = sortOutProductionElectricMeterData(production, groupedByMonthDTO, allElectricMeterDataForProductions);
 
             //get last 10 from db
             List<ProductionData> foundData = last6Months
@@ -153,12 +154,36 @@ public class ProductionService {
                     .filter(data -> data.getProduction().getName().equals(production.getName()))
                     .sorted(Comparator.comparing(ProductionData::getTs).reversed())
                     .limit(10).toList();
+
             productionPackageDTOS.add(
                     production.toPackageDTO(groupedByMonthDTO, foundData.stream().map(ProductionData::toDTO).toList(),
-                            null));
+                            elData));
 
         });
         return new GetProductionAllResponse(productionPackageDTOS);
+    }
+
+    private static List<ElMeterWithDataDTO> sortOutProductionElectricMeterData(Production production, List<MonthValueDTO> groupedByMonthDTO, List<ProdWhitStartEndData> allElectricMeterDataForProductions) {
+        List<ElMeterWithDataDTO> elData=null;
+        groupedByMonthDTO.sort(Comparator.comparing(MonthValueDTO::month));
+        final List<ProdWhitStartEndData> filteredMeterProdData= allElectricMeterDataForProductions.stream()
+                .filter(prodEl->prodEl.prod.equals(production)).toList();
+        if(filteredMeterProdData.size()>1){
+            elData=null;
+        }else if(filteredMeterProdData.size()==0){
+            elData=null;
+        }else {
+            elData=List.of(
+                    new ElMeterWithDataDTO(
+                            filteredMeterProdData.get(0).startEndData.get(0).meter.getAddress(),
+                            filteredMeterProdData.get(0).startEndData.get(0).meter.getName(),
+                            String.valueOf(filteredMeterProdData.get(0).startEndData.get(0).end.getTotalActivePower().subtract(filteredMeterProdData.get(0).startEndData.get(0).start.getTotalActivePower())),
+                            //String.valueOf(filteredMeterProdData.get(0).startEndData.get(0).end.getTotalActivePower().subtract(filteredMeterProdData.get(0).startEndData.get(0).start.getTotalActivePower())),
+                            "0",
+                            filteredMeterProdData.get(0).startEndData.get(0).end.getDate().toString(),
+                            filteredMeterProdData.get(0).startEndData.get(0).end.getDate().getMonth().name()));
+        }
+        return elData;
     }
 
 
@@ -204,10 +229,18 @@ public class ProductionService {
     }
 
     private record ElDataStartEnd(ElectricMeter meter, ElectricMeterData start, ElectricMeterData end){}
-    private record ProdWhitStartEndData( Production prod, ElectricMeter meter, ElDataStartEnd startEndData){}
+    private record ProdWhitStartEndData( Production prod, List<ElDataStartEnd> startEndData){}
 
-    private List<ProdWhitStartEndData> mapElectricDataToProd(final List<ElDataStartEnd> datastarEnd, final List<Production> prods) {
+    private List<ProdWhitStartEndData> mapElectricDataToProd(final List<ElDataStartEnd> foundDataStartEnd, final List<Production> prods) {
         List<ProdWhitStartEndData> sortedMeterData = new ArrayList<>();
+
+        prods.forEach(prod -> {
+            List<ElDataStartEnd> dataStartEnd=new ArrayList<>();
+            prod.getElectricMeters().forEach(electricMeter -> {
+                dataStartEnd.add(foundDataStartEnd.stream().filter(fData-> fData.meter.equals(electricMeter)).findFirst().orElse(null));
+            });
+            sortedMeterData.add(new ProdWhitStartEndData(prod,dataStartEnd));
+        });
 
         return sortedMeterData;
     }
