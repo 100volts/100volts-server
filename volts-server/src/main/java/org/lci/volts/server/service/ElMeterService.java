@@ -73,11 +73,8 @@ public class ElMeterService {
     public GetAddressListElMeterResponse getAddressListElectricMeterForCompany(final String companyName) {
         //1 Get the company
         Set<ElectricMeter> allMetersFound = electricMeterRepository.findAllElMetersByCompanyName(companyName).orElseThrow();
-        //2 Get all data for the company
-        final int limitDataCall =allMetersFound.size()*24;
 
-
-        //3 Create the response
+        //2 Create the response
         final List<GetElMeterAndDataResponse> allElMeterDataForCompany=new ArrayList<>();
         allMetersFound.forEach(meterData->{
             allElMeterDataForCompany.add(buildResponse(meterData,companyName));

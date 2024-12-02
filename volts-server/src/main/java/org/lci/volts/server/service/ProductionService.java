@@ -1,6 +1,7 @@
 package org.lci.volts.server.service;
 
 import lombok.RequiredArgsConstructor;
+import org.lci.volts.server.model.dto.electricity.ElMeterWithDataDTO;
 import org.lci.volts.server.model.dto.electricity.MonthValueDTO;
 import org.lci.volts.server.model.dto.production.ProductionDTO;
 import org.lci.volts.server.model.dto.production.ProductionDataDTO;
@@ -9,10 +10,12 @@ import org.lci.volts.server.model.request.production.*;
 import org.lci.volts.server.model.responce.production.*;
 import org.lci.volts.server.persistence.Company;
 import org.lci.volts.server.persistence.electric.ElectricMeter;
+import org.lci.volts.server.persistence.electric.ElectricMeterData;
 import org.lci.volts.server.persistence.production.Production;
 import org.lci.volts.server.persistence.production.ProductionData;
 import org.lci.volts.server.persistence.production.ProductionGroup;
 import org.lci.volts.server.persistence.production.Units;
+import org.lci.volts.server.repository.electric.ElectricMeterDataRepository;
 import org.lci.volts.server.repository.electric.ElectricMeterRepository;
 import org.lci.volts.server.repository.production.ProductionDataRepository;
 import org.lci.volts.server.repository.production.ProductionGroupRepository;
@@ -24,9 +27,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.Month;
+import java.time.*;
 import java.sql.Date;
-import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -40,28 +42,34 @@ public class ProductionService {
     private final UnitsRepository unitsRepository;
     private final CompanyService companyService;
     private final ProductionGroupRepository groupRepository;
-    private final  ElectricMeterRepository electricMeterRepository;
+    private final ElectricMeterRepository electricMeterRepository;
+    private final ElectricMeterDataRepository electricMeterDataRepository;
 
     private final ElMeterService elMeterService;
 
     public GetProductionResponse getProdByName(final GetProductionRequest request) {
-        Production foundProduction = productionRepository.findAllProductionByCompanyName(request.name(), request.companyName()).orElseThrow();
+        Production foundProduction =
+                productionRepository.findAllProductionByCompanyName(request.name(), request.companyName())
+                        .orElseThrow();
 
-        List<ProductionData> last6Months=productionDataRepository.getLast6Months(foundProduction.getId(),LocalDate.now()).orElseThrow();
-        Map<Month, List<ProductionData>> groupedByMonth=last6Months.stream().collect(Collectors.groupingBy(pd->pd.getTs().toLocalDate().getMonth()));
-        Set<Month> prodMonts=groupedByMonth.keySet();
-        List<MonthValueDTO> groupedByMonthDTO=new ArrayList<>();
-        for(Month month:prodMonts){
-            BigDecimal sumValue=BigDecimal.ZERO;
-            List<ProductionData> productionDataList=groupedByMonth.get(month);
-            for (ProductionData productionData:productionDataList) {
-                sumValue=sumValue.add(productionData.getValue());
+        List<ProductionData> last6Months =
+                productionDataRepository.getLast6Months(foundProduction.getId(), LocalDate.now()).orElseThrow();
+        Map<Month, List<ProductionData>> groupedByMonth =
+                last6Months.stream().collect(Collectors.groupingBy(pd -> pd.getTs().toLocalDate().getMonth()));
+        Set<Month> prodMonts = groupedByMonth.keySet();
+        List<MonthValueDTO> groupedByMonthDTO = new ArrayList<>();
+        for (Month month : prodMonts) {
+            BigDecimal sumValue = BigDecimal.ZERO;
+            List<ProductionData> productionDataList = groupedByMonth.get(month);
+            for (ProductionData productionData : productionDataList) {
+                sumValue = sumValue.add(productionData.getValue());
             }
-            groupedByMonthDTO.add(new MonthValueDTO(month,sumValue));
+            groupedByMonthDTO.add(new MonthValueDTO(month, sumValue));
         }
         groupedByMonthDTO.sort(Comparator.comparing(MonthValueDTO::month));
         return new GetProductionResponse(
-                productionRepository.findAllProductionByCompanyName(request.name(), request.companyName()).orElseThrow().toDto(),groupedByMonthDTO);
+                productionRepository.findAllProductionByCompanyName(request.name(), request.companyName()).orElseThrow()
+                        .toDto(), groupedByMonthDTO);
     }
 
     public CreteProductionResponse createProdByName(CreteProductionRequest request) {
@@ -71,9 +79,11 @@ public class ProductionService {
         Company foundCompany = companyService.getCompanyFromName(request.companyName());
         newProduction.setCompany(foundCompany);
         newProduction.setUnits(getUnitsFromName(request.unitsName()));
-        Set<ElectricMeter>electric=elMeterService.findAllElectricMeters(request.elMeterNames(),request.companyName());
+        Set<ElectricMeter> electric =
+                elMeterService.findAllElectricMeters(request.elMeterNames(), request.companyName());
         newProduction.setElectricMeters(electric);
-        newProduction.setGroups(List.of(cascadeGroupFromName(request.groupName(), request.companyName(), foundCompany)));
+        newProduction.setGroups(
+                List.of(cascadeGroupFromName(request.groupName(), request.companyName(), foundCompany)));
         newProduction.setTs(Date.valueOf(LocalDate.now()));
 
         productionRepository.save(newProduction);
@@ -92,7 +102,7 @@ public class ProductionService {
         ProductionGroup foundProdGroup = getGroupFromName(name, companyName);
         if (foundProdGroup == null) {
 
-            ProductionGroup newPrdGroup=new ProductionGroup();
+            ProductionGroup newPrdGroup = new ProductionGroup();
             newPrdGroup.setName(name);
             newPrdGroup.setCompany(company);
             newPrdGroup.setDescription("des");
@@ -104,7 +114,8 @@ public class ProductionService {
 
     public AddProductionDataResponse addProductionData(AddProductionDataRequest request) {
         ProductionData newDate = new ProductionData();
-        var prod = productionRepository.findAllProductionByCompanyName(request.productionName(), request.companyName()).orElseThrow();
+        var prod = productionRepository.findAllProductionByCompanyName(request.productionName(), request.companyName())
+                .orElseThrow();
         newDate.setProduction(prod);
         newDate.setValue(request.value());
         newDate.setTs(request.date());
@@ -112,45 +123,105 @@ public class ProductionService {
         return new AddProductionDataResponse(true);
     }
 
-    public GetProductionAllResponse getProdAllByName(GetProductionAllRequest request) {
+    public GetProductionAllResponse getProdAllByName(final GetProductionAllRequest request) {
         final String companyName = request.companyName();
 
-        List<Production> foundProd=productionRepository.findAllProductionsAllCompanyName(companyName).orElseThrow();
-        List<ProductionPackageDTO> productionPackageDTOS=new ArrayList<>();
-        List<ProductionData> last6Months=productionDataRepository.getLast6MonthsForCompany(companyName,LocalDate.now()).orElseThrow();
+        List<Production> foundProd = productionRepository.findAllProductionsAllCompanyName(companyName).orElseThrow();
+        var allElectricMeterDataForProductions = getAllMeterForACompanyAndTherirLastsReadData(companyName, foundProd);
+        List<ProductionPackageDTO> productionPackageDTOS = new ArrayList<>();
+        List<ProductionData> last6Months =
+                productionDataRepository.getLast6MonthsForCompany(companyName, LocalDate.now()).orElseThrow();
         foundProd.forEach(production -> {
-            Map<Month, List<ProductionData>> groupedByMonth=last6Months.stream().filter(data->data.getProduction().getName().equals(production.getName()))
-                    .collect(Collectors.groupingBy(pd->pd.getTs().toLocalDate().getMonth()));
-            Set<Month> prodMonts=groupedByMonth.keySet();
-            List<MonthValueDTO> groupedByMonthDTO=new ArrayList<>();
-            for(Month month:prodMonts){
-                BigDecimal sumValue=BigDecimal.ZERO;
-                List<ProductionData> productionDataList=groupedByMonth.get(month);
-                for (ProductionData productionData:productionDataList) {
-                    sumValue=sumValue.add(productionData.getValue().setScale(0, RoundingMode.HALF_UP));
+            Map<Month, List<ProductionData>> groupedByMonth =
+                    last6Months.stream().filter(data -> data.getProduction().getName().equals(production.getName()))
+                            .collect(Collectors.groupingBy(pd -> pd.getTs().toLocalDate().getMonth()));
+            Set<Month> prodMonts = groupedByMonth.keySet();
+            List<MonthValueDTO> groupedByMonthDTO = new ArrayList<>();
+            for (Month month : prodMonts) {
+                BigDecimal sumValue = BigDecimal.ZERO;
+                List<ProductionData> productionDataList = groupedByMonth.get(month);
+                for (ProductionData productionData : productionDataList) {
+                    sumValue = sumValue.add(productionData.getValue().setScale(0, RoundingMode.HALF_UP));
                 }
-                groupedByMonthDTO.add(new MonthValueDTO(month,sumValue));
+                groupedByMonthDTO.add(new MonthValueDTO(month, sumValue));
             }
             groupedByMonthDTO.sort(Comparator.comparing(MonthValueDTO::month));
 
             //get last 10 from db
-            List<ProductionData> foundData=last6Months
+            List<ProductionData> foundData = last6Months
                     .stream()
-                    .filter(data->data.getProduction().getName().equals(production.getName()))
+                    .filter(data -> data.getProduction().getName().equals(production.getName()))
                     .sorted(Comparator.comparing(ProductionData::getTs).reversed())
                     .limit(10).toList();
-            productionPackageDTOS.add(production.toPackageDTO(groupedByMonthDTO,foundData.stream().map(ProductionData::toDTO).toList()));
+            productionPackageDTOS.add(
+                    production.toPackageDTO(groupedByMonthDTO, foundData.stream().map(ProductionData::toDTO).toList(),
+                            null));
 
         });
         return new GetProductionAllResponse(productionPackageDTOS);
     }
 
+
+    public List<ProdWhitStartEndData> getAllMeterForACompanyAndTherirLastsReadData(final String companyName, final List<Production> prods) {
+        ArrayList<ElectricMeter> electricMeters = new ArrayList<>();
+        prods.forEach(prod -> {
+            prod.getElectricMeters().forEach(electricMeter -> {
+                if (!electricMeters.contains(electricMeter)) {
+                    electricMeters.add(electricMeter);
+                }
+            });
+        });
+
+        final LocalDateTime endOfMothLimit = LocalDate.now().minusMonths(1).minusDays(1).atTime(LocalTime.MAX);
+
+        List<ElDataStartEnd> foundDataStartEnd = new ArrayList<>();
+        electricMeters.forEach(meter -> {
+            final List<ElectricMeterData> meterData =
+                    electricMeterDataRepository.findDataunderOneMonth(meter.getAddress(), companyName, endOfMothLimit)
+                            .orElseThrow();//dataRepository.findDaielyRead(address,companyName).orElseThrow();
+            final ElectricMeterData lastReadData = meterData.get(0);
+            final Month monthOfLastRead = lastReadData.getDate().getMonth();
+            LocalDateTime targetDateTime = LocalDateTime.of(
+                    lastReadData.getDate().getYear(), // Year from the first date
+                    monthOfLastRead, // Month from the first date
+                    1, // Day set to 1
+                    0, 1 // Time set to 00:01
+            );
+            final ElectricMeterData readDataOfFirstOfMonth =
+                    meterData.stream()
+                            .filter(meterD -> meterD.getDate().getMonth().equals(monthOfLastRead))
+                            .min((d1, d2) -> {
+                                long diff1 = Duration.between(d1.getDate(), targetDateTime).abs().toMinutes();
+                                long diff2 = Duration.between(d2.getDate(), targetDateTime).abs().toMinutes();
+                                return Long.compare(diff1, diff2);
+                            })
+                            .orElse(null);
+            foundDataStartEnd.add(new ElDataStartEnd(meter,readDataOfFirstOfMonth,lastReadData));
+        });
+        //use dis to get data back one moth ago
+
+        return mapElectricDataToProd(foundDataStartEnd,prods);
+    }
+
+    private record ElDataStartEnd(ElectricMeter meter, ElectricMeterData start, ElectricMeterData end){}
+    private record ProdWhitStartEndData( Production prod, ElectricMeter meter, ElDataStartEnd startEndData){}
+
+    private List<ProdWhitStartEndData> mapElectricDataToProd(final List<ElDataStartEnd> datastarEnd, final List<Production> prods) {
+        List<ProdWhitStartEndData> sortedMeterData = new ArrayList<>();
+
+        return sortedMeterData;
+    }
+
     public DeleteProductionResponse deleteProductionByName(final DeleteProductionRequest request) {
-        Production foundProduction = productionRepository.findAllProductionByCompanyName(request.prodName(), request.companyName()).orElseThrow();
+        Production foundProduction =
+                productionRepository.findAllProductionByCompanyName(request.prodName(), request.companyName())
+                        .orElseThrow();
         //0 delete data
         //ProductionGroup foundPodGroup=groupRepository.findByName(request.prodName(), request.companyName());
         //1 delete group
-        List<ProductionData> foundProdData = productionDataRepository.findAllProductionByCompanyName(request.prodName(),request.companyName()).orElseThrow();
+        List<ProductionData> foundProdData =
+                productionDataRepository.findAllProductionByCompanyName(request.prodName(), request.companyName())
+                        .orElseThrow();
         productionDataRepository.deleteAll(foundProdData);
         //2 delete production
         productionRepository.delete(foundProduction);
@@ -159,35 +230,45 @@ public class ProductionService {
 
     public GetProductionDataPackResponse getProductionDataPack(final GetProductionDataPackRequest request) {
         final String companyName = request.companyName();
-        Production foundProduction = productionRepository.findAllProductionByCompanyName(request.productionName(), companyName ).orElseThrow();
-        List<ProductionData> foundData=productionDataRepository.getlast10Data(foundProduction.getName(),companyName).orElseThrow();
+        Production foundProduction =
+                productionRepository.findAllProductionByCompanyName(request.productionName(), companyName)
+                        .orElseThrow();
+        List<ProductionData> foundData =
+                productionDataRepository.getlast10Data(foundProduction.getName(), companyName).orElseThrow();
         return new GetProductionDataPackResponse(foundData.stream().map(ProductionData::toDTO).toList());
     }
 
     public ProductionDataReportResponse getProductionDataReport(final ProductionDataReportRequest request) {
-        List<ProductionData> foundProdData = productionDataRepository.findAllProductionByCompanyName(request.productionName(),request.companyName()).orElseThrow();
+        List<ProductionData> foundProdData =
+                productionDataRepository.findAllProductionByCompanyName(request.productionName(), request.companyName())
+                        .orElseThrow();
 
         return new ProductionDataReportResponse(foundProdData.stream().map(ProductionData::toDTO).toList());
     }
 
     public ProductionGroupResponse getProductionGroup(ProductionGroupRequest request) {
-        List<ProductionGroup> foundGroups=groupRepository.findAllByName(request.companyName()).orElseThrow();
-        Set<ElectricMeter> foundElectrics=electricMeterRepository.findAllElMetersByCompanyName(request.companyName()).orElseThrow();
-        List<String> response=new ArrayList<>();
+        List<ProductionGroup> foundGroups = groupRepository.findAllByName(request.companyName()).orElseThrow();
+        Set<ElectricMeter> foundElectrics =
+                electricMeterRepository.findAllElMetersByCompanyName(request.companyName()).orElseThrow();
+        List<String> response = new ArrayList<>();
         foundElectrics.forEach(electricMeter -> response.add(electricMeter.getName()));
-        return new ProductionGroupResponse(foundGroups.stream().map(ProductionGroup::getName).toList(),response);
+        return new ProductionGroupResponse(foundGroups.stream().map(ProductionGroup::getName).toList(), response);
     }
 
     public boolean deleteProductionDate(DeleteProductionDataRequest request) {
-        ProductionData foundData=productionDataRepository.getDataById(request.id());
+        ProductionData foundData = productionDataRepository.getDataById(request.id());
         productionDataRepository.delete(foundData);
         return true;
     }
+
     @Transactional
     public UpdateProductionResponse updateProd(UpdateProductionRequest request) {
         Company foundCompany = companyService.getCompanyFromName(request.companyName());
-        Production foundProduction = productionRepository.findAllProductionByCompanyName(request.prodName(), request.companyName()).orElseThrow();
-        Set<ElectricMeter>electric=elMeterService.findAllElectricMeters(request.elMeterNames(),request.companyName());
+        Production foundProduction =
+                productionRepository.findAllProductionByCompanyName(request.prodName(), request.companyName())
+                        .orElseThrow();
+        Set<ElectricMeter> electric =
+                elMeterService.findAllElectricMeters(request.elMeterNames(), request.companyName());
         //productionRepository.delete(foundProduction);
         foundProduction.setName(request.prodNameNew());
         foundProduction.setDescription(request.prodDescription());
