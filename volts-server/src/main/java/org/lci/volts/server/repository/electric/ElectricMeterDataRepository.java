@@ -18,6 +18,10 @@ public interface ElectricMeterDataRepository  extends JpaRepository<ElectricMete
     Optional<List<ElectricMeterData>> findAvrElMetersData(final int address, final String companyName);
     @Query("SELECT u from ElectricMeterData u where u.meter.address= ?1 AND u.meter.company.name= ?2 ORDER BY u.date desc LIMIT 24")
     Optional<List<ElectricMeterData>> findDaielyRead(final int address, final String companyName);
+    @Query("SELECT u from ElectricMeterData u where u.meter.address= ?1 AND u.meter.company.name= ?2 AND u.date> ?3 ORDER BY u.date desc")
+    Optional<List<ElectricMeterData>> findDataunderOneMonth(final int address, final String companyName, LocalDateTime limit);
     @Query(value = "SELECT e FROM ElectricMeterData e WHERE e.meter.address= ?1 AND e.meter.company.name= ?2 AND e.date BETWEEN ?3 AND ?4 ORDER BY e.date DESC LIMIT 1")
     Optional<ElectricMeterData> getYesterdays(int address, String companyName, LocalDateTime startOfYesterday, LocalDateTime endOfYesterday);
+    @Query("SELECT u from ElectricMeterData u where u.meter.company.name= ?1 ORDER BY u.date desc LIMIT ?2")
+    Optional<List<ElectricMeterData>> fiendAllElDataForACompany( final String companyName, final int limit);
 }

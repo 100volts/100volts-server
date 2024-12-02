@@ -3,6 +3,7 @@ package org.lci.volts.server.model.dto.production;
 import lombok.*;
 import org.lci.volts.server.model.dto.CompanyDTO;
 import org.lci.volts.server.model.dto.electricity.ElMeterDTO;
+import org.lci.volts.server.model.dto.electricity.ElMeterWithDataDTO;
 import org.lci.volts.server.model.dto.electricity.MonthValueDTO;
 
 import java.util.List;
@@ -22,4 +23,5 @@ public class ProductionPackageDTO {
     private List<ElMeterDTO> electricMeters;
     private List<MonthValueDTO> monthlyData;
     private List<ProductionDataDTO> last10;
+    private List<ElMeterWithDataDTO> elMeterWithData;
 }

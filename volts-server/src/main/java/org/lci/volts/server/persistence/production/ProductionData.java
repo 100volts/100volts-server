@@ -19,8 +19,9 @@ public class ProductionData {
     private Long id;
     @Column
     private BigDecimal value;
-    @Column
-    private long production;
+    @ManyToOne
+    @JoinColumn(name = "production")
+    private Production production;
     @Column
     private Date ts;
 
