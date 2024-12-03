@@ -5,7 +5,6 @@ import org.lci.volts.server.model.dto.electricity.*;
 import org.lci.volts.server.model.dto.settings.ElMeterSettings;
 import org.lci.volts.server.model.record.ElDataStartEnd;
 import org.lci.volts.server.model.record.ElMeterAvrFifteenMinuteLoad;
-import org.lci.volts.server.model.record.ProdWhitStartEndData;
 import org.lci.volts.server.model.request.electric.GetElMeterNameRequest;
 import org.lci.volts.server.model.request.electric.data.GetElmeterReportRequest;
 import org.lci.volts.server.model.request.electric.monthly.SetElMeterMonthlyRequest;
@@ -23,7 +22,6 @@ import org.lci.volts.server.persistence.Company;
 import org.lci.volts.server.persistence.electric.ElectricMeter;
 import org.lci.volts.server.persistence.electric.ElectricMeterData;
 import org.lci.volts.server.persistence.electric.ElectricMeterMonthlyData;
-import org.lci.volts.server.persistence.production.Production;
 import org.lci.volts.server.repository.electric.ElMeterRpository;
 import org.lci.volts.server.repository.electric.ElectricMeterDataRepository;
 import org.lci.volts.server.repository.electric.ElectricMeterMonthlyDataRepository;
@@ -93,10 +91,7 @@ public class ElMeterService {
         return new GetAddListAndElMeterNamesResponse(meterWithAddresses);
     }
 
-    public List<ElDataStartEnd> getMonthlyData( ArrayList<ElectricMeter> electricMeters,final String companyName) {
-
-        final LocalDateTime endOfMothLimit = LocalDate.now().minusMonths(1).minusDays(1).atTime(LocalTime.MAX);
-
+    public List<ElDataStartEnd> getMonthlyData(ArrayList<ElectricMeter> electricMeters, final String companyName, final LocalDateTime endOfMothLimit) {
         List<ElDataStartEnd> foundDataStartEnd = new ArrayList<>();
         electricMeters.forEach(meter -> {
             final List<ElectricMeterData> meterData =
