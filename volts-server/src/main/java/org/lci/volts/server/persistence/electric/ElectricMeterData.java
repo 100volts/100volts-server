@@ -44,7 +44,7 @@ public class ElectricMeterData {
     @Column(name = "power_factor_l3")
     private BigDecimal powerFactorL3;
     @Column(name = "total_active_power")
-    private BigDecimal totalActivePower;
+    private BigDecimal totalActivePower;//kWh
     @Column(name = "total_active_energy_import_tariff_1")
     private BigDecimal totalActiveEnergyImportTariff1;
     @Column(name = "total_active_energy_import_tariff_2")
