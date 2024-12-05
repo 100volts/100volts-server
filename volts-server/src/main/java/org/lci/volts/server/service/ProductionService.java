@@ -6,6 +6,8 @@ import org.lci.volts.server.model.dto.electricity.MonthValueDTO;
 import org.lci.volts.server.model.dto.production.ProductionDTO;
 import org.lci.volts.server.model.dto.production.ProductionDataDTO;
 import org.lci.volts.server.model.dto.production.ProductionPackageDTO;
+import org.lci.volts.server.model.record.ElDataStartEnd;
+import org.lci.volts.server.model.record.ProdWhitStartEndData;
 import org.lci.volts.server.model.request.production.*;
 import org.lci.volts.server.model.responce.production.*;
 import org.lci.volts.server.persistence.Company;
@@ -167,7 +169,7 @@ public class ProductionService {
         List<ElMeterWithDataDTO> elData=null;
         groupedByMonthDTO.sort(Comparator.comparing(MonthValueDTO::month));
         final List<ProdWhitStartEndData> filteredMeterProdData= allElectricMeterDataForProductions.stream()
-                .filter(prodEl->prodEl.prod.equals(production)).toList();
+                .filter(prodEl->prodEl.prod().equals(production)).toList();
         if(filteredMeterProdData.size()>1){
             elData=null;
         }else if(filteredMeterProdData.size()==0){
@@ -175,13 +177,13 @@ public class ProductionService {
         }else {
             elData=List.of(
                     new ElMeterWithDataDTO(
-                            filteredMeterProdData.get(0).startEndData.get(0).meter.getAddress(),
-                            filteredMeterProdData.get(0).startEndData.get(0).meter.getName(),
-                            String.valueOf(filteredMeterProdData.get(0).startEndData.get(0).end.getTotalActivePower().subtract(filteredMeterProdData.get(0).startEndData.get(0).start.getTotalActivePower())),
+                            filteredMeterProdData.get(0).startEndData().get(0).meter().getAddress(),
+                            filteredMeterProdData.get(0).startEndData().get(0).meter().getName(),
+                            String.valueOf(filteredMeterProdData.get(0).startEndData().get(0).end().getTotalActiveEnergyImportTariff1().subtract(filteredMeterProdData.get(0).startEndData().get(0).start().getTotalActiveEnergyImportTariff1())),
                             //String.valueOf(filteredMeterProdData.get(0).startEndData.get(0).end.getTotalActivePower().subtract(filteredMeterProdData.get(0).startEndData.get(0).start.getTotalActivePower())),
                             "0",
-                            filteredMeterProdData.get(0).startEndData.get(0).end.getDate().toString(),
-                            filteredMeterProdData.get(0).startEndData.get(0).end.getDate().getMonth().name()));
+                            filteredMeterProdData.get(0).startEndData().get(0).end().getDate().toString(),
+                            filteredMeterProdData.get(0).startEndData().get(0).end().getDate().getMonth().name()));
         }
         return elData;
     }
@@ -199,37 +201,11 @@ public class ProductionService {
 
         final LocalDateTime endOfMothLimit = LocalDate.now().minusMonths(1).minusDays(1).atTime(LocalTime.MAX);
 
-        List<ElDataStartEnd> foundDataStartEnd = new ArrayList<>();
-        electricMeters.forEach(meter -> {
-            final List<ElectricMeterData> meterData =
-                    electricMeterDataRepository.findDataunderOneMonth(meter.getAddress(), companyName, endOfMothLimit)
-                            .orElseThrow();//dataRepository.findDaielyRead(address,companyName).orElseThrow();
-            final ElectricMeterData lastReadData = meterData.get(0);
-            final Month monthOfLastRead = lastReadData.getDate().getMonth();
-            LocalDateTime targetDateTime = LocalDateTime.of(
-                    lastReadData.getDate().getYear(), // Year from the first date
-                    monthOfLastRead, // Month from the first date
-                    1, // Day set to 1
-                    0, 1 // Time set to 00:01
-            );
-            final ElectricMeterData readDataOfFirstOfMonth =
-                    meterData.stream()
-                            .filter(meterD -> meterD.getDate().getMonth().equals(monthOfLastRead))
-                            .min((d1, d2) -> {
-                                long diff1 = Duration.between(d1.getDate(), targetDateTime).abs().toMinutes();
-                                long diff2 = Duration.between(d2.getDate(), targetDateTime).abs().toMinutes();
-                                return Long.compare(diff1, diff2);
-                            })
-                            .orElse(null);
-            foundDataStartEnd.add(new ElDataStartEnd(meter,readDataOfFirstOfMonth,lastReadData));
-        });
+        List<ElDataStartEnd> foundDataStartEnd =elMeterService.getMonthlyData(electricMeters,companyName,endOfMothLimit);
         //use dis to get data back one moth ago
 
         return mapElectricDataToProd(foundDataStartEnd,prods);
     }
-
-    private record ElDataStartEnd(ElectricMeter meter, ElectricMeterData start, ElectricMeterData end){}
-    private record ProdWhitStartEndData( Production prod, List<ElDataStartEnd> startEndData){}
 
     private List<ProdWhitStartEndData> mapElectricDataToProd(final List<ElDataStartEnd> foundDataStartEnd, final List<Production> prods) {
         List<ProdWhitStartEndData> sortedMeterData = new ArrayList<>();
@@ -237,7 +213,7 @@ public class ProductionService {
         prods.forEach(prod -> {
             List<ElDataStartEnd> dataStartEnd=new ArrayList<>();
             prod.getElectricMeters().forEach(electricMeter -> {
-                dataStartEnd.add(foundDataStartEnd.stream().filter(fData-> fData.meter.equals(electricMeter)).findFirst().orElse(null));
+                dataStartEnd.add(foundDataStartEnd.stream().filter(fData-> fData.meter().equals(electricMeter)).findFirst().orElse(null));
             });
             sortedMeterData.add(new ProdWhitStartEndData(prod,dataStartEnd));
         });

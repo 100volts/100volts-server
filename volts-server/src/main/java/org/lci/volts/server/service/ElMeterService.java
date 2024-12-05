@@ -3,6 +3,7 @@ package org.lci.volts.server.service;
 import lombok.RequiredArgsConstructor;
 import org.lci.volts.server.model.dto.electricity.*;
 import org.lci.volts.server.model.dto.settings.ElMeterSettings;
+import org.lci.volts.server.model.record.ElDataStartEnd;
 import org.lci.volts.server.model.record.ElMeterAvrFifteenMinuteLoad;
 import org.lci.volts.server.model.request.electric.GetElMeterNameRequest;
 import org.lci.volts.server.model.request.electric.data.GetElmeterReportRequest;
@@ -31,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.math.RoundingMode;
 import java.time.*;
 import java.util.*;
 
@@ -89,6 +91,36 @@ public class ElMeterService {
         return new GetAddListAndElMeterNamesResponse(meterWithAddresses);
     }
 
+    public List<ElDataStartEnd> getMonthlyData(ArrayList<ElectricMeter> electricMeters, final String companyName, final LocalDateTime endOfMothLimit) {
+        List<ElDataStartEnd> foundDataStartEnd = new ArrayList<>();
+        electricMeters.forEach(meter -> {
+            final List<ElectricMeterData> meterData =
+                    dataRepository.findDataunderOneMonth(meter.getAddress(), companyName, endOfMothLimit)
+                            .orElseThrow();//dataRepository.findDaielyRead(address,companyName).orElseThrow();
+            final ElectricMeterData lastReadData = meterData.get(0);
+            final Month monthOfLastRead = lastReadData.getDate().getMonth();
+            LocalDateTime targetDateTime = LocalDateTime.of(
+                    lastReadData.getDate().getYear(), // Year from the first date
+                    monthOfLastRead, // Month from the first date
+                    1, // Day set to 1
+                    0, 1 // Time set to 00:01
+            );
+            final ElectricMeterData readDataOfFirstOfMonth =
+                    meterData.stream()
+                            .filter(meterD -> meterD.getDate().getMonth().equals(monthOfLastRead))
+                            .min((d1, d2) -> {
+                                long diff1 = Duration.between(d1.getDate(), targetDateTime).abs().toMinutes();
+                                long diff2 = Duration.between(d2.getDate(), targetDateTime).abs().toMinutes();
+                                return Long.compare(diff1, diff2);
+                            })
+                            .orElse(null);
+            foundDataStartEnd.add(new ElDataStartEnd(meter,readDataOfFirstOfMonth,lastReadData));
+        });
+        //use dis to get data back one moth ago
+
+        return foundDataStartEnd;
+    }
+
 
     private GetElMeterAndDataResponse buildResponse(final ElectricMeter elMeter, final String companyName) {
         final int address=elMeter.getAddress();
@@ -112,11 +144,14 @@ public class ElMeterService {
                     address,
                     new ElMeterDataDTO(BigDecimal.valueOf(data.getMeter().getId()),
                             data.getVoltageL1(), data.getVoltageL2(),
-                            data.getVoltageL3(), data.getCurrentL1(),
-                            data.getCurrentL2(), data.getCurrentL3(),
-                            data.getActivePowerL1(), data.getActivePowerL2(),
-                            data.getActivePowerL3(), data.getPowerFactorL1(),
-                            data.getPowerFactorL2(), data.getPowerFactorL3(),
+                            data.getVoltageL3(),
+                            data.getCurrentL1().setScale(2, RoundingMode.HALF_UP),
+                            data.getCurrentL2().setScale(2, RoundingMode.HALF_UP),
+                            data.getCurrentL3().setScale(2, RoundingMode.HALF_UP),
+                            data.getActivePowerL1(), data.getActivePowerL2(), data.getActivePowerL3(),
+                            data.getPowerFactorL1().setScale(3, RoundingMode.HALF_UP),
+                            data.getPowerFactorL2().setScale(3, RoundingMode.HALF_UP),
+                            data.getPowerFactorL3().setScale(3, RoundingMode.HALF_UP),
                             data.getTotalActivePower(),
                             BigDecimal.valueOf(
                                     data.getTotalActiveEnergyImportTariff1().longValue() - yesterdays.getTotalActiveEnergyImportTariff1().longValue()),
@@ -136,11 +171,14 @@ public class ElMeterService {
                 address,
                 new ElMeterDataDTO(BigDecimal.valueOf(data.getMeter().getId()),
                         data.getVoltageL1(), data.getVoltageL2(),
-                        data.getVoltageL3(), data.getCurrentL1(),
-                        data.getCurrentL2(), data.getCurrentL3(),
-                        data.getActivePowerL1(), data.getActivePowerL2(),
-                        data.getActivePowerL3(), data.getPowerFactorL1(),
-                        data.getPowerFactorL2(), data.getPowerFactorL3(),
+                        data.getVoltageL3(),
+                        data.getCurrentL1().setScale(2, RoundingMode.HALF_UP),
+                        data.getCurrentL2().setScale(2, RoundingMode.HALF_UP),
+                        data.getCurrentL3().setScale(2, RoundingMode.HALF_UP),
+                        data.getActivePowerL1(), data.getActivePowerL2(), data.getActivePowerL3(),
+                        data.getPowerFactorL1().setScale(3, RoundingMode.HALF_UP),
+                        data.getPowerFactorL2().setScale(3, RoundingMode.HALF_UP),
+                        data.getPowerFactorL3().setScale(3, RoundingMode.HALF_UP),
                         data.getTotalActivePower(),
                         BigDecimal.ZERO,
                         data.getTotalActiveEnergyImportTariff2()),
