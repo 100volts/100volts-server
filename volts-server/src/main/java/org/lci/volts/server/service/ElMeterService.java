@@ -91,14 +91,14 @@ public class ElMeterService {
         return new GetAddListAndElMeterNamesResponse(meterWithAddresses);
     }
 
-    public List<ElDataStartEnd> getMonthlyData(ArrayList<ElectricMeter> electricMeters, final String companyName, final LocalDateTime endOfMothLimit) {
+    public List<ElDataStartEnd> getMonthlyData(List<ElectricMeter> electricMeters, final String companyName, final LocalDateTime endOfMothLimit,int monthsToSubtract) {
         List<ElDataStartEnd> foundDataStartEnd = new ArrayList<>();
         electricMeters.forEach(meter -> {
             final List<ElectricMeterData> meterData =
                     dataRepository.findDataunderOneMonth(meter.getAddress(), companyName, endOfMothLimit)
                             .orElseThrow();//dataRepository.findDaielyRead(address,companyName).orElseThrow();
             final ElectricMeterData lastReadData = meterData.get(0);
-            final Month monthOfLastRead = lastReadData.getDate().getMonth();
+            final Month monthOfLastRead = lastReadData.getDate().minusMonths(monthsToSubtract).getMonth();
             LocalDateTime targetDateTime = LocalDateTime.of(
                     lastReadData.getDate().getYear(), // Year from the first date
                     monthOfLastRead, // Month from the first date
@@ -138,6 +138,7 @@ public class ElMeterService {
 
         ElectricMeterData yesterdays = dataRepository.getYesterdays(address, companyName, startOfYesterday, endOfYesterday).orElse(null);
         ElectricMeterData yesterdays2 =meterData.stream().filter(dataYesterday-> dataYesterday.getDate().isAfter(startOfYesterday)&&dataYesterday.getDate().isBefore(endOfYesterday)).findFirst().orElse(null);
+        List<EnergyMonthPairDTO> energyPair= calculateEnergyPai(companyName,elMeter);
         if (yesterdays != null) {
             return new GetElMeterAndDataResponse(
                     data.getMeter().getName(),
@@ -158,12 +159,13 @@ public class ElMeterService {
                             data.getTotalActiveEnergyImportTariff2()),
                     getAvrData(foundAvrMeterData),
                     traf.dailyTariff(),
-                    lastWeekEnergy);
+                    lastWeekEnergy,
+                    energyPair);
         }
         if(Objects.isNull(data)){
             return new GetElMeterAndDataResponse(elMeter.getName(),
                     address,
-                    null,null,List.of(),List.of()
+                    null,null,List.of(),List.of(),null
             );
         }
         return new GetElMeterAndDataResponse(
@@ -184,7 +186,8 @@ public class ElMeterService {
                         data.getTotalActiveEnergyImportTariff2()),
                 getAvrData(foundAvrMeterData),
                 traf.dailyTariff(),
-                lastWeekEnergy);
+                lastWeekEnergy,
+                energyPair);
     }
 
     public GetElMeterAndDataResponse getElectricMeterWithLastData(final int address, final String companyName) {
@@ -197,6 +200,7 @@ public class ElMeterService {
         List<DailyElMeterEnergyDTO> lastWeekEnergy = getSevenDayEnergy(address, companyName);
 
         ElectricMeterData yesterdays = dataRepository.getYesterdays(address, companyName, startOfYesterday, endOfYesterday).orElse(null);
+        List<EnergyMonthPairDTO> energyPair= calculateEnergyPai(companyName,electricMeter);
         if (yesterdays != null) {
             return new GetElMeterAndDataResponse(
                     foundMeterWithData.getMeter().getName(),
@@ -214,12 +218,12 @@ public class ElMeterService {
                             foundMeterWithData.getTotalActiveEnergyImportTariff2()),
                     getAvrData(foundAvrMeterData),
                     traf.dailyTariff(),
-                    lastWeekEnergy);
+                    lastWeekEnergy,
+                    energyPair);
         }
         if(Objects.isNull(foundMeterWithData)){
             return new GetElMeterAndDataResponse(electricMeter.getName(),
-                    address,
-                    null,null,List.of(),List.of()
+                    address, null,null,List.of(),List.of(),null
                     );
         }
         return new GetElMeterAndDataResponse(
@@ -237,7 +241,24 @@ public class ElMeterService {
                         foundMeterWithData.getTotalActiveEnergyImportTariff2()),
                 getAvrData(foundAvrMeterData),
                 traf.dailyTariff(),
-                lastWeekEnergy);
+                lastWeekEnergy,
+                energyPair);
+    }
+
+    private List<EnergyMonthPairDTO> calculateEnergyPai(String companyName, ElectricMeter electricMeter) {
+        final LocalDateTime endOfMothLimit = LocalDate.now().minusMonths(1).minusDays(1).atTime(LocalTime.MAX);
+        List<ElDataStartEnd> foundDataStartEndLastMonth =getMonthlyData(List.of(electricMeter),companyName,endOfMothLimit,0);
+        List<ElDataStartEnd> foundDataStartEndNextToLastMonth =getMonthlyData(List.of(electricMeter),companyName,LocalDate.now().minusMonths(2).minusDays(1).atTime(LocalTime.MAX),1);
+        //use dis to get data back one moth ago
+
+        return List.of( new EnergyMonthPairDTO(
+                        foundDataStartEndLastMonth.get(0).start().getDate().getMonth().toString(),
+                        foundDataStartEndLastMonth.get(0).end().getTotalActiveEnergyImportTariff1().subtract(foundDataStartEndLastMonth.get(0).start().getTotalActiveEnergyImportTariff1()))
+        ,new EnergyMonthPairDTO(
+                        foundDataStartEndNextToLastMonth.get(0).start().getDate().getMonth().toString(),
+                        foundDataStartEndNextToLastMonth.get(0).end().getTotalActiveEnergyImportTariff1().subtract(foundDataStartEndNextToLastMonth.get(0).start().getTotalActiveEnergyImportTariff1()))
+
+                );
     }
 
     List<DailyElMeterEnergyDTO> getSevenDayEnergyWithOutDbCall(final List<ElectricMeterData> meterData, final int address, final String companyName) {

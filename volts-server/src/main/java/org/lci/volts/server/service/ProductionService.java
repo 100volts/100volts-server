@@ -201,7 +201,7 @@ public class ProductionService {
 
         final LocalDateTime endOfMothLimit = LocalDate.now().minusMonths(1).minusDays(1).atTime(LocalTime.MAX);
 
-        List<ElDataStartEnd> foundDataStartEnd =elMeterService.getMonthlyData(electricMeters,companyName,endOfMothLimit);
+        List<ElDataStartEnd> foundDataStartEnd =elMeterService.getMonthlyData(electricMeters,companyName,endOfMothLimit,0);
         //use dis to get data back one moth ago
 
         return mapElectricDataToProd(foundDataStartEnd,prods);
