@@ -3,8 +3,12 @@ package org.lci.volts.server.persistence;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.lci.volts.server.model.dto.EnergyDTO;
+import org.lci.volts.server.persistence.electric.ElectricMeter;
+import org.lci.volts.server.persistence.production.ProductionGroup;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -23,4 +27,15 @@ public class Energy {
     @Column(name = "ts", nullable = false)
     private OffsetDateTime ts;
 
+    @ManyToMany
+    @JoinTable(
+            name = "energy_electric",
+            joinColumns = @JoinColumn(name = "energy"),
+            inverseJoinColumns = @JoinColumn(name = "electric")
+    )
+    private List<ElectricMeter> electricMeters;
+
+    public EnergyDTO toDTO() {
+        return new EnergyDTO(energyIndex.toString(),electricMeters.stream().map(electricMeter -> electricMeter.toDTO()).toList());
+    }
 }
