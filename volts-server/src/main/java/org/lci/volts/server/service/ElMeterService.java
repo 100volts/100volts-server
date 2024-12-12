@@ -253,11 +253,14 @@ public class ElMeterService {
 
         return List.of( new EnergyMonthPairDTO(
                         foundDataStartEndLastMonth.get(0).start().getDate().getMonth().toString(),
-                        foundDataStartEndLastMonth.get(0).end().getTotalActiveEnergyImportTariff1().subtract(foundDataStartEndLastMonth.get(0).start().getTotalActiveEnergyImportTariff1()))
+                        foundDataStartEndLastMonth.get(0).end().getTotalActiveEnergyImportTariff1().subtract(foundDataStartEndLastMonth.get(0).start().getTotalActiveEnergyImportTariff1()),
+                        foundDataStartEndLastMonth.get(0).start().getDate().toString(),
+                        foundDataStartEndLastMonth.get(0).end().getDate().toString())
         ,new EnergyMonthPairDTO(
                         foundDataStartEndNextToLastMonth.get(0).start().getDate().getMonth().toString(),
-                        foundDataStartEndNextToLastMonth.get(0).end().getTotalActiveEnergyImportTariff1().subtract(foundDataStartEndNextToLastMonth.get(0).start().getTotalActiveEnergyImportTariff1()))
-
+                        foundDataStartEndNextToLastMonth.get(0).end().getTotalActiveEnergyImportTariff1().subtract(foundDataStartEndNextToLastMonth.get(0).start().getTotalActiveEnergyImportTariff1()),
+                        foundDataStartEndLastMonth.get(0).start().getDate().toString(),
+                        foundDataStartEndLastMonth.get(0).end().getDate().toString())
                 );
     }
 
