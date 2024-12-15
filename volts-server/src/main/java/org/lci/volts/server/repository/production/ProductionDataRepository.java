@@ -11,6 +11,8 @@ import java.util.Optional;
 public interface ProductionDataRepository extends JpaRepository<ProductionData, Long> {
     @Query("SELECT u FROM ProductionData u WHERE u.production.name= ?1 and u.production.company.name= ?2")
     Optional<List<ProductionData>> findAllProductionByCompanyName(final String prodName, final String company);
+    @Query("SELECT u FROM ProductionData u WHERE u.production.company.name= ?1")
+    Optional<List<ProductionData>> findAllByCompanyName(final String company);
     @Query("SELECT u FROM ProductionData u WHERE u.production.name= ?1 and u.production.company= ?2  ORDER BY u.id DESC Limit 6")
     Optional<List<ProductionData>> getlast10Data(final String prodName, final String company);
     @Query("SELECT e FROM ProductionData e WHERE  e.production= ?1 AND e.ts <= ?2 ORDER BY e.ts ASC")

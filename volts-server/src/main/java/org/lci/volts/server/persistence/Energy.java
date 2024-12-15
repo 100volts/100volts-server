@@ -27,7 +27,7 @@ public class Energy {
     @Column(name = "ts", nullable = false)
     private OffsetDateTime ts;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "energy_electric",
             joinColumns = @JoinColumn(name = "energy"),

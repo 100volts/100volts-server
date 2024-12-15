@@ -16,6 +16,9 @@ import java.util.Optional;
 public interface KPIRepository extends JpaRepository<Kpi, Long> {
     @Query("select k from Kpi k where k.company.name= ?1 ")
     Optional<List<Kpi>> getKPIPackage(String companyName);
+
+    @Query("select k from Kpi k where k.name=?1 and k.company.name= ?2 ")
+    Optional<Kpi> findByNameAndCompany(String name, String companyName);
 }
 /*
 @Repository
