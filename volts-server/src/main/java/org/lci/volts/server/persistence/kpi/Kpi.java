@@ -8,13 +8,10 @@ import org.hibernate.annotations.OnDeleteAction;
 import org.lci.volts.server.model.dto.kpi.KPIDTO;
 import org.lci.volts.server.persistence.Company;
 import org.lci.volts.server.persistence.Energy;
-import org.lci.volts.server.persistence.electric.ElectricMeter;
 import org.lci.volts.server.persistence.production.Production;
 
 import java.time.OffsetDateTime;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -65,7 +62,7 @@ public class Kpi {
     )
     private List<Production> productions;
 
-    public KPIDTO toDTO() {
-        return new KPIDTO(name,descriptor,groupKpi.getName(),target.toString(),energy.toDTO(), productions.stream().map(Production::toDto).toList(),ts.toString());
+    public KPIDTO toDTO(List<KpiData> kpiData) {
+        return new KPIDTO(name,descriptor,groupKpi.getName(),target.toString(),energy.toDTO(), productions.stream().map(Production::toDto).toList(),ts.toString(),kpiData.stream().map(KpiData::toDTO).toList());
     }
 }

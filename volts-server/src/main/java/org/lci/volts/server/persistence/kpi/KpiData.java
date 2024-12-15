@@ -3,14 +3,18 @@ package org.lci.volts.server.persistence.kpi;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.lci.volts.server.model.dto.kpi.KPIDataDTO;
+import org.lci.volts.server.persistence.production.Production;
+import org.lci.volts.server.persistence.production.ProductionData;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "kpi_data")
-public class KpiDatum {
+public class KpiData {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "kpi_data_id_gen")
     @SequenceGenerator(name = "kpi_data_id_gen", sequenceName = "kpi_data_id_seq", allocationSize = 1)
@@ -24,7 +28,18 @@ public class KpiDatum {
     @JoinColumn(name = "kpi", nullable = false)
     private Kpi kpi;
 
+    @ManyToMany
+    @JoinTable(
+            name = "kpi_data_prod_data",
+            joinColumns = @JoinColumn(name = "kpi_data"),
+            inverseJoinColumns = @JoinColumn(name = "production_data")
+    )
+    private List<ProductionData> prodData;
+
     @Column(name = "ts", nullable = false)
     private OffsetDateTime ts;
 
+    public KPIDataDTO toDTO() {
+        return new KPIDataDTO(value.toString(),ts.toString(),prodData.stream().map(ProductionData::toKpiDTO).toList());
+    }
 }

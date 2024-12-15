@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.lci.volts.server.model.dto.production.ProductionDataDTO;
+import org.lci.volts.server.model.dto.production.ProductionDataForKpiDTO;
 
 import java.math.BigDecimal;
 import java.sql.Date;
@@ -31,5 +32,9 @@ public class ProductionData {
         dto.setValues(value);
         dto.setId(id);
         return dto;
+    }
+
+    public ProductionDataForKpiDTO toKpiDTO(){
+        return new ProductionDataForKpiDTO(id,value,ts.toString(),production.toDto());
     }
 }
