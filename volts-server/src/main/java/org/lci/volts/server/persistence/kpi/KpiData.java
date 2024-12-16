@@ -40,6 +40,6 @@ public class KpiData {
     private OffsetDateTime ts;
 
     public KPIDataDTO toDTO() {
-        return new KPIDataDTO(value.toString(),ts.toString(),prodData.stream().map(ProductionData::toKpiDTO).toList());
+        return new KPIDataDTO(value,ts.toString(),prodData.stream().map(ProductionData::toKpiDTO).toList());
     }
 }
