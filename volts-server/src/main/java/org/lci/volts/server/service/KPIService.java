@@ -60,7 +60,7 @@ public class KPIService {
         return new KPIPayloadResponse(kpiData.stream().map(kpi->kpi.toDTO(kpiDataData.stream().filter(kd->kd.getKpi().getName().equals(kpi.getName())).toList())).toList());
     }
 
-    public KPIUpdateByDateResponse updateKpi(final String company, final String kpiName, final Date date){
+    public KPIUpdateByDateResponse updateKpiData(final String company, final String kpiName, final Date date){
         List<ProductionData> data =productionDataRepository.findAllByCompanyName(company).orElse(null);
         assert data != null;
 
@@ -141,6 +141,51 @@ public class KPIService {
         final KpiSetting setting=kpiSettingsRepository.findByName(request.settings().name()).orElse(null);
         //5. create new kpi
         Kpi kpi=new Kpi();
+        kpi.setName(request.KPIName());
+        kpi.setDescriptor(request.description());
+        kpi.setCompany(companyRepository.findByName(request.company()).orElse(null));
+        kpi.setTarget(Double.valueOf(request.target()));
+        kpi.setGroupKpi(group);
+        kpi.setProductions(prod);
+        kpi.setSettings(setting);
+        kpi.setEnergy(energy);
+        kpi.setTs(time);
+        var resultOfSave=kpiRepository.save(kpi);
+        return resultOfSave.toDTO();
+    }
+
+
+    public KPIDTO updateKPI(KPICreateRequest request) {
+        final OffsetDateTime time=OffsetDateTime.now();
+        //1. create new Energy
+
+        //2. create new Group if dose not exists
+        KpiGroup group=kpiGroupRepository.findByName(request.group().name()).orElse(null);
+        if(group==null){
+            group=new KpiGroup();
+            group.setName(request.group().name());
+            group=kpiGroupRepository.save(group);
+        }
+        //3. Get prod
+        List<Production> prod=new ArrayList<>();
+        request.prodNames().forEach(prodName->{
+            prod.add(productionRepository.findAllProductionByCompanyName( prodName,request.company()).orElse(null));
+        });
+        //4. get settings
+        final KpiSetting setting=kpiSettingsRepository.findByName(request.settings().name()).orElse(null);
+        //5. create new kpi
+        Kpi kpi=kpiRepository.findByNameAndCompany(request.KPIName(), request.company()).orElse(null);//new Kpi();
+
+        List<ElectricMeter> electricMeters=new ArrayList<>();
+        request.energy().electricEnergy().forEach(meter->{
+            electricMeters.add(electricMeterRepository.findAllElMetersByCompanyNameAndNAme(meter.getMeterName(), request.company()).orElse(null));
+        });
+        Energy energy=kpiEnergyRepo.findById(kpi.getEnergy().getId().longValue()).orElse(new Energy());
+        energy.setTs(time);
+        energy.setEnergyIndex(Double.valueOf(request.energy().index()));
+        energy.setElectricMeters(electricMeters);
+        energy=kpiEnergyRepo.save(energy);
+
         kpi.setName(request.KPIName());
         kpi.setDescriptor(request.description());
         kpi.setCompany(companyRepository.findByName(request.company()).orElse(null));

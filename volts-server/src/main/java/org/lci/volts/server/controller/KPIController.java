@@ -9,10 +9,7 @@ import org.lci.volts.server.model.responce.kpi.KPIPayloadResponse;
 import org.lci.volts.server.model.responce.kpi.KPIUpdateByDateResponse;
 import org.lci.volts.server.service.KPIService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.sql.Date;
 
@@ -29,9 +26,13 @@ public class KPIController {
     public ResponseEntity<KPICreateResponse> create(@RequestBody KPICreateRequest request){
         return ResponseEntity.ok(new KPICreateResponse(kpiService.createKPI(request)));
     }
+    @PutMapping
+    public ResponseEntity<KPICreateResponse> update(@RequestBody KPICreateRequest request){
+        return ResponseEntity.ok(new KPICreateResponse(kpiService.updateKPI(request)));
+    }
     @PostMapping("/update")
     public ResponseEntity<KPIUpdateByDateResponse> updateKpi(@RequestBody KPIUpdateByDateRequest request){
-        return ResponseEntity.ok(kpiService.updateKpi(request.company(),request.kpiName(), Date.valueOf(request.date())));
+        return ResponseEntity.ok(kpiService.updateKpiData(request.company(),request.kpiName(), Date.valueOf(request.date())));
     }
 
 }
