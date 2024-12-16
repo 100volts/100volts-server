@@ -193,7 +193,7 @@ public class ElMeterService {
     public GetElMeterAndDataResponse getElectricMeterWithLastData(final int address, final String companyName) {
         final ElectricMeterData foundMeterWithData = dataRepository.findAllElMetersWitDatalastRead(address, companyName).orElse(null);
         final ElectricMeter electricMeter=electricMeterRepository.findElMetersByCompanyName(address,companyName).orElseThrow();
-        final Set<ElectricMeterData> foundAvrMeterData = dataRepository.findAvrElMetersData(address, companyName).orElseThrow();
+        final Set<ElectricMeterData> foundAvrMeterData = dataRepository.findAvrElMetersData(address, companyName,15).orElseThrow();
         var traf = getDailyTotPowerTariff(address, companyName);
         LocalDateTime startOfYesterday = LocalDate.now().minusDays(1).atStartOfDay();
         LocalDateTime endOfYesterday = LocalDate.now().minusDays(1).atTime(LocalTime.MAX);

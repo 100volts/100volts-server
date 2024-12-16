@@ -222,7 +222,7 @@ class ElMeterServiceTest {
 
         given(electricMeterDataRepository.findAllElMetersWitDatalastRead(address, COMPANY_NAME)).willReturn(
                 Optional.of(mockElectricMeterData));
-        given(electricMeterDataRepository.findAvrElMetersData(address, COMPANY_NAME)).willReturn(Optional.of(Set.of(mockElectricMeterData)));
+        given(electricMeterDataRepository.findAvrElMetersData(address, COMPANY_NAME,15)).willReturn(Optional.of(Set.of(mockElectricMeterData)));
         given(electricMeterDataRepository.findDaielyRead(address,COMPANY_NAME)).willReturn(Optional.of(List.of(mockElectricMeterData)));
         //when
         GetElMeterAndDataResponse foundLastMeterData =

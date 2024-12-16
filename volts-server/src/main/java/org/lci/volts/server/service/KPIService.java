@@ -61,40 +61,38 @@ public class KPIService {
         if(Objects.isNull(kpi)){
             return null;
         }
+        float buildSumElValueKpi=0;
         List<ElectricMeterData> elDate=new ArrayList<>();
         for(ElectricMeter electricMeter:kpi.getEnergy().getElectricMeters()){
-            var elMeterDateFound=electricMeterDataRepository.findAvrElMetersData(electricMeter.getAddress(),company).orElse(null);
+            var elMeterDateFound=electricMeterDataRepository.findByCompanyAdrDate(electricMeter.getAddress(),company,date.toLocalDate().atStartOfDay(),date.toLocalDate().atTime(23,59)).orElse(null);
             if(Objects.nonNull(elMeterDateFound)){
+                buildSumElValueKpi=buildSumElValueKpi+
+                        (elMeterDateFound.get(0).getTotalActiveEnergyImportTariff1().longValue()
+                                -elMeterDateFound.get(elMeterDateFound.size()-1).getTotalActiveEnergyImportTariff1().longValue());
                 elDate.addAll(elMeterDateFound);
             }
         }
 
         final List<ProductionData> buildProd=new ArrayList<>();
         float buildSumProdValueKpi=0;
-        float buildSumElValueKpi=0;
         for(int i=0;i<kpi.getProductions().size();i++){
             final int constI=i;
             final List<ProductionData> prodDataFiltered=data.stream()
                     .filter(d->d.getProduction().equals(kpi.getProductions().get(constI)))
                     .filter(d->d.getTs().equals(date))
                     .toList();
-            final List<ElectricMeterData> elDateFileterd=elDate.stream().filter(eld->
-                eld.getMeter().equals(kpi.getEnergy().getElectricMeters())).filter(eld->
-                eld.getDate().toLocalDate().equals(date.toLocalDate()))
-                    .toList();
             float sumProdValueKpi=0;
             float sumElValueKpi=0;
             for(ProductionData prodData:prodDataFiltered){
                 sumProdValueKpi=sumProdValueKpi+prodData.getValue().longValue();
             }
-            for(ElectricMeterData elMeterData:elDateFileterd){
-                sumElValueKpi=sumElValueKpi+elMeterData.getTotalActiveEnergyImportTariff1().longValue();
-            }
+
 
             buildProd.addAll(prodDataFiltered);
             buildSumProdValueKpi=buildSumProdValueKpi+sumProdValueKpi;
             buildSumElValueKpi=buildSumElValueKpi+sumElValueKpi;
         }
+
         ZoneOffset zoneOffset = ZoneOffset.ofHours(2);
         OffsetDateTime timezoneDate=date.toLocalDate().atTime(12, 0).atOffset(zoneOffset);
         KpiData kpiData=new KpiData();
