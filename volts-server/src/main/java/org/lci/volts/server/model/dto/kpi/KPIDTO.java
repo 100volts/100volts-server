@@ -1,6 +1,6 @@
 package org.lci.volts.server.model.dto.kpi;
 
-import org.lci.volts.server.model.dto.EnergyDTO;
+import org.lci.volts.server.model.dto.energy.EnergyDTO;
 import org.lci.volts.server.model.dto.production.ProductionDTO;
 
 import java.util.List;

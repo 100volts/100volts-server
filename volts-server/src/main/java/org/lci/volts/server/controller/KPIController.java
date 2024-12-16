@@ -1,8 +1,10 @@
 package org.lci.volts.server.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.lci.volts.server.model.request.kpi.KPICreateRequest;
 import org.lci.volts.server.model.request.kpi.KPIPayloadRequest;
 import org.lci.volts.server.model.request.kpi.KPIUpdateByDateRequest;
+import org.lci.volts.server.model.responce.kpi.KPICreateResponse;
 import org.lci.volts.server.model.responce.kpi.KPIPayloadResponse;
 import org.lci.volts.server.model.responce.kpi.KPIUpdateByDateResponse;
 import org.lci.volts.server.service.KPIService;
@@ -22,6 +24,10 @@ public class KPIController {
     @PostMapping("/all")
     public ResponseEntity<KPIPayloadResponse> allForCompany(@RequestBody KPIPayloadRequest request){
         return ResponseEntity.ok(kpiService.getAllFromCompany(request));
+    }
+    @PostMapping("/create")
+    public ResponseEntity<KPICreateResponse> create(@RequestBody KPICreateRequest request){
+        return ResponseEntity.ok(new KPICreateResponse(kpiService.createKPI(request)));
     }
     @PostMapping("/update")
     public ResponseEntity<KPIUpdateByDateResponse> updateKpi(@RequestBody KPIUpdateByDateRequest request){

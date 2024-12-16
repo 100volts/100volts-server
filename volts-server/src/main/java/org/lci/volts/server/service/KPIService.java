@@ -2,20 +2,27 @@ package org.lci.volts.server.service;
 
 import lombok.RequiredArgsConstructor;
 import org.lci.volts.server.model.dto.kpi.KPIDTO;
-import org.lci.volts.server.model.dto.kpi.KPIDataDTO;
+import org.lci.volts.server.model.request.kpi.KPICreateRequest;
 import org.lci.volts.server.model.request.kpi.KPIPayloadRequest;
 import org.lci.volts.server.model.responce.kpi.KPIPayloadResponse;
 import org.lci.volts.server.model.responce.kpi.KPIUpdateByDateResponse;
+import org.lci.volts.server.persistence.Energy;
 import org.lci.volts.server.persistence.electric.ElectricMeter;
 import org.lci.volts.server.persistence.electric.ElectricMeterData;
 import org.lci.volts.server.persistence.kpi.Kpi;
 import org.lci.volts.server.persistence.kpi.KpiData;
+import org.lci.volts.server.persistence.kpi.KpiGroup;
+import org.lci.volts.server.persistence.kpi.KpiSetting;
 import org.lci.volts.server.persistence.production.Production;
 import org.lci.volts.server.persistence.production.ProductionData;
+import org.lci.volts.server.repository.CompanyRepository;
 import org.lci.volts.server.repository.KPIEnergyRepository;
 import org.lci.volts.server.repository.electric.ElectricMeterDataRepository;
+import org.lci.volts.server.repository.electric.ElectricMeterRepository;
 import org.lci.volts.server.repository.kpi.KPIDataRepository;
+import org.lci.volts.server.repository.kpi.KPIGroupRepository;
 import org.lci.volts.server.repository.kpi.KPIRepository;
+import org.lci.volts.server.repository.kpi.KpiSettingsRepository;
 import org.lci.volts.server.repository.production.ProductionDataRepository;
 import org.lci.volts.server.repository.production.ProductionRepository;
 import org.springframework.data.convert.ReadingConverter;
@@ -23,7 +30,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
-import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
@@ -38,9 +44,13 @@ public class KPIService {
     private final KPIEnergyRepository kpiEnergyRepo;
     private final KPIRepository kpiRepository;
     private final KPIDataRepository dataRepository;
+    private final KPIGroupRepository kpiGroupRepository;
+    private final KpiSettingsRepository kpiSettingsRepository;
     private final ProductionDataRepository productionDataRepository;
     private final ProductionRepository productionRepository;
     private final ElectricMeterDataRepository electricMeterDataRepository;
+    private final ElectricMeterRepository electricMeterRepository;
+    private final CompanyRepository companyRepository;
 
     public KPIPayloadResponse getAllFromCompany(KPIPayloadRequest request) {
         KPIPayloadResponse response=new KPIPayloadResponse(null);
@@ -101,5 +111,46 @@ public class KPIService {
         dataRepository.save(kpiData);
 
         return new KPIUpdateByDateResponse(kpiData.toDTO());
+    }
+
+    public KPIDTO createKPI(KPICreateRequest request) {
+        final OffsetDateTime time=OffsetDateTime.now();
+        //1. create new Energy
+        List<ElectricMeter> electricMeters=new ArrayList<>();
+        request.energy().electricEnergy().forEach(meter->{
+            electricMeters.add(electricMeterRepository.findAllElMetersByCompanyNameAndNAme(meter.getMeterName(), request.company()).orElse(null));
+        });
+        Energy energy=new Energy();
+        energy.setTs(time);
+        energy.setEnergyIndex(Double.valueOf(request.energy().index()));
+        energy.setElectricMeters(electricMeters);
+        energy=kpiEnergyRepo.save(energy);
+        //2. create new Group if dose not exists
+        KpiGroup group=kpiGroupRepository.findByName(request.group().name()).orElse(null);
+        if(group==null){
+            group=new KpiGroup();
+            group.setName(request.group().name());
+            group=kpiGroupRepository.save(group);
+        }
+        //3. Get prod
+        List<Production> prod=new ArrayList<>();
+        request.prodNames().forEach(prodName->{
+            prod.add(productionRepository.findAllProductionByCompanyName( prodName,request.company()).orElse(null));
+        });
+        //4. get settings
+        final KpiSetting setting=kpiSettingsRepository.findByName(request.settings().name()).orElse(null);
+        //5. create new kpi
+        Kpi kpi=new Kpi();
+        kpi.setName(request.KPIName());
+        kpi.setDescriptor(request.description());
+        kpi.setCompany(companyRepository.findByName(request.company()).orElse(null));
+        kpi.setTarget(Double.valueOf(request.target()));
+        kpi.setGroupKpi(group);
+        kpi.setProductions(prod);
+        kpi.setSettings(setting);
+        kpi.setEnergy(energy);
+        kpi.setTs(time);
+        var resultOfSave=kpiRepository.save(kpi);
+        return resultOfSave.toDTO();
     }
 }

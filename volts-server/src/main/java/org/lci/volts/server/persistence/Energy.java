@@ -3,9 +3,8 @@ package org.lci.volts.server.persistence;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.lci.volts.server.model.dto.EnergyDTO;
+import org.lci.volts.server.model.dto.energy.EnergyDTO;
 import org.lci.volts.server.persistence.electric.ElectricMeter;
-import org.lci.volts.server.persistence.production.ProductionGroup;
 
 import java.time.OffsetDateTime;
 import java.util.List;
