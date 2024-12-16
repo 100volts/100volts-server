@@ -51,12 +51,9 @@ public class KPIService {
     }
 
     public KPIUpdateByDateResponse updateKpi(final String company, final String kpiName, final Date date){
-        //1. Get all of the prods
-        //2. get all of there data
         List<ProductionData> data =productionDataRepository.findAllByCompanyName(company).orElse(null);
         assert data != null;
-        //3. for earch prod_data get and filter by dates
-        // then write to data after all dates are finished get next date
+
         final Kpi kpi= kpiRepository.findByNameAndCompany(kpiName,company).orElse(null);
         if(Objects.isNull(kpi)){
             return null;
@@ -65,7 +62,7 @@ public class KPIService {
         List<ElectricMeterData> elDate=new ArrayList<>();
         for(ElectricMeter electricMeter:kpi.getEnergy().getElectricMeters()){
             var elMeterDateFound=electricMeterDataRepository.findByCompanyAdrDate(electricMeter.getAddress(),company,date.toLocalDate().atStartOfDay(),date.toLocalDate().atTime(23,59)).orElse(null);
-            if(Objects.nonNull(elMeterDateFound)){
+            if(Objects.nonNull(elMeterDateFound)&& !elMeterDateFound.isEmpty()){
                 buildSumElValueKpi=buildSumElValueKpi+
                         (elMeterDateFound.get(0).getTotalActiveEnergyImportTariff1().longValue()
                                 -elMeterDateFound.get(elMeterDateFound.size()-1).getTotalActiveEnergyImportTariff1().longValue());
@@ -101,7 +98,7 @@ public class KPIService {
         kpiData.setTs(timezoneDate);
         kpiData.setValue(buildSumElValueKpi/buildSumProdValueKpi);
 
-        //dataRepository.save(kpiData);
+        dataRepository.save(kpiData);
 
         return new KPIUpdateByDateResponse(kpiData.toDTO());
     }
