@@ -117,8 +117,8 @@ public class KPIService {
         final OffsetDateTime time=OffsetDateTime.now();
         //1. create new Energy
         List<ElectricMeter> electricMeters=new ArrayList<>();
-        request.energy().electricEnergy().forEach(meter->{
-            electricMeters.add(electricMeterRepository.findAllElMetersByCompanyNameAndNAme(meter.getMeterName(), request.company()).orElse(null));
+        request.energy().electricEnergyName().forEach(meter->{
+            electricMeters.add(electricMeterRepository.findAllElMetersByCompanyNameAndNAme(meter, request.company()).orElse(null));
         });
         Energy energy=new Energy();
         energy.setTs(time);
@@ -130,6 +130,7 @@ public class KPIService {
         if(group==null){
             group=new KpiGroup();
             group.setName(request.group().name());
+            group.setDescriptor(request.group().description());
             group=kpiGroupRepository.save(group);
         }
         //3. Get prod
@@ -177,8 +178,8 @@ public class KPIService {
         Kpi kpi=kpiRepository.findByNameAndCompany(request.KPIName(), request.company()).orElse(null);//new Kpi();
 
         List<ElectricMeter> electricMeters=new ArrayList<>();
-        request.energy().electricEnergy().forEach(meter->{
-            electricMeters.add(electricMeterRepository.findAllElMetersByCompanyNameAndNAme(meter.getMeterName(), request.company()).orElse(null));
+        request.energy().electricEnergyName().forEach(meter->{
+            electricMeters.add(electricMeterRepository.findAllElMetersByCompanyNameAndNAme(meter, request.company()).orElse(null));
         });
         Energy energy=kpiEnergyRepo.findById(kpi.getEnergy().getId().longValue()).orElse(new Energy());
         energy.setTs(time);

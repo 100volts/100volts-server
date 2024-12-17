@@ -35,6 +35,6 @@ public class Energy {
     private List<ElectricMeter> electricMeters;
 
     public EnergyDTO toDTO() {
-        return new EnergyDTO(energyIndex.toString(),electricMeters.stream().map(electricMeter -> electricMeter.toDTO()).toList());
+        return new EnergyDTO(energyIndex.toString(),electricMeters.stream().map(ElectricMeter::getName).toList());
     }
 }
