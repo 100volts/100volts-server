@@ -33,6 +33,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
@@ -57,7 +58,9 @@ public class KPIService {
 
     public KPIPayloadResponse getAllFromCompany(KPIPayloadRequest request) {
         List<Kpi> kpiData= kpiRepository.getKPIPackage(request.company()).orElse(null);
-        List<KpiData> kpiDataData=dataRepository.getKPIPDataLastMonth(request.company()).orElse(null);
+        final OffsetDateTime dataTimeNow=OffsetDateTime.now();
+        final OffsetDateTime startOfMonth=OffsetDateTime.of(LocalDateTime.of( dataTimeNow.getYear(), dataTimeNow.getMonth(),1,0,0),ZoneOffset.UTC);
+        List<KpiData> kpiDataData=dataRepository. getKPIPDataBetweenTs(request.company(),startOfMonth,dataTimeNow).orElse(null);
         final List<KpiGroup> groups=kpiGroupRepository.findByCompanyName(request.company()).orElse(null);
         if(Objects.isNull(groups)){
             return null;
