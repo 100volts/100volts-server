@@ -3,6 +3,7 @@ package org.lci.volts.server.persistence.kpi;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.lci.volts.server.persistence.Company;
 
 @Getter
 @Setter
@@ -20,5 +21,9 @@ public class KpiGroup {
 
     @Column(name = "descriptor", nullable = false, length = 200)
     private String descriptor;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "company")
+    private Company company;
 
 }

@@ -6,6 +6,7 @@ import org.lci.volts.server.model.request.kpi.KPICreateRequest;
 import org.lci.volts.server.model.request.kpi.KPIPayloadRequest;
 import org.lci.volts.server.model.responce.kpi.KPIPayloadResponse;
 import org.lci.volts.server.model.responce.kpi.KPIUpdateByDateResponse;
+import org.lci.volts.server.persistence.Company;
 import org.lci.volts.server.persistence.Energy;
 import org.lci.volts.server.persistence.electric.ElectricMeter;
 import org.lci.volts.server.persistence.electric.ElectricMeterData;
@@ -125,12 +126,18 @@ public class KPIService {
         energy.setEnergyIndex(Double.valueOf(request.energy().index()));
         energy.setElectricMeters(electricMeters);
         energy=kpiEnergyRepo.save(energy);
+        //1.5 get company
+        final Company company=companyRepository.findByName(request.company()).orElse(null);
+        if(Objects.isNull(company)){
+            return null;
+        }
         //2. create new Group if dose not exists
         KpiGroup group=kpiGroupRepository.findByName(request.group().name()).orElse(null);
         if(group==null){
             group=new KpiGroup();
             group.setName(request.group().name());
             group.setDescriptor(request.group().description());
+            group.setCompany(company);
             group=kpiGroupRepository.save(group);
         }
         //3. Get prod
@@ -144,7 +151,7 @@ public class KPIService {
         Kpi kpi=new Kpi();
         kpi.setName(request.KPIName());
         kpi.setDescriptor(request.description());
-        kpi.setCompany(companyRepository.findByName(request.company()).orElse(null));
+        kpi.setCompany(company);
         kpi.setTarget(Double.valueOf(request.target()));
         kpi.setGroupKpi(group);
         kpi.setProductions(prod);
