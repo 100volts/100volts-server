@@ -1,5 +1,6 @@
 package org.lci.volts.server.service;
 
+import com.sun.istack.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.lci.volts.server.model.dto.kpi.KPIDTO;
 import org.lci.volts.server.model.request.kpi.KPICreateRequest;
@@ -66,6 +67,22 @@ public class KPIService {
             return null;
         }
         return new KPIPayloadResponse(kpiData.stream().map(kpi->kpi.toDTO(kpiDataData.stream().filter(kd->kd.getKpi().getName().equals(kpi.getName())).toList())).toList(),groups.stream().map(KpiGroup::toDto).toList());
+    }
+
+    public void recalculateKPIForProd(final String companyName,final Date date,@NotNull  final ProductionData production){
+        return;
+        //todo needs to be tested
+        /*
+        List<Kpi> allKpi= kpiRepository.getKPIPackage(companyName).orElse(null);
+        if(Objects.isNull(allKpi)){
+            return;
+        }
+        allKpi=allKpi.stream().filter(k->{ return k.getProductions().contains(production);}).toList();
+        for(Kpi kpi:allKpi){
+            updateKpiData(companyName,kpi.getName(),date);
+        }
+        */
+
     }
 
     public KPIUpdateByDateResponse updateKpiData(final String company, final String kpiName, final Date date){

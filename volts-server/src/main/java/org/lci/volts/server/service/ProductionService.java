@@ -45,7 +45,7 @@ public class ProductionService {
     private final CompanyService companyService;
     private final ProductionGroupRepository groupRepository;
     private final ElectricMeterRepository electricMeterRepository;
-    private final ElectricMeterDataRepository electricMeterDataRepository;
+    private final KPIService kpiService;
 
     private final ElMeterService elMeterService;
 
@@ -122,6 +122,7 @@ public class ProductionService {
         newDate.setValue(request.value());
         newDate.setTs(request.date());
         productionDataRepository.save(newDate);
+        kpiService.recalculateKPIForProd(request.companyName(),request.date(),newDate);
         return new AddProductionDataResponse(true);
     }
 
