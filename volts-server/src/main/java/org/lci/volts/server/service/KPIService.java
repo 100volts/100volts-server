@@ -54,17 +54,18 @@ public class KPIService {
     private final CompanyRepository companyRepository;
 
     public KPIPayloadResponse getAllFromCompany(KPIPayloadRequest request) {
-        KPIPayloadResponse response=new KPIPayloadResponse(null);
-        List<KPIDTO> data=new ArrayList<>();
         List<Kpi> kpiData= kpiRepository.getKPIPackage(request.company()).orElse(null);
         List<KpiData> kpiDataData=dataRepository.getKPIPDataLastMonth(request.company()).orElse(null);
-        return new KPIPayloadResponse(kpiData.stream().map(kpi->kpi.toDTO(kpiDataData.stream().filter(kd->kd.getKpi().getName().equals(kpi.getName())).toList())).toList());
+        final List<KpiGroup> groups=kpiGroupRepository.findByCompanyName(request.company()).orElse(null);
+        if(Objects.isNull(groups)){
+            return null;
+        }
+        return new KPIPayloadResponse(kpiData.stream().map(kpi->kpi.toDTO(kpiDataData.stream().filter(kd->kd.getKpi().getName().equals(kpi.getName())).toList())).toList(),groups.stream().map(KpiGroup::toDto).toList());
     }
 
     public KPIUpdateByDateResponse updateKpiData(final String company, final String kpiName, final Date date){
         List<ProductionData> data =productionDataRepository.findAllByCompanyName(company).orElse(null);
         assert data != null;
-
         final Kpi kpi= kpiRepository.findByNameAndCompany(kpiName,company).orElse(null);
         if(Objects.isNull(kpi)){
             return null;

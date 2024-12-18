@@ -3,6 +3,7 @@ package org.lci.volts.server.persistence.kpi;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.lci.volts.server.model.dto.kpi.KPIGroupDTO;
 import org.lci.volts.server.persistence.Company;
 
 @Getter
@@ -26,4 +27,7 @@ public class KpiGroup {
     @JoinColumn(name = "company")
     private Company company;
 
+    public KPIGroupDTO toDto() {
+        return new KPIGroupDTO(name, descriptor);
+    }
 }
