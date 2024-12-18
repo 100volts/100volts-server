@@ -12,5 +12,7 @@ import java.util.Optional;
 @Repository
 public interface KPIDataRepository extends JpaRepository<KpiData, Long> {
     @Query("select k from KpiData k where k.kpi.company.name= ?1 order by k.ts asc limit 1000")
-    Optional<List<KpiData>> getKPIPDataLastMonth(String companyName);
+    Optional<List<KpiData>> getKPIPDataLastMonth(final String companyName);
+    @Query("select k from KpiData k where k.kpi.name=?1 and k.kpi.company.name= ?2")
+    Optional<List<KpiData>> getKPIPByNameAndCompanyName(final String kpiName,final String companyName);
 }

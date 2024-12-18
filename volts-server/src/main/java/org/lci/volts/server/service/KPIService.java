@@ -3,7 +3,9 @@ package org.lci.volts.server.service;
 import lombok.RequiredArgsConstructor;
 import org.lci.volts.server.model.dto.kpi.KPIDTO;
 import org.lci.volts.server.model.request.kpi.KPICreateRequest;
+import org.lci.volts.server.model.request.kpi.KPIDeleteRequest;
 import org.lci.volts.server.model.request.kpi.KPIPayloadRequest;
+import org.lci.volts.server.model.responce.kpi.KPICreateResponse;
 import org.lci.volts.server.model.responce.kpi.KPIPayloadResponse;
 import org.lci.volts.server.model.responce.kpi.KPIUpdateByDateResponse;
 import org.lci.volts.server.persistence.Company;
@@ -206,5 +208,15 @@ public class KPIService {
         kpi.setTs(time);
         var resultOfSave=kpiRepository.save(kpi);
         return resultOfSave.toDTO();
+    }
+
+    public KPIDTO delete(final KPIDeleteRequest request) {
+        final Kpi kpiForDelete=kpiRepository.findByNameAndCompany(request.kpiName(),request.companyName()).orElseThrow();
+        final List<KpiData> kpiDate=dataRepository.getKPIPByNameAndCompanyName(request.kpiName(),request.companyName()).orElse(null);
+        if(Objects.nonNull(kpiForDelete)||!kpiDate.isEmpty()){
+            dataRepository.deleteAll(kpiDate);
+        }
+        kpiRepository.delete(kpiForDelete);
+        return kpiForDelete.toDTO();
     }
 }

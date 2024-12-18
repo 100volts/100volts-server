@@ -2,6 +2,7 @@ package org.lci.volts.server.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.lci.volts.server.model.request.kpi.KPICreateRequest;
+import org.lci.volts.server.model.request.kpi.KPIDeleteRequest;
 import org.lci.volts.server.model.request.kpi.KPIPayloadRequest;
 import org.lci.volts.server.model.request.kpi.KPIUpdateByDateRequest;
 import org.lci.volts.server.model.responce.kpi.KPICreateResponse;
@@ -33,6 +34,11 @@ public class KPIController {
     @PostMapping("/update")
     public ResponseEntity<KPIUpdateByDateResponse> updateKpi(@RequestBody KPIUpdateByDateRequest request){
         return ResponseEntity.ok(kpiService.updateKpiData(request.company(),request.kpiName(), Date.valueOf(request.date())));
+    }
+
+    @DeleteMapping
+    public ResponseEntity<KPICreateResponse> delete(@RequestBody KPIDeleteRequest request){
+        return ResponseEntity.ok(new KPICreateResponse(kpiService.delete(request)));
     }
 
 }

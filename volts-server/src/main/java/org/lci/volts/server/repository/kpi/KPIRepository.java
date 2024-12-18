@@ -20,22 +20,3 @@ public interface KPIRepository extends JpaRepository<Kpi, Long> {
     @Query("select k from Kpi k where k.name=?1 and k.company.name= ?2 ")
     Optional<Kpi> findByNameAndCompany(String name, String companyName);
 }
-/*
-@Repository
-@RequiredArgsConstructor
-@Transactional
-public class KPIRepository {
-    private final EntityManagerFactory emf;
-
-    public Optional getKPIPackage(String companyName){
-        EntityManager entityManager = emf.createEntityManager();
-        Query query = entityManager
-                .createQuery("select Kpi from Kpi " +
-                        "where Kpi.production.company.name= :companyName ");
-        query.setParameter("companyName", companyName);
-
-        return Optional.ofNullable(query.getResultList());
-    }
-}
-
- */
