@@ -124,7 +124,10 @@ public class KPIService {
             buildSumProdValueKpi=buildSumProdValueKpi+sumProdValueKpi;
             buildSumElValueKpi=buildSumElValueKpi+sumElValueKpi;
         }
-
+        final Float kpiDataValue=buildSumElValueKpi/buildSumProdValueKpi;
+        if(kpiDataValue.equals(Float.POSITIVE_INFINITY)){
+            return null;
+        }
         ZoneOffset zoneOffset = ZoneOffset.ofHours(2);
         OffsetDateTime timezoneDate=date.toLocalDate().atTime(12, 0).atOffset(zoneOffset);
         KpiData kpiData=new KpiData();
