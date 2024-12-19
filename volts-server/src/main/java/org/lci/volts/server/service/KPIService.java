@@ -35,6 +35,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -141,6 +142,58 @@ public class KPIService {
         return new KPIUpdateByDateResponse(kpiData.toDTO());
     }
 
+    public KPIUpdateByDateResponse updateKpiData(@NotNull final List<ProductionData> prodData,final String company, final Kpi kpi, final Date date){
+        assert prodData != null;
+        float buildSumElValueKpi=0;
+        List<ElectricMeterData> elDate=new ArrayList<>();
+        for(ElectricMeter electricMeter:kpi.getEnergy().getElectricMeters()){
+            var elMeterDateFound=electricMeterDataRepository.findByCompanyAdrDate(electricMeter.getAddress(),company,date.toLocalDate().atStartOfDay(),date.toLocalDate().atTime(23,59)).orElse(null);
+            if(Objects.nonNull(elMeterDateFound)&& !elMeterDateFound.isEmpty()){
+                buildSumElValueKpi=buildSumElValueKpi+
+                        (elMeterDateFound.get(0).getTotalActiveEnergyImportTariff1().longValue()
+                                -elMeterDateFound.get(elMeterDateFound.size()-1).getTotalActiveEnergyImportTariff1().longValue());
+                elDate.addAll(elMeterDateFound);
+            }
+        }
+
+        final List<ProductionData> buildProd=new ArrayList<>();
+        float buildSumProdValueKpi=0;
+        for(int i=0;i<kpi.getProductions().size();i++){
+            final int constI=i;
+            final List<ProductionData> prodDataFiltered=prodData.stream()
+                    .filter(d->d.getProduction().equals(kpi.getProductions().get(constI)))
+                    .filter(d->d.getTs().equals(date))
+                    .toList();
+            float sumProdValueKpi=0;
+            float sumElValueKpi=0;
+            for(ProductionData pData:prodDataFiltered){
+                sumProdValueKpi=sumProdValueKpi+pData.getValue().longValue();
+            }
+
+
+            buildProd.addAll(prodDataFiltered);
+            buildSumProdValueKpi=buildSumProdValueKpi+sumProdValueKpi;
+            buildSumElValueKpi=buildSumElValueKpi+sumElValueKpi;
+        }
+        final Float kpiDataValue=buildSumElValueKpi/buildSumProdValueKpi;
+        if(kpiDataValue.equals(Float.POSITIVE_INFINITY)||kpiDataValue.equals(Float.NEGATIVE_INFINITY)
+        ||kpiDataValue.equals(Float.NaN)){
+            return null;
+        }
+        ZoneOffset zoneOffset = ZoneOffset.ofHours(2);
+        OffsetDateTime timezoneDate=date.toLocalDate().atTime(12, 0).atOffset(zoneOffset);
+        KpiData kpiData=new KpiData();
+        kpiData.setKpi(kpi);
+        kpiData.setProdData(buildProd);
+        kpiData.setTs(timezoneDate);
+        kpiData.setValue(buildSumElValueKpi/buildSumProdValueKpi);
+
+        dataRepository.save(kpiData);
+
+        return new KPIUpdateByDateResponse(kpiData.toDTO());
+    }
+
+
     public KPIDTO createKPI(KPICreateRequest request) {
         final OffsetDateTime time=OffsetDateTime.now();
         //1. create new Energy
@@ -186,6 +239,15 @@ public class KPIService {
         kpi.setEnergy(energy);
         kpi.setTs(time);
         var resultOfSave=kpiRepository.save(kpi);
+        //calculate data
+        List<ProductionData> prodData =productionDataRepository.findAllByCompanyName(request.company()).orElse(null);
+        final LocalDate now=LocalDate.now();
+        final LocalDate endOfYear=LocalDate.of(now.getYear(), 1, 1);
+        LocalDate date=now;
+        do{
+            updateKpiData(prodData,request.company(), kpi, Date.valueOf(date));
+            date=date.minusDays(1);
+        }while (date.isAfter(endOfYear));
         return resultOfSave.toDTO();
     }
 
