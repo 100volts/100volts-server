@@ -6,6 +6,7 @@ import org.lci.volts.server.model.dto.kpi.KPIDTO;
 import org.lci.volts.server.model.request.kpi.KPICreateRequest;
 import org.lci.volts.server.model.request.kpi.KPIDeleteRequest;
 import org.lci.volts.server.model.request.kpi.KPIPayloadRequest;
+import org.lci.volts.server.model.request.kpi.KPIUpdateRequest;
 import org.lci.volts.server.model.responce.kpi.KPICreateResponse;
 import org.lci.volts.server.model.responce.kpi.KPIPayloadResponse;
 import org.lci.volts.server.model.responce.kpi.KPIUpdateByDateResponse;
@@ -186,7 +187,7 @@ public class KPIService {
     }
 
 
-    public KPIDTO updateKPI(KPICreateRequest request) {
+    public KPIDTO updateKPI(final KPIUpdateRequest request) {
         final OffsetDateTime time=OffsetDateTime.now();
         //1. create new Energy
 
@@ -217,7 +218,7 @@ public class KPIService {
         energy.setElectricMeters(electricMeters);
         energy=kpiEnergyRepo.save(energy);
 
-        kpi.setName(request.KPIName());
+        kpi.setName(request.newName());
         kpi.setDescriptor(request.description());
         kpi.setCompany(companyRepository.findByName(request.company()).orElse(null));
         kpi.setTarget(Double.valueOf(request.target()));
