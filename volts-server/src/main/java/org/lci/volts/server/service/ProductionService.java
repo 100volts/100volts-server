@@ -123,6 +123,7 @@ public class ProductionService {
         newDate.setTs(request.date());
         productionDataRepository.save(newDate);
         kpiService.recalculateKPIForProd(request.companyName(),request.date(),newDate);
+        kpiService.updateKpiBasedOnProduction(request.companyName(),newDate.getProduction().getName(), Date.valueOf(LocalDate.now()));
         return new AddProductionDataResponse(true);
     }
 

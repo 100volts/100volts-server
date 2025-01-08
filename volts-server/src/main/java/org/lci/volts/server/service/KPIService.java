@@ -87,6 +87,16 @@ public class KPIService {
 
     }
 
+    public void updateKpiBasedOnProduction(final String company, final String prodName, final Date date) {
+        List<Kpi> kpiToUpdate=kpiRepository.findByProductionName(prodName).orElse(null);
+        if (Objects.isNull(kpiToUpdate)) {
+            return;
+        }
+        for(Kpi kpi:kpiToUpdate){
+            updateKpiData(company,kpi.getName(),date);
+        }
+    }
+
     public KPIUpdateByDateResponse updateKpiData(final String company, final String kpiName, final Date date){
         List<ProductionData> data =productionDataRepository.findAllByCompanyName(company).orElse(null);
         assert data != null;
