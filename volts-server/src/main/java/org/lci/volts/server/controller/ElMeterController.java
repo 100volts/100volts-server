@@ -5,10 +5,7 @@ import org.lci.volts.server.model.dto.electricity.DailyElMeterEnergyDTO;
 import org.lci.volts.server.model.dto.electricity.ElMeterDTO;
 import org.lci.volts.server.model.dto.electricity.ElMeterDataDTO;
 import org.lci.volts.server.model.dto.electricity.PutElectricMeterRequest;
-import org.lci.volts.server.model.request.electric.ElMeterCreationRequest;
-import org.lci.volts.server.model.request.electric.GetAddressListElMeterRequest;
-import org.lci.volts.server.model.request.electric.GetElMeterNameRequest;
-import org.lci.volts.server.model.request.electric.GetElMeterRequest;
+import org.lci.volts.server.model.request.electric.*;
 import org.lci.volts.server.model.request.electric.data.GetElMeterLastDataRequest;
 import org.lci.volts.server.model.request.electric.data.GetElectricMeterDailyTotPowerRequest;
 import org.lci.volts.server.model.request.electric.data.GetElmeterReportRequest;
@@ -40,6 +37,13 @@ public class ElMeterController {
             @RequestBody ElMeterDataDTO request
     ) {
         return ResponseEntity.ok(elMeterService.setReadData(request));
+    }
+
+    @PostMapping("/data/electric_meter_energy_data")
+    public ResponseEntity<ElMeterReadResponse> insertElectricMeterEnergyData(
+            @RequestBody ElectricMeterDataRequest request
+    ) {
+        return ResponseEntity.ok(elMeterService.setElectricMeterEnergyData(request));
     }
 
     @PostMapping("create")

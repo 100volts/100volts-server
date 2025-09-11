@@ -5,6 +5,7 @@ import org.lci.volts.server.model.dto.electricity.*;
 import org.lci.volts.server.model.dto.settings.ElMeterSettings;
 import org.lci.volts.server.model.record.ElDataStartEnd;
 import org.lci.volts.server.model.record.ElMeterAvrFifteenMinuteLoad;
+import org.lci.volts.server.model.request.electric.ElectricMeterDataRequest;
 import org.lci.volts.server.model.request.electric.GetElMeterNameRequest;
 import org.lci.volts.server.model.request.electric.data.GetElmeterReportRequest;
 import org.lci.volts.server.model.request.electric.monthly.SetElMeterMonthlyRequest;
@@ -21,11 +22,9 @@ import org.lci.volts.server.model.responce.electric.settings.ElectricMeterSettin
 import org.lci.volts.server.persistence.Company;
 import org.lci.volts.server.persistence.electric.ElectricMeter;
 import org.lci.volts.server.persistence.electric.ElectricMeterData;
+import org.lci.volts.server.persistence.electric.ElectricMeterEnergyData;
 import org.lci.volts.server.persistence.electric.ElectricMeterMonthlyData;
-import org.lci.volts.server.repository.electric.ElMeterRpository;
-import org.lci.volts.server.repository.electric.ElectricMeterDataRepository;
-import org.lci.volts.server.repository.electric.ElectricMeterMonthlyDataRepository;
-import org.lci.volts.server.repository.electric.ElectricMeterRepository;
+import org.lci.volts.server.repository.electric.*;
 import org.springframework.data.convert.ReadingConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,6 +44,7 @@ public class ElMeterService {
     private final ElectricMeterRepository electricMeterRepository;
     private final ElectricMeterDataRepository dataRepository;
     private final ElectricMeterMonthlyDataRepository monthlyDataRepository;
+    private final ElectricMeterEnergyDataRepository electricMeterEnergyDataRepository;
     private final CompanyService companyService;
 
     public Set<ElectricMeter> findAllElectricMeters(final String companyName) {
@@ -61,6 +61,22 @@ public class ElMeterService {
 
     public ElMeterReadResponse setReadData(ElMeterDataDTO elMeterData) {
         return new ElMeterReadResponse(repository.saveElmeterData(elMeterData));
+    }
+
+    public ElMeterReadResponse setElectricMeterEnergyData(ElectricMeterDataRequest request) {
+        ElectricMeterEnergyData entity = new ElectricMeterEnergyData();
+        final ElectricMeter meter = electricMeterRepository.findByAddress(request.meterId()).orElseThrow();
+
+        entity.setMeter(meter);
+        entity.setEnergyActiveImport(BigDecimal.valueOf(request.energyActiveImport()));
+        entity.setEnergyActiveExport(BigDecimal.valueOf(request.energyActiveExport()));
+        entity.setEnergyReactiveImport(BigDecimal.valueOf(request.energyReactiveImport()));
+        entity.setEnergyReactiveExport(BigDecimal.valueOf(request.energyReactiveExport()));
+        entity.setEnergyApparent(BigDecimal.valueOf(request.energyApparent()));
+        entity.setRecordedAt(request.recordedAt() != null ? request.recordedAt() : OffsetDateTime.now());
+
+        electricMeterEnergyDataRepository.save(entity);
+        return new ElMeterReadResponse(true);
     }
 
     public boolean createElMeter(final ElMeterDTO request) {
