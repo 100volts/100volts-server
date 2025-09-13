@@ -11,6 +11,7 @@ import org.hibernate.type.SqlTypes;
 import org.lci.volts.server.persistence.Company;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.Map;
 
 @Getter
@@ -21,6 +22,7 @@ public class ControllerReadTimeSheet {
     @Id
     @ColumnDefault("nextval('controller_read_time_sheet_id_seq')")
     @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -30,7 +32,7 @@ public class ControllerReadTimeSheet {
 
     @Column(name = "time_sheet", nullable = false)
     @JdbcTypeCode(SqlTypes.JSON)
-    private Map<String, Object> timeSheet;
+    private List<Object> timeSheet;
 
     @ColumnDefault("now()")
     @Column(name = "created_at")
@@ -39,5 +41,9 @@ public class ControllerReadTimeSheet {
     @ColumnDefault("now()")
     @Column(name = "updated_at")
     private OffsetDateTime updatedAt;
+
+    @Column(name = "status", nullable = false, length = 50)
+    @Enumerated(EnumType.STRING)
+    private ControllerReadTimeSheetStatus status;
 
 }

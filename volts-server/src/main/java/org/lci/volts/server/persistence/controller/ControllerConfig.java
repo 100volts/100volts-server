@@ -21,6 +21,7 @@ public class ControllerConfig {
     @Id
     @ColumnDefault("nextval('controller_config_id_seq')")
     @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
