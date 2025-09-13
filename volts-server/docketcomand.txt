@@ -1,0 +1,7 @@
+docker build -t volts_server_1 .
+
+docker tag volts_server_1 100sq/mindzone:1
+
+docker push 100sq/mindzone:1
+
+docker run -p 8081:8081 your-image-name

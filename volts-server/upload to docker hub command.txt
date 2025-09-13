@@ -1,0 +1,5 @@
+docker login
+docker build -t 100sq/volts:latest .
+docker push 100sq/volts:latest
+
+docker run -p 8081:8081 100sq/volts:latest
