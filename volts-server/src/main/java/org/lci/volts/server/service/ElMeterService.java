@@ -143,38 +143,39 @@ public class ElMeterService {
         final LocalDateTime startOfYesterday = LocalDate.now().minusDays(1).atStartOfDay();
         final LocalDateTime endOfYesterday = LocalDate.now().minusDays(1).atTime(LocalTime.MAX);
         final LocalDateTime endOfWeek = LocalDate.now().minusWeeks(1).minusDays(1).atTime(LocalTime.MAX);
-        final List<ElectricMeterData> meterData = dataRepository.findDataunderOneMonth(address,companyName,endOfWeek).orElseThrow();//dataRepository.findDaielyRead(address,companyName).orElseThrow();
-        final Set<ElectricMeterData> foundAvrMeterData = new HashSet<>(meterData);//dataRepository.findAvrElMetersData(address, companyName).orElseThrow();
-        final ElectricMeterData data=meterData.get(0);
-        final List<DailyElMeterEnergyDTO> lastWeekEnergy = getSevenDayEnergyWithOutDbCall(meterData,address,companyName);
+        final List<ElectricMeterData> meterData = null;dataRepository.findDataunderOneMonth(address,companyName,endOfWeek).orElseThrow();//dataRepository.findDaielyRead(address,companyName).orElseThrow();
+        final Set<ElectricMeterData> foundAvrMeterData = null;//new HashSet<>(meterData);//dataRepository.findAvrElMetersData(address, companyName).orElseThrow();
+        final ElectricMeterData data=null;//meterData.get(0);
+        final List<DailyElMeterEnergyDTO> lastWeekEnergy = null;//getSevenDayEnergyWithOutDbCall(meterData,address,companyName);
         //tarif
         final LocalDateTime dateTime = LocalDateTime.now();
-        final var traf=new GetElectricMeterDailyTotPowerResponse(meterData.stream().filter(dailyT -> dailyT.getDate().getDayOfMonth() == dateTime.getDayOfMonth()).map(dailyT -> new TotPowerDTO(dailyT.getTotalActiveEnergyImportTariff1(), dailyT.getDate().toString())).toList());
+        //todo final var traf=new GetElectricMeterDailyTotPowerResponse(meterData.stream().filter(dailyT -> dailyT.getDate().getDayOfMonth() == dateTime.getDayOfMonth()).map(dailyT -> new TotPowerDTO(dailyT.getTotalActiveEnergyImportTariff1(), dailyT.getDate().toString())).toList());
 
 
         ElectricMeterData yesterdays = dataRepository.getYesterdays(address, companyName, startOfYesterday, endOfYesterday).orElse(null);
-        ElectricMeterData yesterdays2 =meterData.stream().filter(dataYesterday-> dataYesterday.getDate().isAfter(startOfYesterday)&&dataYesterday.getDate().isBefore(endOfYesterday)).findFirst().orElse(null);
-        List<EnergyMonthPairDTO> energyPair= calculateEnergyPai(companyName,elMeter);
+        ElectricMeterData yesterdays2 =null;//meterData.stream().filter(dataYesterday-> dataYesterday.getDate().isAfter(startOfYesterday)&&dataYesterday.getDate().isBefore(endOfYesterday)).findFirst().orElse(null);
+        List<EnergyMonthPairDTO> energyPair= Collections.EMPTY_LIST;//calculateEnergyPai(companyName,elMeter);
         if (yesterdays != null) {
             return new GetElMeterAndDataResponse(
-                    data.getMeter().getName(),
+                    null,//data.getMeter().getName(),
                     address,
-                    new ElMeterDataDTO(BigDecimal.valueOf(data.getMeter().getId()),
-                            data.getVoltageL1(), data.getVoltageL2(),
-                            data.getVoltageL3(),
-                            data.getCurrentL1().setScale(2, RoundingMode.HALF_UP),
-                            data.getCurrentL2().setScale(2, RoundingMode.HALF_UP),
-                            data.getCurrentL3().setScale(2, RoundingMode.HALF_UP),
-                            data.getActivePowerL1(), data.getActivePowerL2(), data.getActivePowerL3(),
-                            data.getPowerFactorL1().setScale(3, RoundingMode.HALF_UP),
-                            data.getPowerFactorL2().setScale(3, RoundingMode.HALF_UP),
-                            data.getPowerFactorL3().setScale(3, RoundingMode.HALF_UP),
-                            data.getTotalActivePower(),
-                            BigDecimal.valueOf(
-                                    data.getTotalActiveEnergyImportTariff1().longValue() - yesterdays.getTotalActiveEnergyImportTariff1().longValue()),
-                            data.getTotalActiveEnergyImportTariff2()),
-                    getAvrData(foundAvrMeterData),
-                    traf.dailyTariff(),
+                null,
+//                    new ElMeterDataDTO(BigDecimal.valueOf(data.getMeter().getId()),
+//                            data.getVoltageL1(), data.getVoltageL2(),
+//                            data.getVoltageL3(),
+//                            data.getCurrentL1().setScale(2, RoundingMode.HALF_UP),
+//                            data.getCurrentL2().setScale(2, RoundingMode.HALF_UP),
+//                            data.getCurrentL3().setScale(2, RoundingMode.HALF_UP),
+//                            data.getActivePowerL1(), data.getActivePowerL2(), data.getActivePowerL3(),
+//                            data.getPowerFactorL1().setScale(3, RoundingMode.HALF_UP),
+//                            data.getPowerFactorL2().setScale(3, RoundingMode.HALF_UP),
+//                            data.getPowerFactorL3().setScale(3, RoundingMode.HALF_UP),
+//                            data.getTotalActivePower(),
+//                            BigDecimal.valueOf(
+//                                    data.getTotalActiveEnergyImportTariff1().longValue() - yesterdays.getTotalActiveEnergyImportTariff1().longValue()),
+//                            data.getTotalActiveEnergyImportTariff2()),
+                    null,//getAvrData(foundAvrMeterData),
+                    null,//traf.dailyTariff(),
                     lastWeekEnergy,
                     energyPair);
         }
@@ -187,21 +188,22 @@ public class ElMeterService {
         return new GetElMeterAndDataResponse(
                 elMeter.getName(),
                 address,
-                new ElMeterDataDTO(BigDecimal.valueOf(data.getMeter().getId()),
-                        data.getVoltageL1(), data.getVoltageL2(),
-                        data.getVoltageL3(),
-                        data.getCurrentL1().setScale(2, RoundingMode.HALF_UP),
-                        data.getCurrentL2().setScale(2, RoundingMode.HALF_UP),
-                        data.getCurrentL3().setScale(2, RoundingMode.HALF_UP),
-                        data.getActivePowerL1(), data.getActivePowerL2(), data.getActivePowerL3(),
-                        data.getPowerFactorL1().setScale(3, RoundingMode.HALF_UP),
-                        data.getPowerFactorL2().setScale(3, RoundingMode.HALF_UP),
-                        data.getPowerFactorL3().setScale(3, RoundingMode.HALF_UP),
-                        data.getTotalActivePower(),
-                        BigDecimal.ZERO,
-                        data.getTotalActiveEnergyImportTariff2()),
+            null,
+//                new ElMeterDataDTO(BigDecimal.valueOf(data.getMeter().getId()),
+//                        data.getVoltageL1(), data.getVoltageL2(),
+//                        data.getVoltageL3(),
+//                        data.getCurrentL1().setScale(2, RoundingMode.HALF_UP),
+//                        data.getCurrentL2().setScale(2, RoundingMode.HALF_UP),
+//                        data.getCurrentL3().setScale(2, RoundingMode.HALF_UP),
+//                        data.getActivePowerL1(), data.getActivePowerL2(), data.getActivePowerL3(),
+//                        data.getPowerFactorL1().setScale(3, RoundingMode.HALF_UP),
+//                        data.getPowerFactorL2().setScale(3, RoundingMode.HALF_UP),
+//                        data.getPowerFactorL3().setScale(3, RoundingMode.HALF_UP),
+//                        data.getTotalActivePower(),
+//                        BigDecimal.ZERO,
+//                        data.getTotalActiveEnergyImportTariff2()),
                 getAvrData(foundAvrMeterData),
-                traf.dailyTariff(),
+                null,//traf.dailyTariff(),
                 lastWeekEnergy,
                 energyPair);
     }
