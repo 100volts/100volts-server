@@ -8,4 +8,4 @@ docker tag volts_server 100sq/volts_server:1
 
 docker push 100sq/volts_server:1
 
-docker run -p 8081:8081 your-image-name
+docker run -p 8081:8081 --restart=always your-image-name
