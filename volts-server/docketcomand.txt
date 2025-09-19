@@ -1,7 +1,11 @@
-docker build -t volts_server_1 .
+docker build -t volts_server .
 
-docker tag volts_server_1 100sq/mindzone:1
+///building for all platforms (do it for arm)
+docker buildx build --platform linux/arm64 -t 100sq/volts_server:1 --push .
 
-docker push 100sq/mindzone:1
 
-docker run -p 8081:8081 your-image-name
+docker tag volts_server 100sq/volts_server:1
+
+docker push 100sq/volts_server:1
+
+docker run -p 8081:8081 --restart=always your-image-name

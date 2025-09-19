@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.antlr.v4.runtime.misc.Pair;
+import org.lci.volts.server.model.dto.ElectricMeterEnergyDataDto;
 import org.lci.volts.server.model.dto.electricity.DailyElMeterEnergyDTO;
 import org.lci.volts.server.model.dto.electricity.EnergyMonthPairDTO;
 import org.lci.volts.server.model.record.ElMeterAvrFifteenMinuteLoad;
@@ -25,4 +26,6 @@ public class GetElMeterAndDataResponse {
     private List<TotPowerDTO> dailyTariff;
     private List<DailyElMeterEnergyDTO> lastWeekEnergy;
     private List<EnergyMonthPairDTO> energyMonthPairDTOS;
+    @JsonProperty("energy_data")
+    private List<ElectricMeterEnergyDataDto> energyData;
 }

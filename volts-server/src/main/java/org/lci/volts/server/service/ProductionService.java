@@ -150,7 +150,7 @@ public class ProductionService {
                 groupedByMonthDTO.add(new MonthValueDTO(month, sumValue));
             }
             //creation of el-meter data for prod
-            List<ElMeterWithDataDTO> elData = sortOutProductionElectricMeterData(production, groupedByMonthDTO, allElectricMeterDataForProductions);
+            List<ElMeterWithDataDTO> elData = Collections.EMPTY_LIST;//sortOutProductionElectricMeterData(production, groupedByMonthDTO, allElectricMeterDataForProductions);
 
             //get last 10 from db
             List<ProductionData> foundData = last6Months
@@ -174,7 +174,7 @@ public class ProductionService {
                 .filter(prodEl->prodEl.prod().equals(production)).toList();
         if(filteredMeterProdData.size()>1){
             elData=null;
-        }else if(filteredMeterProdData.size()==0){
+        }else if(filteredMeterProdData.size()==0 || filteredMeterProdData.get(0)==null){
             elData=null;
         }else {
             elData=List.of(
@@ -203,7 +203,7 @@ public class ProductionService {
 
         final LocalDateTime endOfMothLimit = LocalDate.now().minusMonths(1).minusDays(1).atTime(LocalTime.MAX);
 
-        List<ElDataStartEnd> foundDataStartEnd =elMeterService.getMonthlyData(electricMeters,companyName,endOfMothLimit,0);
+        List<ElDataStartEnd> foundDataStartEnd =Collections.EMPTY_LIST;//elMeterService.getMonthlyData(electricMeters,companyName,endOfMothLimit,0);
         //use dis to get data back one moth ago
 
         return mapElectricDataToProd(foundDataStartEnd,prods);
