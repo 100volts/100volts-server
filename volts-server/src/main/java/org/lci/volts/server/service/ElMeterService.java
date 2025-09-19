@@ -1,10 +1,12 @@
 package org.lci.volts.server.service;
 
 import lombok.RequiredArgsConstructor;
+import org.lci.volts.server.model.dto.ElectricMeterEnergyDataDto;
 import org.lci.volts.server.model.dto.electricity.*;
 import org.lci.volts.server.model.dto.settings.ElMeterSettings;
 import org.lci.volts.server.model.record.ElDataStartEnd;
 import org.lci.volts.server.model.record.ElMeterAvrFifteenMinuteLoad;
+import org.lci.volts.server.model.request.electric.ElMeterEnergyRequest;
 import org.lci.volts.server.model.request.electric.ElectricMeterDataRequest;
 import org.lci.volts.server.model.request.electric.GetElMeterNameRequest;
 import org.lci.volts.server.model.request.electric.data.GetElmeterReportRequest;
@@ -147,6 +149,8 @@ public class ElMeterService {
         final Set<ElectricMeterData> foundAvrMeterData = null;//new HashSet<>(meterData);//dataRepository.findAvrElMetersData(address, companyName).orElseThrow();
         final ElectricMeterData data=null;//meterData.get(0);
         final List<DailyElMeterEnergyDTO> lastWeekEnergy = null;//getSevenDayEnergyWithOutDbCall(meterData,address,companyName);
+        final List<ElectricMeterEnergyDataDto> energyData = geElectricMeterEnergyDataFilterByMeterName(companyName, elMeter.getName());
+
         //tarif
         final LocalDateTime dateTime = LocalDateTime.now();
         //todo final var traf=new GetElectricMeterDailyTotPowerResponse(meterData.stream().filter(dailyT -> dailyT.getDate().getDayOfMonth() == dateTime.getDayOfMonth()).map(dailyT -> new TotPowerDTO(dailyT.getTotalActiveEnergyImportTariff1(), dailyT.getDate().toString())).toList());
@@ -177,13 +181,13 @@ public class ElMeterService {
                     null,//getAvrData(foundAvrMeterData),
                     null,//traf.dailyTariff(),
                     lastWeekEnergy,
-                    energyPair);
+                    energyPair,
+                    energyData);
         }
         if(Objects.isNull(data)){
             return new GetElMeterAndDataResponse(elMeter.getName(),
                     address,
-                    null,null,List.of(),List.of(),null
-            );
+                    null,null,List.of(),List.of(),null,energyData);
         }
         return new GetElMeterAndDataResponse(
                 elMeter.getName(),
@@ -205,7 +209,8 @@ public class ElMeterService {
                 getAvrData(foundAvrMeterData),
                 null,//traf.dailyTariff(),
                 lastWeekEnergy,
-                energyPair);
+                energyPair,
+                energyData);
     }
 
     public GetElMeterAndDataResponse getElectricMeterWithLastData(final int address, final String companyName) {
@@ -216,6 +221,8 @@ public class ElMeterService {
         LocalDateTime startOfYesterday = LocalDate.now().minusDays(1).atStartOfDay();
         LocalDateTime endOfYesterday = LocalDate.now().minusDays(1).atTime(LocalTime.MAX);
         List<DailyElMeterEnergyDTO> lastWeekEnergy = getSevenDayEnergy(address, companyName);
+        final List<ElectricMeterEnergyDataDto> energyData = geElectricMeterEnergyDataFilterByMeterName(companyName, electricMeter.getName());
+
 
         ElectricMeterData yesterdays = dataRepository.getYesterdays(address, companyName, startOfYesterday, endOfYesterday).orElse(null);
         List<EnergyMonthPairDTO> energyPair= calculateEnergyPai(companyName,electricMeter);
@@ -237,12 +244,12 @@ public class ElMeterService {
                     getAvrData(foundAvrMeterData),
                     traf.dailyTariff(),
                     lastWeekEnergy,
-                    energyPair);
+                    energyPair,
+                    energyData);
         }
         if(Objects.isNull(foundMeterWithData)){
             return new GetElMeterAndDataResponse(electricMeter.getName(),
-                    address, null,null,List.of(),List.of(),null
-                    );
+                    address, null,null,List.of(),List.of(),null,energyData);
         }
         return new GetElMeterAndDataResponse(
                 electricMeter.getName(),
@@ -260,7 +267,8 @@ public class ElMeterService {
                 getAvrData(foundAvrMeterData),
                 traf.dailyTariff(),
                 lastWeekEnergy,
-                energyPair);
+                energyPair,
+                energyData);
     }
 
     private List<EnergyMonthPairDTO> calculateEnergyPai(String companyName, ElectricMeter electricMeter) {
@@ -506,5 +514,19 @@ public class ElMeterService {
             }
         });
         return new ElMeterSettingsForCompanyResponse(foundSettings);
+    }
+
+    public List<ElectricMeterEnergyDataDto> geElectricMeterEnergyData(String companyName) {
+        List<ElectricMeterEnergyData> foundData = electricMeterEnergyDataRepository.findEnergyDataForMeter(companyName).orElse(List.of());
+        List<ElectricMeterEnergyDataDto> responseData = foundData.stream().map(data -> new ElectricMeterEnergyDataDto(data.getMeter().getAddress(),data.getEnergyActiveImport(), data.getEnergyActiveExport(), data.getEnergyReactiveImport(), data.getEnergyReactiveExport(), data.getEnergyApparent(), data.getRecordedAt().toString())).toList();
+
+        return responseData;
+    }
+
+    public List<ElectricMeterEnergyDataDto> geElectricMeterEnergyDataFilterByMeterName(final String companyName,final String meterName) {
+        List<ElectricMeterEnergyData> foundData = electricMeterEnergyDataRepository.findEnergyDataForMeterFilterByMeterName(companyName,meterName).orElse(List.of());
+        List<ElectricMeterEnergyDataDto> responseData = foundData.stream().map(data -> new ElectricMeterEnergyDataDto(data.getMeter().getAddress(),data.getEnergyActiveImport(), data.getEnergyActiveExport(), data.getEnergyReactiveImport(), data.getEnergyReactiveExport(), data.getEnergyApparent(), data.getRecordedAt().toString())).toList();
+
+        return responseData;
     }
 }

@@ -46,6 +46,11 @@ public class ElMeterController {
         return ResponseEntity.ok(elMeterService.setElectricMeterEnergyData(request));
     }
 
+    @PostMapping("/data/get/electric_meter_energy_data")
+    public ResponseEntity<ElMeterEnergyResponse> getElmeterEnergy(@RequestBody ElMeterEnergyRequest request){
+        return ResponseEntity.ok(new ElMeterEnergyResponse(elMeterService.geElectricMeterEnergyData(request.companyName())));
+    }
+
     @PostMapping("create")
     public ResponseEntity<ElMetterCreateResponse> createElectricMeter(
             @RequestBody ElMeterCreationRequest request
